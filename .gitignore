@@ -41,3 +41,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Large files
+public/landing/hero-left.jpg
+public/landing/chooseus.jpg
+public/industries/Healthcare.jpg
+public/industries/vecteezy_a-woman-in-a-business-suit-standing-with-her-arms-crossed_56505159.jpeg
+public/services/it-cons.jpg
+
+# Temporary directories
+temp_backup/
+optimized_images/
