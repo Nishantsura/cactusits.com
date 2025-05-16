@@ -289,9 +289,10 @@ export default function Header() {
                       href={item.url}
                       className={`
                         px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center
-                        ${isActive(item.url) 
-                          ? "bg-foreground/10 text-foreground font-semibold" 
-                          : "text-gray-txt hover:bg-gray-100"
+                        ${
+                          isActive(item.url)
+                            ? "bg-foreground/10 text-foreground font-semibold"
+                            : "text-gray-txt hover:bg-gray-100"
                         }
                       `}
                     >
@@ -424,14 +425,15 @@ export default function Header() {
               {navItems.map((item) => (
                 <div key={item.title} className="py-1">
                   <div className="flex items-center justify-between">
-                    <Link 
+                    <Link
                       href={item.url}
                       onClick={closeMobileMenu}
                       className={`
                         flex-1 flex items-center px-3 py-2 text-base font-medium rounded-md
-                        ${isActive(item.url) 
-                          ? "bg-foreground/10 text-foreground" 
-                          : "text-gray-700 hover:text-primary hover:bg-gray-50"
+                        ${
+                          isActive(item.url)
+                            ? "bg-foreground/10 text-foreground"
+                            : "text-gray-700 hover:text-primary hover:bg-gray-50"
                         }
                       `}
                     >

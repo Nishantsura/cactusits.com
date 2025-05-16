@@ -37,7 +37,8 @@ const industries: Industry[] = [
     title: "Information Technology",
     description:
       "Top-tier talent and innovative tech solutions to power digital transformation and IT innovation.",
-    imageUrl: "/industries/vecteezy_portrait-of-a-serious-and-focused-female-programmer-working_54880456.jpeg",
+    imageUrl:
+      "/industries/vecteezy_portrait-of-a-serious-and-focused-female-programmer-working_54880456.jpeg",
     imageAlt: "Serious and focused female programmer working with code",
     url: "public-sector",
   },
@@ -46,7 +47,8 @@ const industries: Industry[] = [
     title: "Public Sector & Defence",
     description:
       "Transforming operations with agile technologies and digital platforms for government and defense.",
-    imageUrl: "/industries/vecteezy_handsome-prosperous-businessman-reads-useful-information-in_8168158.jpg",
+    imageUrl:
+      "/industries/vecteezy_handsome-prosperous-businessman-reads-useful-information-in_8168158.jpg",
     imageAlt: "Defence and security services",
     url: "public-sector-defence",
   },
@@ -74,7 +76,7 @@ export default function IndustriesPage() {
               key={industry.id}
               id={industry.url}
               className="relative overflow-hidden bg-warm-white p-6 shadow-lg transition-all duration-300 hover:shadow-xl"
-              style={{ borderRadius: '0px' }}
+              style={{ borderRadius: "0px" }}
             >
               <div className="flex flex-col md:flex-row gap-6 items-start">
                 <div className="w-full md:w-2/5 relative">
@@ -101,7 +103,14 @@ export default function IndustriesPage() {
                       className="px-4 py-2 bg-primary text-white rounded-none text-sm font-medium hover:bg-opacity-90 transition-all flex items-center"
                     >
                       Learn More
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="ml-1">
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        className="ml-1"
+                      >
                         <path d="M7 17L17 7" />
                         <path d="M7 7h10v10" />
                       </svg>

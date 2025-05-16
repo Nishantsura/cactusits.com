@@ -16,7 +16,7 @@ export default function EnhancedHero({
   title,
   description,
   bulletpoints,
-  image
+  image,
 }: HeroProps) {
   // Animation variants
   const containerVariants = {
@@ -24,14 +24,14 @@ export default function EnhancedHero({
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2
-      }
-    }
+        staggerChildren: 0.2,
+      },
+    },
   };
-  
+
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
+    visible: { opacity: 1, y: 0 },
   };
 
   return (
@@ -45,14 +45,14 @@ export default function EnhancedHero({
             animate="visible"
             className="flex flex-col"
           >
-            <motion.p 
+            <motion.p
               variants={itemVariants}
               className="text-sm md:text-base font-medium tracking-wide text-primary uppercase mb-4"
             >
               {service}
             </motion.p>
 
-            <motion.h1 
+            <motion.h1
               variants={itemVariants}
               className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight text-gray-900 mb-6"
             >
@@ -63,24 +63,21 @@ export default function EnhancedHero({
                   </span>
                 ) : (
                   word + " "
-                )
+                ),
               )}
             </motion.h1>
 
-            <motion.p 
+            <motion.p
               variants={itemVariants}
               className="text-base md:text-lg leading-relaxed text-gray-600 mb-8"
             >
               {description}
             </motion.p>
 
-            <motion.div 
-              variants={containerVariants}
-              className="space-y-6"
-            >
+            <motion.div variants={containerVariants} className="space-y-6">
               {bulletpoints.map((point, index) => (
-                <motion.div 
-                  key={index} 
+                <motion.div
+                  key={index}
                   variants={itemVariants}
                   className="flex items-start gap-4"
                 >
@@ -102,10 +99,7 @@ export default function EnhancedHero({
               ))}
             </motion.div>
 
-            <motion.div
-              variants={itemVariants}
-              className="mt-10"
-            >
+            <motion.div variants={itemVariants} className="mt-10">
               <a
                 href="#contact"
                 className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-500 md:py-4 md:text-lg shadow-md transition-all transform hover:translate-y-[-2px]"

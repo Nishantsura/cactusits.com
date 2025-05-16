@@ -80,8 +80,8 @@ function Hero() {
             <p className="text-lg md:text-lg leading-relaxed tracking-tight text-muted-foreground max-w-2xl text-center">
               Welcome to Cactus, where innovation meets excellence. Established
               in 2021, we have rapidly grown into a trusted partner for
-              businesses across the UK and Europe, providing cutting-edge IT services and
-              staffing & recruitment solutions.
+              businesses across the UK and Europe, providing cutting-edge IT
+              services and staffing & recruitment solutions.
             </p>
           </div>
           <div className="flex flex-row gap-3">

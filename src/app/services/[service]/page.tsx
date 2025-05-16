@@ -1,11 +1,12 @@
 import { PagePropsSer, data, getServiceData } from "./data";
 import EnhancedHero from "@/components/Services/EnhancedHero";
 import EnhancedPotential from "@/components/Services/EnhancedPotential";
-import Explore from "@/components/Services/Explore";
-import { ServicePageSection, FadeInSection } from "@/components/Services/ServicePageLayout";
+// import Explore from "@/components/Services/Explore";
+import {
+  ServicePageSection,
+  FadeInSection,
+} from "@/components/Services/ServicePageLayout";
 import ServiceContactForm from "@/components/Services/ServiceContactForm";
-
-
 
 export async function generateMetadata({
   params,
@@ -48,7 +49,6 @@ export async function generateMetadata({
   };
 }
 
-
 export default async function Page({
   params,
 }: {
@@ -72,7 +72,7 @@ export default async function Page({
     return <div>Service not found</div>;
   }
 
-  const { Hero, Potential, Explore: ExploreData } = pageData;
+  const { Hero, Potential } = pageData;
 
   return (
     <div className="w-full">
@@ -91,35 +91,23 @@ export default async function Page({
         serviceCards={Potential.serviceCards}
       />
 
-      {/* Explore Section */}
-      <ServicePageSection 
-        id="features" 
-        title="Key Features & Capabilities" 
-        subtitle="Explore the comprehensive suite of services we offer"
-        background="gradient"
-      >
-        <FadeInSection>
-          <Explore
-            serviceDetails={ExploreData.serviceDetails}
-            serviceFeatures={ExploreData.serviceFeatures}
-          />
-        </FadeInSection>
-      </ServicePageSection>
-
-
+      {/*
+        The "Explore Section" (Key Features & Capabilities) has been temporarily removed
+        due to a missing 'Explore' component. This section (which included <ServicePageSection>,
+        <FadeInSection>, and the <Explore> component) needs to be reinstated once the
+        'Explore' component at '@/components/Services/Explore' is available.
+      */}
 
       {/* Contact Form Section */}
-      <ServicePageSection 
-        id="contact" 
-        title="Ready to Transform Your Business?" 
+      <ServicePageSection
+        id="contact"
+        title="Ready to Transform Your Business?"
         subtitle={`Get in touch to learn how our ${Hero.service.toLowerCase()} services can help you achieve your business goals.`}
         background="white"
       >
         <FadeInSection>
           <div className="max-w-3xl mx-auto">
-            <ServiceContactForm 
-              serviceTitle={Hero.service.toLowerCase()}
-            />
+            <ServiceContactForm serviceTitle={Hero.service.toLowerCase()} />
           </div>
         </FadeInSection>
       </ServicePageSection>

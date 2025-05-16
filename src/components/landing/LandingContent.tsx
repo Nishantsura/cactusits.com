@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Image from "next/image";
 import IndustriesSection from "@/components/landing/Industries";
@@ -15,7 +15,13 @@ export function LandingContent() {
   return (
     <div className="relative w-full min-h-screen flex flex-col items-center">
       {/* hero section */}
-      <Section id="hero" spacing="none" verticalAlign="center" fullHeight className="w-full max-w-[85vw] mx-auto flex flex-col items-center pt-[90px]">
+      <Section
+        id="hero"
+        spacing="none"
+        verticalAlign="center"
+        fullHeight
+        className="w-full max-w-[85vw] mx-auto flex flex-col items-center pt-[90px]"
+      >
         <div className="w-full h-[88%] flex flex-col-reverse md:flex-row">
           <div className="w-full md:w-[70%] h-full p-4 md:p-16 pt-6 md:pt-12 flex flex-col gap-4 md:gap-8 text-center">
             <h1 className="text-3xl md:text-6xl">
@@ -53,7 +59,12 @@ export function LandingContent() {
       </Section>
 
       {/* quality over quantity */}
-      <Section id="quality" spacing="minimal" verticalAlign="center" className="w-full max-w-[85vw] mx-auto flex flex-col md:flex-row">
+      <Section
+        id="quality"
+        spacing="minimal"
+        verticalAlign="center"
+        className="w-full max-w-[85vw] mx-auto flex flex-col md:flex-row"
+      >
         <div className="w-full md:w-[40%] flex flex-col justify-between px-4 md:px-0">
           <div>
             <h1 className="text-3xl md:text-5xl">
@@ -130,32 +141,62 @@ export function LandingContent() {
       </Section>
 
       {/* services  */}
-      <Section id="services" spacing="minimal" verticalAlign="center" className="w-full">
+      <Section
+        id="services"
+        spacing="minimal"
+        verticalAlign="center"
+        className="w-full"
+      >
         <Services />
       </Section>
 
       {/* Industries section */}
-      <Section id="industries" spacing="minimal" verticalAlign="center" className="w-full">
+      <Section
+        id="industries"
+        spacing="minimal"
+        verticalAlign="center"
+        className="w-full"
+      >
         <IndustriesSection />
       </Section>
 
       {/* choose us  */}
-      <Section id="choose-us" spacing="minimal" verticalAlign="center" className="w-full">
+      <Section
+        id="choose-us"
+        spacing="minimal"
+        verticalAlign="center"
+        className="w-full"
+      >
         <ChooseUs />
       </Section>
 
       {/* testimonials */}
-      <Section id="testimonials" spacing="minimal" verticalAlign="center" className="w-full">
+      <Section
+        id="testimonials"
+        spacing="minimal"
+        verticalAlign="center"
+        className="w-full"
+      >
         <Testimonials />
       </Section>
 
       {/* news letter  */}
-      <Section id="newsletter" spacing="minimal" verticalAlign="center" className="w-full">
+      <Section
+        id="newsletter"
+        spacing="minimal"
+        verticalAlign="center"
+        className="w-full"
+      >
         <SubscriptionForm />
       </Section>
 
       {/* contact us form */}
-      <Section id="contactus" spacing="minimal" verticalAlign="center" className="w-full">
+      <Section
+        id="contactus"
+        spacing="minimal"
+        verticalAlign="center"
+        className="w-full"
+      >
         <ContactForm />
       </Section>
     </div>

@@ -23,8 +23,8 @@ export default function Careers() {
                 <span className="text-primary">personality</span>
               </h1>
               <h3 className="text-base sm:text-lg lg:text-xl text-gray-muted max-w-2xl mx-auto md:mx-0">
-                Explore exciting career opportunities at Cactus and be a part
-                of our innovative and dynamic team.
+                Explore exciting career opportunities at Cactus and be a part of
+                our innovative and dynamic team.
               </h3>
               <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                 <Link href="/#contactus" className="w-full sm:w-auto">
@@ -48,7 +48,7 @@ export default function Careers() {
               />
             </div>
           </div>
-          
+
           {/* Trusted By Section */}
           <div className="mt-8 lg:mt-16 flex flex-col items-center w-full">
             <p className="text-gray-muted">

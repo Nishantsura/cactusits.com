@@ -80,7 +80,8 @@ export const data: Record<string, PageProps>[] = [
         title: "Transforming Retail Operations with Agile Technologies",
         description:
           "The retail industry is evolving rapidly, with a significant shift toward online sales. Companies worldwide are adopting agile technologies and automating operations to improve efficiency, aiming to deliver outstanding service and experiences to their customers.",
-        image: "/industries/vecteezy_handsome-prosperous-businessman-reads-useful-information-in_8168158.jpg",
+        image:
+          "/industries/vecteezy_handsome-prosperous-businessman-reads-useful-information-in_8168158.jpg",
       },
       Approach: [
         {
@@ -192,7 +193,8 @@ export const data: Record<string, PageProps>[] = [
         title: "Connecting You with IT Professionals Who Drive Success",
         description:
           "In today's fast-paced digital world, the Information Technology (IT) sector is the backbone of innovation and efficiency. Our IT staffing solutions are designed to meet the unique needs of this dynamic industry, providing top-tier talent that drives technological advancements and business success.",
-        image: "/industries/vecteezy_portrait-of-a-serious-and-focused-female-programmer-working_54880456.jpeg",
+        image:
+          "/industries/vecteezy_portrait-of-a-serious-and-focused-female-programmer-working_54880456.jpeg",
       },
       Approach: [
         {
@@ -263,7 +265,8 @@ export const data: Record<string, PageProps>[] = [
         title: "Improving Service Delivery Through Technology",
         description:
           "For the public sector, we help government organisations and agencies improve service delivery through technology. Our consulting services provide strategic advice to enhance public sector IT systems and processes.",
-        image: "/industries/vecteezy_a-woman-in-a-business-suit-standing-with-her-arms-crossed_56505159.jpeg",
+        image:
+          "/industries/vecteezy_a-woman-in-a-business-suit-standing-with-her-arms-crossed_56505159.jpeg",
       },
       Approach: [
         {

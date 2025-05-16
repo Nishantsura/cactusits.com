@@ -1,4 +1,5 @@
 # Cactusits.com
+
 Entire and updated codebase for CactusIT Solutions.
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
@@ -7,7 +8,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 - Modern responsive design with Tailwind CSS
 - Service page redesign with improved layouts
-- Enhanced navigation system 
+- Enhanced navigation system
 - Animated components using Framer Motion
 - Comprehensive services and industries sections
 

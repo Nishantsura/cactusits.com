@@ -1,5 +1,5 @@
-import React, { createContext, useContext, ReactNode } from 'react';
-import { useSectionScroll } from '@/hooks/useSectionScroll';
+import React, { createContext, useContext, ReactNode } from "react";
+import { useSectionScroll } from "@/hooks/useSectionScroll";
 
 interface SectionScrollContextProps {
   activeSection: number;
@@ -7,7 +7,9 @@ interface SectionScrollContextProps {
   sections: HTMLElement[];
 }
 
-const SectionScrollContext = createContext<SectionScrollContextProps | undefined>(undefined);
+const SectionScrollContext = createContext<
+  SectionScrollContextProps | undefined
+>(undefined);
 
 interface SectionScrollProviderProps {
   children: ReactNode;
@@ -16,7 +18,7 @@ interface SectionScrollProviderProps {
 
 export function SectionScrollProvider({
   children,
-  sectionSelector = '[data-section]',
+  sectionSelector = "[data-section]",
 }: SectionScrollProviderProps) {
   const sectionScroll = useSectionScroll({
     sectionSelector,
@@ -32,7 +34,9 @@ export function SectionScrollProvider({
 export function useSectionScrollContext() {
   const context = useContext(SectionScrollContext);
   if (context === undefined) {
-    throw new Error('useSectionScrollContext must be used within a SectionScrollProvider');
+    throw new Error(
+      "useSectionScrollContext must be used within a SectionScrollProvider",
+    );
   }
   return context;
 }

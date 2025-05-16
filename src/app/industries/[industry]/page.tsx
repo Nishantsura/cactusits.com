@@ -6,7 +6,6 @@ import ChooseUs from "@/components/ChooseUs";
 import ContactForm from "@/components/landing/ContactUs";
 import { Section } from "@/components/ui/section";
 
-
 export default async function Page({
   params,
 }: {
@@ -21,7 +20,12 @@ export default async function Page({
   return (
     <div className="w-full flex flex-col items-center">
       {/* Hero Section */}
-      <Section id="hero" spacing="minimal" verticalAlign="center" className="flex flex-col lg:flex-row max-w-[90vw] w-full p-4 lg:p-8 gap-8 pt-[115px]">
+      <Section
+        id="hero"
+        spacing="minimal"
+        verticalAlign="center"
+        className="flex flex-col lg:flex-row max-w-[90vw] w-full p-4 lg:p-8 gap-8 pt-[115px]"
+      >
         <div className="flex-1 flex flex-col justify-center">
           <p className="text-sm uppercase tracking-wide text-gray-500 mb-4">
             {Hero.industry}
@@ -67,12 +71,12 @@ export default async function Page({
       <Section id="approach" spacing="none" verticalAlign="center">
         <OurApproach Approach={Approach} />
       </Section>
-      
+
       {/* Why you'd love to choose us section */}
       <Section id="why-choose-us" spacing="none" verticalAlign="center">
         <ChooseUs />
       </Section>
-      
+
       {/* Contact us section */}
       <Section id="contact" spacing="minimal" verticalAlign="center">
         <ContactForm />
