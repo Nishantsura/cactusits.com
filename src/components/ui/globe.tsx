@@ -72,7 +72,7 @@ export function Globe({
       state.width = width * 2;
       state.height = width * 2;
     },
-    [r],
+    [r, width],
   );
 
   const onResize = () => {
@@ -101,7 +101,7 @@ export function Globe({
       window.removeEventListener("resize", onResize);
       globe.destroy();
     };
-  }, [config, onRender]);
+  }, [config, onRender, onResize, width]);
 
   return (
     <div
