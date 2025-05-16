@@ -9,7 +9,7 @@ interface SectionScrollOptions {
 
 export function useSectionScroll({
   sectionSelector,
-  threshold = 0.2,
+  // threshold param is not used in the implementation
   scrollDuration = 800, // Increased for smoother animation
   offset = 0, // Default no offset
 }: SectionScrollOptions) {
@@ -37,7 +37,6 @@ export function useSectionScroll({
   // Helper to find the most visible section
   const findVisibleSection = useCallback((sectionEls: HTMLElement[]) => {
     const windowHeight = window.innerHeight;
-    const scrollTop = window.scrollY;
     
     let bestSection = 0;
     let maxVisibility = 0;

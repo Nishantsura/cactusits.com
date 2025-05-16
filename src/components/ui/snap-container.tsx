@@ -27,8 +27,7 @@ const SnapContainer = forwardRef<HTMLDivElement, SnapContainerProps>(
       const container = containerRef.current;
       if (!container) return;
 
-      // Store previous scroll position
-      let lastScrollTop = 0;
+      // No need to store scroll position in this implementation
       
       const handleScroll = () => {
         // Prevent default behavior if needed
@@ -45,7 +44,6 @@ const SnapContainer = forwardRef<HTMLDivElement, SnapContainerProps>(
         const sections = Array.from(container.querySelectorAll('[data-section]'));
         
         // Find current active section
-        const containerRect = container.getBoundingClientRect();
         const viewportCenter = window.innerHeight / 2;
         
         let activeIndex = 0;

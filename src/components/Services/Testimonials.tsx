@@ -78,7 +78,7 @@ export default function ServiceTestimonials({
             
             {/* Testimonial text */}
             <p className="text-gray-700 italic mb-6 flex-grow">
-              "{testimonial.text}"
+              &quot;{testimonial.text}&quot;
             </p>
             
             {/* Author info */}

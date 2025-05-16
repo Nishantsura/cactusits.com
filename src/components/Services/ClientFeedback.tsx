@@ -247,9 +247,9 @@ export default function ClientFeedback({
             >
               {/* Quote content */}
               <div className="mb-4 text-gray-800 text-lg font-light italic relative">
-                <div className="text-primary text-4xl absolute -top-2 -left-2 opacity-20">"</div>
+                <div className="text-primary text-4xl absolute -top-2 -left-2 opacity-20">&quot;</div>
                 <p className="relative z-10 pl-4">{item.quote}</p>
-                <div className="text-primary text-4xl absolute -bottom-5 right-0 opacity-20">"</div>
+                <div className="text-primary text-4xl absolute -bottom-5 right-0 opacity-20">&quot;</div>
               </div>
               
               {/* Client info */}

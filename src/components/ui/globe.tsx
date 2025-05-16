@@ -43,7 +43,7 @@ export function Globe({
   className?: string;
   config?: COBEOptions;
 }) {
-  let phi = 0;
+  const phiRef = useRef(0);
   let width = 0;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointerInteracting = useRef<number | null>(null);
@@ -67,8 +67,8 @@ export function Globe({
 
   const onRender = useCallback(
     (state: Record<string, number>) => {
-      if (!pointerInteracting.current) phi += 0.005;
-      state.phi = phi + r;
+      if (!pointerInteracting.current) phiRef.current += 0.005;
+      state.phi = phiRef.current + r;
       state.width = width * 2;
       state.height = width * 2;
     },
@@ -92,9 +92,16 @@ export function Globe({
       onRender,
     });
 
-    setTimeout(() => (canvasRef.current!.style.opacity = "1"));
-    return () => globe.destroy();
-  }, []);
+    setTimeout(() => {
+      if (canvasRef.current) {
+        canvasRef.current.style.opacity = "1";
+      }
+    });
+    return () => {
+      window.removeEventListener("resize", onResize);
+      globe.destroy();
+    };
+  }, [config, onRender]);
 
   return (
     <div

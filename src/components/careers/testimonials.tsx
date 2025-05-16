@@ -38,13 +38,15 @@ const TestimonialsColumn = (props: {
                 <div className="p-10 rounded-3xl shadow-md hover:shadow-lg transition-shadow duration-300 bg-warm-white max-w-xs w-full" key={i}>
                   <div>{text}</div>
                   <div className="flex items-center gap-2 mt-5">
-                    <img
-                      width={40}
-                      height={40}
-                      src={image}
-                      alt={name}
-                      className="h-10 w-10 rounded-full"
-                    />
+                    <div className="h-10 w-10 rounded-full overflow-hidden relative">
+                      <img
+                        width={40}
+                        height={40}
+                        src={image}
+                        alt={name}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
                     <div className="flex flex-col">
                       <div className="font-medium tracking-tight leading-5">{name}</div>
                       <div className="leading-5 opacity-60 tracking-tight">{role}</div>
@@ -123,8 +125,7 @@ const firstColumn = testimonials.slice(0, 3);
 const secondColumn = testimonials.slice(3, 6);
 const thirdColumn = testimonials.slice(6, 9);
 
-// Empty interface for backwards compatibility
-export interface TestimonialsProps {}
+// No need for an empty interface
 
 export default function Testimonials() {
   return (

@@ -3,7 +3,6 @@
 import React from "react";
 import Image from "next/image";
 import ChooseUs from "@/components/ChooseUs";
-import LifeAtCactus from "@/components/careers/life-at-cactus";
 import JobListings from "@/components/careers/job-listings";
 import Testimonials from "@/components/careers/testimonials";
 import ContactForm from "@/components/landing/ContactUs";
@@ -100,8 +99,6 @@ export default function Careers() {
       <ChooseUs />
 
       <JobListings />
-
-      <LifeAtCactus />
 
       <Testimonials />
 

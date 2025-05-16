@@ -82,7 +82,7 @@ export function MainFooter() {
           </div>
         </Link>
         <p className="bg-transparent text-center text-xs leading-4 text-primary/60 md:text-left max-w-3xl">
-          At Cactus AI, we're committed to delivering exceptional IT services across diverse industries. 
+          At Cactus AI, we&apos;re committed to delivering exceptional IT services across diverse industries. 
           Our expertise and innovative approach enable us to meet the unique requirements of each business 
           we serve. Through quality solutions and dedicated support, we help organizations harness the 
           power of technology to drive growth and achieve their strategic objectives.

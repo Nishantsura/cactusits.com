@@ -8,14 +8,14 @@ export default function CookiesPolicyPage() {
       <div className="prose prose-sm md:prose-base lg:prose-lg max-w-none">
         <section className="mb-8">
           <p className="mb-4">
-            This cookie policy ("Policy") describes what cookies are and how and they're being used by the cactusits.com website ("Website" or "Service") and any of its related products and services (collectively, "Services"). This Policy is a legally binding agreement between you ("User", "you" or "your") and this Website operator ("Operator", "we", "us" or "our"). If you are entering into this agreement on behalf of a business or other legal entity, you represent that you have the authority to bind such entity to this agreement, in which case the terms "User", "you" or "your" shall refer to such entity. If you do not have such authority, or if you do not agree with the terms of this agreement, you must not accept this agreement and may not access and use the Website and Services. You should read this Policy so you can understand the types of cookies we use, the information we collect using cookies and how that information is used. It also describes the choices available to you regarding accepting or declining the use of cookies. For further information on how we use, store and keep your personal data secure, see our privacy policy.
+            This cookie policy (&quot;Policy&quot;) describes what cookies are and how and they&apos;re being used by the cactusits.com website (&quot;Website&quot; or &quot;Service&quot;) and any of its related products and services (collectively, &quot;Services&quot;). This Policy is a legally binding agreement between you (&quot;User&quot;, &quot;you&quot; or &quot;your&quot;) and this Website operator (&quot;Operator&quot;, &quot;we&quot;, &quot;us&quot; or &quot;our&quot;). If you are entering into this agreement on behalf of a business or other legal entity, you represent that you have the authority to bind such entity to this agreement, in which case the terms &quot;User&quot;, &quot;you&quot; or &quot;your&quot; shall refer to such entity. If you do not have such authority, or if you do not agree with the terms of this agreement, you must not accept this agreement and may not access and use the Website and Services. You should read this Policy so you can understand the types of cookies we use, the information we collect using cookies and how that information is used. It also describes the choices available to you regarding accepting or declining the use of cookies. For further information on how we use, store and keep your personal data secure, see our privacy policy.
           </p>
         </section>
 
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">What are cookies?</h2>
           <p className="mb-4">
-            Cookies are small pieces of data stored in text files that are saved on your computer or other devices when websites are loaded in a browser. They are widely used to remember you and your preferences, either for a single visit (through a "session cookie") or for multiple repeat visits (using a "persistent cookie").
+            Cookies are small pieces of data stored in text files that are saved on your computer or other devices when websites are loaded in a browser. They are widely used to remember you and your preferences, either for a single visit (through a &quot;session cookie&quot;) or for multiple repeat visits (using a &quot;persistent cookie&quot;).
           </p>
           <p className="mb-4">
             Session cookies are temporary cookies that are used during the course of your visit to the Website, and they expire when you close the web browser.
@@ -24,7 +24,7 @@ export default function CookiesPolicyPage() {
             Persistent cookies are used to remember your preferences within our Website and remain on your desktop or mobile device even after you close your browser or restart your computer. They ensure a consistent and efficient experience for you while visiting the Website and Services.
           </p>
           <p className="mb-4">
-            Cookies may be set by the Website ("first-party cookies"), or by third parties, such as those who serve content or provide advertising or analytics services on the Website ("third party cookies"). These third parties can recognise you when you visit our website and also when you visit certain other websites.
+            Cookies may be set by the Website (&quot;first-party cookies&quot;), or by third parties, such as those who serve content or provide advertising or analytics services on the Website (&quot;third party cookies&quot;). These third parties can recognise you when you visit our website and also when you visit certain other websites.
           </p>
         </section>
 
@@ -46,7 +46,7 @@ export default function CookiesPolicyPage() {
             <li>
               <p className="font-semibold">Social media cookies</p>
               <p>Third party cookies from social media sites (such as Facebook, Twitter, etc) let us track social network users when they visit or use the Website and Services, or share content, by using a tagging mechanism provided by those social networks.</p>
-              <p>These cookies are also used for event tracking and remarketing purposes. Any data collected with these tags will be used in accordance with our and social networks' privacy policies. We will not collect or share any personally identifiable information from the user.</p>
+              <p>These cookies are also used for event tracking and remarketing purposes. Any data collected with these tags will be used in accordance with our and social networks&apos; privacy policies. We will not collect or share any personally identifiable information from the user.</p>
             </li>
           </ul>
         </section>
@@ -54,7 +54,7 @@ export default function CookiesPolicyPage() {
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">What are your cookie options?</h2>
           <p className="mb-4">
-            If you don't like the idea of cookies or certain types of cookies, you can change your browser's settings to delete cookies that have already been set and to not accept new cookies. Visit internetcookies.com to learn more about how to do this.
+            If you don&apos;t like the idea of cookies or certain types of cookies, you can change your browser&apos;s settings to delete cookies that have already been set and to not accept new cookies. Visit internetcookies.com to learn more about how to do this.
           </p>
         </section>
 

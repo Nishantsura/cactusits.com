@@ -6,11 +6,6 @@ import { ServicePageSection, FadeInSection } from "@/components/Services/Service
 import ServiceContactForm from "@/components/Services/ServiceContactForm";
 
 
-interface ServiceCardProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}
 
 export async function generateMetadata({
   params,
@@ -53,19 +48,6 @@ export async function generateMetadata({
   };
 }
 
-const ServiceCard: React.FC<ServiceCardProps> = ({
-  icon,
-  title,
-  description,
-}) => {
-  return (
-    <div className="bg-warm-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col h-full">
-      <div className="mb-4 text-gray-700">{icon}</div>
-      <h3 className="text-lg font-semibold mb-3 text-gray-900">{title}</h3>
-      <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
-    </div>
-  );
-};
 
 export default async function Page({
   params,

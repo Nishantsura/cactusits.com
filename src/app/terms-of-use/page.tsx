@@ -19,7 +19,7 @@ export default function TermsOfUsePage() {
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">Agreement to Terms and Conditions</h2>
           <p className="mb-4">
-            These Terms and Conditions (the "Terms") govern your use of Cactusits.com (the "Website") and all its content. All materials, information, documents, services, and other content that appear on the Website are subject to these Terms.
+            These Terms and Conditions (the &quot;Terms&quot;) govern your use of Cactusits.com (the &quot;Website&quot;) and all its content. All materials, information, documents, services, and other content that appear on the Website are subject to these Terms.
           </p>
           <p className="mb-4">
             Use of this Website constitutes an express agreement to be bound by these Terms in full. If you object to any of the Terms, you must not continue to use the Website.
@@ -32,9 +32,9 @@ export default function TermsOfUsePage() {
             For the purposes of these Terms:
           </p>
           <ul className="list-disc pl-6 mb-4 space-y-2">
-            <li>"User," "Visitor," "Client," "Customer," "You," "Your" refer to any person who uses the Website.</li>
-            <li>"Cactus," "We," "Our," "Us" refer to Cactus IT Solutions UK Limited.</li>
-            <li>"Party" or "Parties" refers to both You and Us.</li>
+            <li>&quot;User,&quot; &quot;Visitor,&quot; &quot;Client,&quot; &quot;Customer,&quot; &quot;You,&quot; &quot;Your&quot; refer to any person who uses the Website.</li>
+            <li>&quot;Cactus,&quot; &quot;We,&quot; &quot;Our,&quot; &quot;Us&quot; refer to Cactus IT Solutions UK Limited.</li>
+            <li>&quot;Party&quot; or &quot;Parties&quot; refers to both You and Us.</li>
           </ul>
           <p className="mb-4">
             All terms refer to the necessary actions undertaken by Cactus to meet your needs, in accordance with the laws of the United Kingdom. Singular/plural uses and varying capitalisations are considered interchangeable.
@@ -64,7 +64,7 @@ export default function TermsOfUsePage() {
             You agree to use the Website only for its intended purpose and in accordance with these Terms. You may not use the Website:
           </p>
           <ul className="list-disc pl-6 mb-4 space-y-2">
-            <li>In any way that is harmful or interferes with other users' access;</li>
+            <li>In any way that is harmful or interferes with other users&apos; access;</li>
             <li>In violation of applicable laws;</li>
             <li>To harvest data or perform similar activities;</li>
             <li>To advertise or market without our prior written consent.</li>
@@ -125,7 +125,7 @@ export default function TermsOfUsePage() {
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">User Content</h2>
           <p className="mb-4">
-            "User Content" refers to any material (text, images, video, etc.) you upload to the Website.
+            &quot;User Content&quot; refers to any material (text, images, video, etc.) you upload to the Website.
           </p>
           <p className="mb-4">
             By uploading User Content, you grant Cactus a non-exclusive, worldwide, irrevocable, royalty-free license to use, reproduce, and distribute it in any media.
@@ -158,7 +158,7 @@ export default function TermsOfUsePage() {
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">Disclaimers, Warranties & Limitation of Liability</h2>
           <p className="mb-4">
-            The Website is provided "as is" without warranties of any kind. Cactus makes no guarantees regarding the reliability, accuracy, or completeness of the content.
+            The Website is provided &quot;as is&quot; without warranties of any kind. Cactus makes no guarantees regarding the reliability, accuracy, or completeness of the content.
           </p>
           <p className="mb-4">
             Cactus shall not be liable for any losses, damages, or liabilities arising from use of the Website, including direct, indirect, incidental, or special damages, even if advised of such risks.

@@ -1,12 +1,10 @@
 "use client";
-import { useState, type FormEvent, useRef, KeyboardEvent, ChangeEvent } from "react";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { Send, X } from "lucide-react";
+import { useState, type FormEvent, useRef, KeyboardEvent } from "react";
+import { Send } from "lucide-react";
 
 export default function ContactForm() {
-  const [loading, setLoading] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [loading] = useState(false);
+  const [showSuccess] = useState(false);
   const [userType, setUserType] = useState<"hiringManager" | "jobSeeker">("hiringManager");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [fileName, setFileName] = useState<string>("");
@@ -135,7 +133,7 @@ export default function ContactForm() {
             Get in touch
           </h1>
           <p className="text-gray-600 text-sm sm:text-base max-w-2xl mx-auto">
-            Explore how we can support your business through innovative IT solutions.
+            At Cactus, we&apos;re eager to understand how we can support your career growth, whether you&apos;re looking to join our team or seeking our services.
           </p>
         </div>
 
@@ -343,7 +341,7 @@ export default function ContactForm() {
                 {/* Roles - Tag Input */}
                 <div className="mt-4">
                   <label htmlFor="roles" className="block text-sm font-medium text-gray-700 mb-1">
-                    Roles You're Interested In
+                    Roles You&apos;re Interested In
                   </label>
                   <div className="relative">
                     <div className="flex flex-wrap gap-2 p-2 bg-gray-50 border border-gray-200 rounded-lg mb-1 min-h-[52px]">
@@ -537,7 +535,7 @@ export default function ContactForm() {
                   <path d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.709 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.7649 14.1003 1.98232 16.07 2.85999" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   <path d="M22 4L12 14.01L9 11.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                <span>Thank you for your message! We'll get back to you as soon as possible.</span>
+                <span>Thank you for your message! We&apos;ll get back to you as soon as possible.</span>
               </div>
             )}
           </form>
