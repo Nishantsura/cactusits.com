@@ -31,7 +31,7 @@ export default async function Page({
             {Hero.industry}
           </p>
 
-          <h1 className="text-3xl lg:text-5xl font-bold leading-tight text-gray-900 mb-6">
+          <h2 className="text-3xl md:text-4xl font-semibold text-center mb-3 text-gray-800">
             {Hero.title.split(" ").map((word, i) =>
               i === 2 ? (
                 <span key={i} className="text-primary">
@@ -41,9 +41,9 @@ export default async function Page({
                 word + " "
               ),
             )}
-          </h1>
+          </h2>
 
-          <p className="text-base lg:text-lg leading-relaxed text-gray-600 mb-8">
+          <p className="text-center text-lg text-gray-600 mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed">
             {Hero.description}
           </p>
 

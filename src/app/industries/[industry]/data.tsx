@@ -13,6 +13,68 @@ interface PageProps {
 
 export const data: Record<string, PageProps>[] = [
   {
+    "information-technology": {
+      Hero: {
+        industry: "Information Technology",
+        title: "Connecting You with IT Professionals Who Drive Success",
+        description:
+          "In today's fast-paced digital world, the Information Technology (IT) sector is the backbone of innovation and efficiency. Our IT staffing solutions are designed to meet the unique needs of this dynamic industry, providing top-tier talent that drives technological advancements and business success.",
+        image:
+          "/industries/vecteezy_portrait-of-a-serious-and-focused-female-programmer-working_54880456.jpeg",
+      },
+      Approach: [
+        {
+          title: "Technical Expertise",
+          description:
+            "Connect with professionals who excel in various programming languages and frameworks.",
+        },
+        {
+          title: "Software Development",
+          description:
+            "Build robust applications with developers skilled in the latest technologies.",
+        },
+        {
+          title: "Cloud Architecture",
+          description:
+            "Design and implement scalable cloud solutions with certified cloud architects.",
+        },
+        {
+          title: "DevOps Engineering",
+          description:
+            "Streamline your development pipeline with experienced DevOps engineers.",
+        },
+        {
+          title: "Data Analysis",
+          description:
+            "Transform your data into actionable insights with expert data analysts.",
+        },
+        {
+          title: "Cybersecurity",
+          description:
+            "Protect your digital assets with experts in security protocols and threat mitigation.",
+        },
+        {
+          title: "IT Project Management",
+          description:
+            "Ensure your projects are delivered on time and within budget with experienced managers.",
+        },
+        {
+          title: "Network Engineering",
+          description:
+            "Build and maintain reliable network infrastructure with skilled network engineers.",
+        },
+        {
+          title: "UI/UX Design",
+          description:
+            "Create intuitive and engaging user experiences with talented designers.",
+        },
+        {
+          title: "Quality Assurance",
+          description:
+            "Ensure software reliability with meticulous QA specialists and automated testing.",
+        },
+      ],
+    },
     "banking-financial": {
       Hero: {
         industry: "Banking & Financial Services",

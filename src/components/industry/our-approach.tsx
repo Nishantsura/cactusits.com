@@ -1,4 +1,5 @@
 import type { ServiceCardProps } from "@/types/job";
+import { CheckCircle } from "lucide-react";
 
 interface OurApproachProps {
   Approach: ServiceCardProps[];
@@ -7,12 +8,14 @@ interface OurApproachProps {
 // This component can be rendered on the server
 export default function OurApproach({ Approach }: OurApproachProps) {
   return (
-    <section className="py-16 px-4 max-w-[85vw] mx-auto">
+    <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-[85vw] mx-auto">
       <div className="text-center mb-16">
-        <h2 className="text-4xl font-bold mb-4 text-gray-800">Our Approach</h2>
-        <p className="max-w-2xl mx-auto text-gray-600">
-          Our consulting services provide strategic advice to help financial
-          institutions stay ahead in a competitive market.
+        <h2 className="text-3xl md:text-4xl font-semibold mb-3 text-gray-800">
+          Our Approach
+        </h2>
+        <p className="text-lg text-gray-600 mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed">
+          Our industry expertise and tailored solutions help businesses achieve
+          their goals and stay ahead of the competition.
         </p>
       </div>
 
@@ -31,9 +34,14 @@ export default function OurApproach({ Approach }: OurApproachProps) {
 
 function ServiceCard({ title, description }: ServiceCardProps) {
   return (
-    <div className="border border-gray-200 rounded-lg p-6 transition-shadow hover:shadow-md">
-      <h3 className="text-xl font-semibold mb-3 text-gray-800">{title}</h3>
-      <p className="text-gray-600">{description}</p>
+    <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 flex flex-col items-center text-center transition-all duration-300 ease-in-out hover:shadow-2xl hover:scale-[1.03]">
+      <div className="p-3 bg-blue-100 rounded-full mb-5 text-blue-600 inline-block">
+        <CheckCircle size={28} className="text-blue-600" />
+      </div>
+      <h3 className="text-xl font-semibold mb-2.5 text-gray-900">{title}</h3>
+      <p className="text-gray-600 text-sm leading-relaxed flex-grow">
+        {description}
+      </p>
     </div>
   );
 }

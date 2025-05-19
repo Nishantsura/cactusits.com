@@ -48,7 +48,7 @@ export function LandingContent() {
           </div>
           <div className="w-full md:w-[30%] h-full flex justify-evenly items-center">
             <Image
-              src="/landing/hero-left.jpg"
+              src="/landing/hero-left.png"
               alt="hero image"
               width={500}
               height={500}
@@ -162,7 +162,7 @@ export function LandingContent() {
 
       {/* choose us  */}
       <Section
-        id="choose-us"
+        id="why-choose-us"
         spacing="minimal"
         verticalAlign="center"
         className="w-full"

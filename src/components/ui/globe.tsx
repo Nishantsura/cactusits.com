@@ -44,7 +44,7 @@ export function Globe({
   config?: COBEOptions;
 }) {
   const phiRef = useRef(0);
-  let width = 0;
+  const [width, setWidth] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointerInteracting = useRef<number | null>(null);
   const pointerInteractionMovement = useRef(0);
@@ -75,11 +75,11 @@ export function Globe({
     [r, width],
   );
 
-  const onResize = () => {
+  const onResize = useCallback(() => {
     if (canvasRef.current) {
-      width = canvasRef.current.offsetWidth;
+      setWidth(canvasRef.current.offsetWidth);
     }
-  };
+  }, []);
 
   useEffect(() => {
     window.addEventListener("resize", onResize);
