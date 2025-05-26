@@ -3,8 +3,9 @@ import { useState, type FormEvent, useRef, KeyboardEvent } from "react";
 import { Send } from "lucide-react";
 
 export default function ContactForm() {
-  const [loading] = useState(false);
-  const [showSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [formError, setFormError] = useState<string>('');
   const [userType, setUserType] = useState<"hiringManager" | "jobSeeker">(
     "hiringManager",
   );
@@ -276,16 +277,68 @@ export default function ContactForm() {
     handleTagKeyDown(e, currentRole, setCurrentRole, roles, setRoles);
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log({
-      userType,
-      hiringPositions: userType === "hiringManager" ? hiringPositions : [],
-      roles: userType === "jobSeeker" ? roles : [],
-      hiringType: userType === "hiringManager" ? hiringType : null,
-      nationality: userType === "jobSeeker" ? nationality : "",
-    });
+    setLoading(true);
+    setFormError('');
+    
+    try {
+      // Get form elements as HTMLFormElement
+      const form = e.currentTarget as HTMLFormElement;
+      
+      // Build form data based on user type
+      const formData = {
+        name: form.elements.namedItem('name') ? (form.elements.namedItem('name') as HTMLInputElement).value : '',
+        email: form.elements.namedItem('email') ? (form.elements.namedItem('email') as HTMLInputElement).value : '',
+        message: form.elements.namedItem('message') ? (form.elements.namedItem('message') as HTMLTextAreaElement).value : '',
+        userType: userType,
+        // Include relevant fields based on user type
+        ...(userType === "hiringManager" ? {
+          organization: form.elements.namedItem('organizationName') ? (form.elements.namedItem('organizationName') as HTMLInputElement).value : '',
+          website: form.elements.namedItem('organizationWebsite') ? (form.elements.namedItem('organizationWebsite') as HTMLInputElement).value : '',
+          hiringPositions,
+          hiringType
+        } : {}),
+        ...(userType === "jobSeeker" ? {
+          roles,
+          nationality,
+          fileName
+        } : {})
+      };
+      
+      // Submit to our API endpoint
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Form submission failed');
+      }
+      
+      // Show success message and reset form
+      setShowSuccess(true);
+      form.reset();
+      
+      // Reset tag inputs
+      if (userType === "hiringManager") {
+        setHiringPositions([]);
+      } else {
+        setRoles([]);
+      }
+      
+      setFileName('');
+    } catch (error: any) {
+      console.error('Error submitting form:', error);
+      setFormError(error.message || 'Failed to submit form. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -882,6 +935,43 @@ export default function ContactForm() {
                 with third parties.
               </span>
             </div>
+
+            {/* Error message */}
+            {formError && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm flex items-start">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="mr-2 flex-shrink-0 mt-0.5 text-red-500"
+                >
+                  <path
+                    d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M12 8V12"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M12 16H12.01"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                {formError}
+              </div>
+            )}
 
             {/* Submit button */}
             <button

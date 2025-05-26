@@ -1,0 +1,126 @@
+"use client";
+
+import { useState, useEffect } from 'react';
+import { use } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { ArrowLeft, Save, Plus, Trash, Edit2 } from 'lucide-react';
+import { getServiceById, updateService } from '@/lib/data-utils';
+
+// Type definitions for service data
+interface ServiceCardType {
+  title: string;
+  description: string;
+  icon: string;
+}
+
+interface ServiceFeatureType {
+  id: string;
+  title: string;
+  icon: string;
+}
+
+interface ServiceDetailType {
+  id: string;
+  title: string;
+  description: string;
+  features: { id: string; title: string; }[];
+}
+
+interface ServiceFormData {
+  // Basic info
+  id?: number;
+  title: string;
+  slug: string;
+  description: string;
+  short_description: string;
+  long_description: string;
+  icon_name: string;
+  accent_color: string;
+  accent_position: string;
+  image: string;
+  image_path: string;
+  image_position: string;
+  image_width: number;
+  image_height: number;
+  image_alt: string;
+  order_index: number;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+  
+  // Hero section
+  hero_service: string;
+  hero_title: string;
+  hero_description: string;
+  hero_bulletpoints: string[];
+  hero_image: string;
+  
+  // Potential section
+  potential_description: string;
+  potential_service_cards: ServiceCardType[];
+  
+  // Explore section
+  explore_service_features: ServiceFeatureType[];
+  explore_service_details: Record<string, ServiceDetailType>;
+}
+
+/**
+ * Form for editing an existing service
+ */
+export default function EditServicePage({ params }: { params: { id: string } }) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'basic' | 'hero' | 'potential' | 'explore'>('basic');
+  const serviceId = parseInt(params.id);
+  
+  // States for adding new items
+  const [newBulletpoint, setNewBulletpoint] = useState('');
+  const [newCard, setNewCard] = useState<ServiceCardType>({ title: '', description: '', icon: '' });
+  const [newFeature, setNewFeature] = useState<ServiceFeatureType>({ id: '', title: '', icon: '' });
+
+  // Form state
+  const [formData, setFormData] = useState<ServiceFormData>({
+    // Basic info
+    title: '',
+    slug: '',
+    description: '',
+    short_description: '',
+    long_description: '',
+    icon_name: '',
+    accent_color: '',
+    accent_position: '',
+    image: '',
+    image_path: '',
+    image_position: '',
+    image_width: 500,
+    image_height: 500,
+    image_alt: '',
+    order_index: 0,
+    is_active: true,
+    
+    // Hero section
+    hero_service: '',
+    hero_title: '',
+    hero_description: '',
+    hero_bulletpoints: [],
+    hero_image: '',
+    
+    // Potential section
+    potential_description: '',
+    potential_service_cards: [],
+    
+    // Explore section
+    explore_service_features: [],
+    explore_service_details: {}
+  });
+  
+  // Available icon options
+  const iconOptions = [
+    'Settings', 'BarChart', 'Database', 'Server', 'Link', 'Code', 'Activity',
+    'Moon', 'Sun', 'Star', 'Image', 'FileText', 'MessageSquare', 'Mail', 'Layers',
+    'Package', 'Briefcase', 'ShieldCheck', 'Globe', 'Zap', 'Share', 'Search',
+    'Award', 'Users', 'MessageCircle', 'Heart', 'Smile', 'Crosshair', 'Terminal'
+  ];

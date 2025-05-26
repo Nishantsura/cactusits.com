@@ -56,14 +56,19 @@ export default function EnhancedHero({
               variants={itemVariants}
               className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight text-gray-900 mb-6"
             >
-              {title.split(" ").map((word, i) =>
-                i === 2 ? (
-                  <span key={i} className="text-primary">
-                    {word}{" "}
-                  </span>
-                ) : (
-                  word + " "
-                ),
+              {title ? (
+                title.split(" ").map((word, i) =>
+                  i === 2 ? (
+                    <span key={i} className="text-primary">
+                      {word}{" "}
+                    </span>
+                  ) : (
+                    word + " "
+                  )
+                )
+              ) : (
+                // Fallback when title is null or undefined
+                <span>{service || "Our Service"}</span>
               )}
             </motion.h1>
 

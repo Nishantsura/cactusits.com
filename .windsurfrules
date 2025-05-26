@@ -1,0 +1,247 @@
+# Coding pattern preferences
+
+- Always prefer simple solutions  
+- Avoid duplication of code whenever possible, which means checking for  
+  other areas of the codebase that might already have similar code and  
+  functionality  
+- Write code that takes into account the different environments: dev,  
+  test, and prod  
+- You are careful to only make changes that are requested or you are  
+  confident are well understood and related to the change being requested  
+- When fixing an issue or bug, do not introduce a new pattern or  
+  technology without first exhausting all options for the existing  
+  implementation. And if you finally do this, make sure to remove the old  
+  implementation afterwards so we don't have duplicate logic.  
+- Keep the codebase very clean and organized  
+- Avoid writing scripts in files if possible, especially if the script  
+  is likely only to be run once  
+- Avoid having files over 200–300 lines of code. Refactor at that point.  
+- Mocking data is only needed for tests, never mock data for dev or prod  
+- Never add stubbing or fake data patterns to code that affects the dev  
+  or prod environments  
+- Never overwrite my .env file without first asking and confirming  
+
+Simple Implementation Plan with Supabase and Headless CMS
+Based on your requirements, I'll outline a straightforward approach using Supabase for the database and a headless CMS. This plan is designed to be beginner-friendly while ensuring a professional, fully functional website.
+
+Implementation Plan
+Phase 1: Supabase Setup & Basic Integration (Week 1)
+Set up Supabase project
+Create a free Supabase account
+Create database tables for:
+contact_submissions (store contact form data)
+jobs (job listings)
+services (service information)
+industries (industry details)
+testimonials (client/employee testimonials)
+Install Supabase in your Next.js project
+bash
+CopyInsert in Terminal
+npm install @supabase/supabase-js
+Create environment variables
+CopyInsert
+# .env.local
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+Create Supabase client utility
+typescript
+CopyInsert
+// src/lib/supabase.ts
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+
+export const supabase = createClient(supabaseUrl, supabaseKey);
+Phase 2: Contact Form Implementation (Week 1-2)
+Create API route for contact form
+typescript
+CopyInsert
+// src/app/api/contact/route.ts
+import { NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
+
+export async function POST(request: Request) {
+  try {
+    const data = await request.json();
+    
+    // Insert form data into Supabase
+    const { error } = await supabase
+      .from('contact_submissions')
+      .insert([data]);
+    
+    if (error) throw error;
+    
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error submitting form:', error);
+    return NextResponse.json({ error: 'Submission failed' }, { status: 500 });
+  }
+}
+Update ContactUs component to use the API
+typescript
+CopyInsert
+// Modified handleSubmit function in ContactForm.tsx
+const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  setLoading(true);
+  
+  try {
+    const formData = {
+      name: e.currentTarget.name.value,
+      email: e.currentTarget.email.value,
+      message: e.currentTarget.message.value,
+      userType: userType,
+      // Add other form fields as needed
+    };
+    
+    const response = await fetch('/api/contact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
+    
+    if (!response.ok) throw new Error('Form submission failed');
+    
+    setShowSuccess(true);
+    e.currentTarget.reset();
+  } catch (error) {
+    console.error('Error:', error);
+    // Handle error state
+  } finally {
+    setLoading(false);
+  }
+};
+Phase 3: Admin Dashboard for Content Management (Week 2-3)
+Since you mentioned not wanting to build a custom login system, we'll use a password-protected, simple admin dashboard approach:
+
+Create a password-protected admin page
+typescript
+CopyInsert
+// src/app/admin/page.tsx
+"use client";
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
+export default function AdminLogin() {
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const router = useRouter();
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simple password check (store this securely in env variables in production)
+    if (password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
+      // Save a session token in localStorage
+      localStorage.setItem('adminAuth', 'true');
+      router.push('/admin/dashboard');
+    } else {
+      setError('Invalid password');
+    }
+  };
+  
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md w-96">
+        <h1 className="text-2xl font-bold mb-6">Admin Login</h1>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+        <div className="mb-4">
+          <label className="block mb-2">Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-2 border rounded"
+            required
+          />
+        </div>
+        <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded">
+          Login
+        </button>
+      </form>
+    </div>
+  );
+}
+Simple Dashboard for Content Management
+Create tabs for managing each content type
+Use simple forms to add/edit content
+Store all data in Supabase tables
+Phase 4: Dynamic Content Integration (Week 3-4)
+Implement Jobs Listing with Supabase data
+typescript
+CopyInsert
+// src/components/careers/job-listings.tsx (modified)
+"use client";
+
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
+import JobCard from './job-card';
+
+export default function JobListings() {
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    async function fetchJobs() {
+      try {
+        const { data, error } = await supabase
+          .from('jobs')
+          .select('*')
+          .order('created_at', { ascending: false });
+          
+        if (error) throw error;
+        setJobs(data || []);
+      } catch (error) {
+        console.error('Error fetching jobs:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchJobs();
+  }, []);
+  
+  // Rest of component code...
+  
+  return (
+    <div className="container mx-auto px-4 py-8">
+      {loading ? (
+        <p>Loading jobs...</p>
+      ) : jobs.length === 0 ? (
+        <p>No jobs currently available.</p>
+      ) : (
+        // Render jobs as before
+      )}
+    </div>
+  );
+}
+Implement similar data fetching for other dynamic content
+Services
+Industries
+Testimonials
+Phase 5: Testing and Deployment (Week 4-5)
+Local testing
+Test all form submissions
+Test content management in the admin panel
+Test dynamic content rendering
+Configure deployment settings
+Update Netlify deploy configuration
+Set environment variables in Netlify
+Deploy updated site
+Push changes to GitHub
+Deploy using Netlify
+Beginner-Friendly Tips
+Take it step by step - Implement one feature at a time
+Test frequently - After each implementation, test thoroughly
+Use console.log liberally - Debug by printing values to the console
+Commit code often - Use descriptive commit messages
+Reference documentation - Bookmark Supabase and Next.js docs for reference
+
+
+Keep the existing hardcoded services content on the main website unchanged for now
+Create an accurate admin dashboard that reflects all the fields used in the actual listings
+Create appropriate Supabase tables that match these fields
+Add the ability to view and edit these listings in the admin dashboard

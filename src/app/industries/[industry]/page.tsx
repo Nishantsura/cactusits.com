@@ -1,22 +1,29 @@
 import Image from "next/image";
-import { data } from "./data";
+import { getIndustryBySlug, getAllIndustrySlugs } from "./data-provider";
 import OurApproach from "@/components/industry/our-approach";
 import Link from "next/link";
 import ChooseUs from "@/components/ChooseUs";
 import ContactForm from "@/components/landing/ContactUs";
 import { Section } from "@/components/ui/section";
 
+export async function generateStaticParams() {
+  const industries = await getAllIndustrySlugs();
+  return industries;
+}
+
 export default async function Page({
   params,
 }: {
-  params: Promise<{ industry: string }>;
+  params: { industry: string };
 }) {
-  const { industry } = await params;
-  const info = data.find((item) => item[industry]);
-  if (!info) {
+  const { industry } = params;
+  const industryData = await getIndustryBySlug(industry);
+  
+  if (!industryData) {
     return <div>Industry not found</div>;
   }
-  const { Hero, Approach } = info[industry];
+  
+  const { Hero, Approach } = industryData;
   return (
     <div className="w-full flex flex-col items-center">
       {/* Hero Section */}
@@ -32,14 +39,19 @@ export default async function Page({
           </p>
 
           <h2 className="text-3xl md:text-4xl font-semibold text-center mb-3 text-gray-800">
-            {Hero.title.split(" ").map((word, i) =>
-              i === 2 ? (
-                <span key={i} className="text-primary">
-                  {word}{" "}
-                </span>
-              ) : (
-                word + " "
-              ),
+            {Hero.title ? (
+              Hero.title.split(" ").map((word, i) =>
+                i === 2 ? (
+                  <span key={i} className="text-primary">
+                    {word}{" "}
+                  </span>
+                ) : (
+                  word + " "
+                )
+              )
+            ) : (
+              // Fallback when title is null or undefined
+              <span>{Hero.industry || "Industry Solutions"}</span>
             )}
           </h2>
 

@@ -1,7 +1,8 @@
-import { PagePropsSer, data, getServiceData } from "./data";
+import { PagePropsSer } from "./data";
+import { getServiceBySlug, getAllServiceSlugs } from "./data-provider";
 import EnhancedHero from "@/components/Services/EnhancedHero";
 import EnhancedPotential from "@/components/Services/EnhancedPotential";
-// import Explore from "@/components/Services/Explore";
+import Explore from "@/components/Services/Explore";
 import {
   ServicePageSection,
   FadeInSection,
@@ -11,62 +12,46 @@ import ServiceContactForm from "@/components/Services/ServiceContactForm";
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ service: string }>;
+  params: { service: string };
 }) {
-  const lookup = {
-    "it-consulting": 0,
-    "digital-transformation": 1,
-    "cloud-services": 2,
-    "data-ai": 3,
-    cybersecurity: 4,
-    "it-infrastructure": 5,
-    "agile-delivery": 6,
-  };
-
-  const { service } = await params;
-  const index = lookup[service as keyof typeof lookup];
-  const serviceData = await getServiceData(index);
-
-  if (!serviceData) {
+  const { service } = params;
+  const pageData = await getServiceBySlug(service);
+  
+  if (!pageData) {
     return {
       title: "Service Not Found | Cactus",
       description: "The requested service could not be found.",
     };
   }
-
+  
+  // Extract metadata from the service data
+  const { Hero } = pageData;
+  
   return {
-    title: `${serviceData.title} | IT Services | Cactus`,
-    description:
-      serviceData.description ||
-      `Learn about our ${serviceData.title} IT service and how it can benefit your business.`,
-    keywords: [...serviceData.keywords, "IT services", "Cactus"],
+    title: `${Hero.service} | IT Services | Cactus`,
+    description: Hero.description || `Learn about our ${Hero.service} IT service and how it can benefit your business.`,
+    keywords: ["IT services", "Cactus"],
     openGraph: {
-      title: `${serviceData.title} | IT Services | Cactus`,
-      description: serviceData.description,
+      title: `${Hero.service} | IT Services | Cactus`,
+      description: Hero.description,
       type: "website",
       url: `/services/${service}`,
     },
   };
 }
 
+export async function generateStaticParams() {
+  const services = await getAllServiceSlugs();
+  return services;
+}
+
 export default async function Page({
   params,
 }: {
-  params: Promise<{ service: string }>;
+  params: { service: string };
 }) {
-  const lookup = {
-    "it-consulting": 0,
-    "digital-transformation": 1,
-    "cloud-services": 2,
-    "data-ai": 3,
-    cybersecurity: 4,
-    "it-infrastructure": 5,
-    "agile-delivery": 6,
-  };
-
-  const { service } = await params;
-  const index = lookup[service as keyof typeof lookup];
-  const pageData: PagePropsSer = data[index];
+  const { service } = params;
+  const pageData = await getServiceBySlug(service);
 
   if (!pageData) {
     return <div>Service not found</div>;
@@ -91,23 +76,31 @@ export default async function Page({
         serviceCards={Potential.serviceCards}
       />
 
-      {/*
-        The "Explore Section" (Key Features & Capabilities) has been temporarily removed
-        due to a missing 'Explore' component. This section (which included <ServicePageSection>,
-        <FadeInSection>, and the <Explore> component) needs to be reinstated once the
-        'Explore' component at '@/components/Services/Explore' is available.
-      */}
+      {/* Explore Section - Key Features & Capabilities */}
+      <ServicePageSection
+        id="features"
+        title="Key Features & Capabilities"
+        subtitle="Discover the comprehensive suite of features and capabilities that our service offers."
+        background="light"
+      >
+        <FadeInSection>
+          <Explore
+            serviceFeatures={pageData.Explore.serviceFeatures || []}
+            serviceDetails={pageData.Explore.serviceDetails || {}}
+          />
+        </FadeInSection>
+      </ServicePageSection>
 
       {/* Contact Form Section */}
       <ServicePageSection
         id="contact"
         title="Ready to Transform Your Business?"
-        subtitle={`Get in touch to learn how our ${Hero.service.toLowerCase()} services can help you achieve your business goals.`}
+        subtitle={`Get in touch to learn how our ${Hero.service ? Hero.service.toLowerCase() : 'selected'} services can help you achieve your business goals.`}
         background="white"
       >
         <FadeInSection>
           <div className="max-w-3xl mx-auto">
-            <ServiceContactForm serviceTitle={Hero.service.toLowerCase()} />
+            <ServiceContactForm serviceTitle={Hero.service ? Hero.service.toLowerCase() : 'selected service'} />
           </div>
         </FadeInSection>
       </ServicePageSection>

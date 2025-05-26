@@ -1,0 +1,968 @@
+"use client";
+
+import { useState, useEffect } from 'react';
+import { use } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { ArrowLeft, Save, Plus, Trash, Edit2 } from 'lucide-react';
+import { getServiceById, updateService } from '@/lib/data-utils';
+
+// Type definitions for service data
+interface ServiceCardType {
+  title: string;
+  description: string;
+  icon: string;
+}
+
+interface ServiceFeatureType {
+  id: string;
+  title: string;
+  icon: string;
+}
+
+interface ServiceDetailType {
+  id: string;
+  title: string;
+  description: string;
+  features: { id: string; title: string; }[];
+}
+
+interface ServiceFormData {
+  // Basic info
+  title: string;
+  slug: string;
+  description: string;
+  icon_name: string;
+  accent_color: string;
+  accent_position: string;
+  image: string;
+  image_position: string;
+  image_width: number;
+  image_height: number;
+  image_alt: string;
+  order_index: number;
+  is_active: boolean;
+  
+  // Hero section
+  hero_service: string;
+  hero_title: string;
+  hero_description: string;
+  hero_bulletpoints: string[];
+  hero_image: string;
+  
+  // Potential section
+  potential_description: string;
+  potential_service_cards: ServiceCardType[];
+  
+  // Explore section
+  explore_service_features: ServiceFeatureType[];
+  explore_service_details: Record<string, ServiceDetailType>;
+}
+
+/**
+ * Form for editing an existing service
+ */
+export default function EditServicePage({ params }: { params: Promise<{ id: string }> }) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'basic' | 'hero' | 'potential' | 'explore'>('basic');
+  const unwrappedParams = use(params);
+  const serviceId = parseInt(unwrappedParams.id);
+  
+  // Input states for adding new items
+  const [newBulletpoint, setNewBulletpoint] = useState('');
+  const [newCard, setNewCard] = useState<ServiceCardType>({ title: '', description: '', icon: '' });
+  const [newFeature, setNewFeature] = useState<ServiceFeatureType>({ id: '', title: '', icon: '' });
+  
+  // Form state
+  const [formData, setFormData] = useState<ServiceFormData>({
+    // Basic info
+    title: '',
+    slug: '',
+    description: '',
+    icon_name: '',
+    accent_color: '',
+    accent_position: '',
+    image: '',
+    image_position: '',
+    image_width: 500,
+    image_height: 500,
+    image_alt: '',
+    order_index: 0,
+    is_active: true,
+    
+    // Hero section
+    hero_service: '',
+    hero_title: '',
+    hero_description: '',
+    hero_bulletpoints: [],
+    hero_image: '',
+    
+    // Potential section
+    potential_description: '',
+    potential_service_cards: [],
+    
+    // Explore section
+    explore_service_features: [],
+    explore_service_details: {}
+  });
+  
+  // Fetch service data on component mount
+  useEffect(() => {
+    const fetchServiceData = async () => {
+      if (isNaN(serviceId)) {
+        setError('Invalid service ID');
+        setIsFetching(false);
+        return;
+      }
+      
+      try {
+        // Check authentication
+        const authData = localStorage.getItem('adminAuth');
+        if (!authData) {
+          router.push('/admin');
+          return;
+        }
+        
+        const { authenticated, expires } = JSON.parse(authData);
+        if (!authenticated || new Date(expires) < new Date()) {
+          localStorage.removeItem('adminAuth');
+          router.push('/admin');
+          return;
+        }
+        
+        // Fetch service data
+        const { data, error } = await getServiceById(serviceId);
+        
+        if (error) {
+          throw new Error('Failed to fetch service data');
+        }
+        
+        if (!data) {
+          throw new Error('Service not found');
+        }
+        
+        // Populate form with service data
+        setFormData({
+          // Basic info
+          title: data.title || '',
+          slug: data.slug || '',
+          description: data.description || '',
+          icon_name: data.icon_name || '',
+          accent_color: data.accent_color || '',
+          accent_position: data.accent_position || '',
+          image: data.image || '',
+          image_position: data.image_position || '',
+          image_width: data.image_width || 500,
+          image_height: data.image_height || 500,
+          image_alt: data.image_alt || '',
+          order_index: data.order_index || 0,
+          is_active: data.is_active !== false, // default to true if undefined
+          
+          // Hero section
+          hero_service: data.hero_service || '',
+          hero_title: data.hero_title || '',
+          hero_description: data.hero_description || '',
+          hero_bulletpoints: Array.isArray(data.hero_bulletpoints) ? data.hero_bulletpoints : [],
+          hero_image: data.hero_image || '',
+          
+          // Potential section
+          potential_description: data.potential_description || '',
+          potential_service_cards: Array.isArray(data.potential_service_cards) ? data.potential_service_cards : [],
+          
+          // Explore section
+          explore_service_features: Array.isArray(data.explore_service_features) ? data.explore_service_features : [],
+          explore_service_details: data.explore_service_details || {}
+        });
+      } catch (err: any) {
+        setError(err.message || 'An error occurred while fetching service data');
+        console.error('Error fetching service:', err);
+      } finally {
+        setIsFetching(false);
+      }
+    };
+    
+    fetchServiceData();
+  }, [serviceId, router]);
+  
+  // Handle form input changes
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    
+    // Convert to number if it's the order_index field
+    if (name === 'order_index') {
+      setFormData(prev => ({
+        ...prev,
+        [name]: parseInt(value) || 0
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
+  
+  // Handle adding a bulletpoint 
+  const [newBulletpoint, setNewBulletpoint] = useState('');
+  const handleAddBulletpoint = () => {
+    if (newBulletpoint.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        hero_bulletpoints: [...prev.hero_bulletpoints, newBulletpoint.trim()]
+      }));
+      setNewBulletpoint('');
+    }
+  };
+
+  // Handle removing a bulletpoint
+  const handleRemoveBulletpoint = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      hero_bulletpoints: prev.hero_bulletpoints.filter((_, i) => i !== index)
+    }));
+  };
+
+  // Handle adding a potential service card
+  const [newCard, setNewCard] = useState<ServiceCardType>({ title: '', description: '', icon: '' });
+  const handleAddCard = () => {
+    if (newCard.title.trim() && newCard.description.trim() && newCard.icon.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        potential_service_cards: [...prev.potential_service_cards, newCard]
+      }));
+      setNewCard({ title: '', description: '', icon: '' });
+    }
+  };
+
+  // Handle removing a service card
+  const handleRemoveCard = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      potential_service_cards: prev.potential_service_cards.filter((_, i) => i !== index)
+    }));
+  };
+
+  // Handle adding a service feature
+  const [newFeature, setNewFeature] = useState<ServiceFeatureType>({ id: '', title: '', icon: '' });
+  const handleAddFeature = () => {
+    if (newFeature.id.trim() && newFeature.title.trim() && newFeature.icon.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        explore_service_features: [...prev.explore_service_features, newFeature]
+      }));
+      setNewFeature({ id: '', title: '', icon: '' });
+    }
+  };
+
+  // Handle removing a service feature
+  const handleRemoveFeature = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      explore_service_features: prev.explore_service_features.filter((_, i) => i !== index)
+    }));
+  };
+  
+  // Auto-generate slug from title
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const title = e.target.value;
+    setFormData(prev => ({
+      ...prev,
+      title,
+      // Only auto-generate slug if user hasn't manually edited it
+      slug: formData.slug === slugify(prev.title) 
+        ? slugify(title)
+        : formData.slug
+    }));
+  };
+  
+  // Simple function to convert title to slug
+  const slugify = (text: string) => {
+    return text
+      .toString()
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')       // Replace spaces with -
+      .replace(/&/g, '-and-')     // Replace & with 'and'
+      .replace(/[^\w\-]+/g, '')   // Remove all non-word chars
+      .replace(/\-\-+/g, '-');    // Replace multiple - with single -
+  };
+  
+  // Submit form to update service
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Basic validation
+      if (!formData.title || !formData.slug || !formData.description || !formData.icon_name) {
+        throw new Error('Please fill in all required fields');
+      }
+      
+      const { data, error } = await updateService(serviceId, formData);
+      
+      if (error) {
+        throw new Error('Failed to update service');
+      }
+      
+      // Redirect to services admin page on success
+      router.push('/admin/dashboard/services');
+    } catch (err: any) {
+      setError(err.message || 'An error occurred while updating the service');
+      console.error('Error updating service:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // List of common Lucide icon names for easy selection
+  const iconOptions = [
+    '', 'Code', 'Database', 'Server', 'Shield', 'Smartphone', 'Laptop', 
+    'Monitor', 'Globe', 'Settings', 'BarChart', 'PieChart', 'Users', 
+    'Search', 'Cloud', 'Lock', 'Activity', 'FileText', 'Terminal',
+    'MessageSquare', 'Mail', 'Layers', 'Package', 'Briefcase'
+  ];
+  
+  // Loading state
+  if (isFetching) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center mb-6">
+            <Link href="/admin/dashboard/services" className="text-gray-500 hover:text-gray-700 mr-2">
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
+            <h1 className="text-2xl font-bold">Edit Service</h1>
+          </div>
+          <div className="bg-white rounded-lg shadow p-6 flex items-center justify-center" style={{ minHeight: '300px' }}>
+            <div className="text-center">
+              <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+              <p className="text-gray-600">Loading service data...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-4xl mx-auto">
+        {/* Header with back button */}
+        <div className="flex items-center mb-6">
+          <Link href="/admin/dashboard/services" className="text-gray-500 hover:text-gray-700 mr-2">
+            <ArrowLeft className="w-5 h-5" />
+          </Link>
+          <h1 className="text-2xl font-bold">Edit Service: {formData.title}</h1>
+        </div>
+        
+        {/* Error message */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+            {error}
+          </div>
+        )}
+        
+        {/* Service form */}
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          {/* Tab Navigation */}
+          <div className="border-b border-gray-200">
+            <nav className="flex -mb-px">
+              <button
+                type="button"
+                onClick={() => setActiveTab('basic')}
+                className={`px-4 py-3 font-medium text-sm ${activeTab === 'basic' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                Basic Info
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('hero')}
+                className={`px-4 py-3 font-medium text-sm ${activeTab === 'hero' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                Hero Section
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('potential')}
+                className={`px-4 py-3 font-medium text-sm ${activeTab === 'potential' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                Potential Section
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('explore')}
+                className={`px-4 py-3 font-medium text-sm ${activeTab === 'explore' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                Explore Section
+              </button>
+            </nav>
+          </div>
+          <form onSubmit={handleSubmit} className="p-6">
+            {activeTab === 'basic' && (
+            <div className="space-y-6">
+              {/* Title */}
+              <div>
+                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                  Service Title <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="title"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleTitleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                  required
+                />
+              </div>
+              
+              {/* Slug */}
+              <div>
+                <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">
+                  Slug <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="slug"
+                  name="slug"
+                  value={formData.slug}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors font-mono"
+                  required
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  URL-friendly identifier for this service.
+                </p>
+              </div>
+              
+              {/* Two column layout for icon and order */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Icon Name */}
+                <div>
+                  <label htmlFor="icon_name" className="block text-sm font-medium text-gray-700 mb-1">
+                    Icon Name
+                  </label>
+                  <select
+                    id="icon_name"
+                    name="icon_name"
+                    value={formData.icon_name}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                  >
+                    <option value="">-- Select an icon --</option>
+                    {iconOptions.map((icon) => (
+                      <option key={icon} value={icon}>{icon || 'None'}</option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Name of the Lucide icon to display
+                  </p>
+                </div>
+                
+                {/* Order Index */}
+                <div>
+                  <label htmlFor="order_index" className="block text-sm font-medium text-gray-700 mb-1">
+                    Display Order
+                  </label>
+                  <input
+                    type="number"
+                    id="order_index"
+                    name="order_index"
+                    value={formData.order_index}
+                    onChange={handleChange}
+                    min="0"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Order in which the service appears (lower numbers first)
+                  </p>
+                </div>
+              </div>
+              
+              {/* Description */}
+              <div>
+                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                  Description <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                  required
+                ></textarea>
+                <p className="text-xs text-gray-500 mt-1">
+                  Service description that appears on the cards. Keep it concise.
+                </p>
+              </div>
+              
+              {/* Accent Color */}
+              <div>
+                <label htmlFor="accent_color" className="block text-sm font-medium text-gray-700 mb-1">
+                  Accent Color
+                </label>
+                <input
+                  type="text"
+                  id="accent_color"
+                  name="accent_color"
+                  value={formData.accent_color}
+                  onChange={handleChange}
+                  placeholder="bg-purple-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  CSS background color class name (e.g., bg-purple-500, bg-blue-500)
+                </p>
+              </div>
+
+              {/* Accent Position */}
+              <div>
+                <label htmlFor="accent_position" className="block text-sm font-medium text-gray-700 mb-1">
+                  Accent Position
+                </label>
+                <select
+                  id="accent_position"
+                  name="accent_position"
+                  value={formData.accent_position}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                >
+                  <option value="">-- Select a position --</option>
+                  <option value="top-right">Top Right</option>
+                  <option value="top-left">Top Left</option>
+                  <option value="bottom-right">Bottom Right</option>
+                  <option value="bottom-left">Bottom Left</option>
+                </select>
+                <p className="text-xs text-gray-500 mt-1">
+                  Position for the accent color
+                </p>
+              </div>
+              
+              {/* Image fields section */}
+              <div className="border-t border-gray-200 pt-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Image Details</h3>
+                
+                {/* Image Path */}
+                <div className="mb-4">
+                  <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
+                    Image Path
+                  </label>
+                  <input
+                    type="text"
+                    id="image"
+                    name="image"
+                    value={formData.image}
+                    onChange={handleChange}
+                    placeholder="/landing/services-1.png"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Path to the image file (e.g., /landing/services-1.png).
+                  </p>
+                </div>
+                
+                {/* Image Position */}
+                <div className="mb-4">
+                  <label htmlFor="image_position" className="block text-sm font-medium text-gray-700 mb-1">
+                    Image Position
+                  </label>
+                  <input
+                    type="text"
+                    id="image_position"
+                    name="image_position"
+                    value={formData.image_position}
+                    onChange={handleChange}
+                    placeholder="top-0 right-0"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    CSS positioning classes (e.g., top-0 right-0)
+                  </p>
+                </div>
+                
+                {/* Two column layout for dimensions and alt text */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Image Width */}
+                  <div>
+                    <label htmlFor="image_width" className="block text-sm font-medium text-gray-700 mb-1">
+                      Width
+                    </label>
+                    <input
+                      type="number"
+                      id="image_width"
+                      name="image_width"
+                      value={formData.image_width}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                    />
+                  </div>
+                  
+                  {/* Image Height */}
+                  <div>
+                    <label htmlFor="image_height" className="block text-sm font-medium text-gray-700 mb-1">
+                      Height
+                    </label>
+                    <input
+                      type="number"
+                      id="image_height"
+                      name="image_height"
+                      value={formData.image_height}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                    />
+                  </div>
+                  
+                  {/* Image Alt */}
+                  <div>
+                    <label htmlFor="image_alt" className="block text-sm font-medium text-gray-700 mb-1">
+                      Alt Text
+                    </label>
+                    <input
+                      type="text"
+                      id="image_alt"
+                      name="image_alt"
+                      value={formData.image_alt}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            )}
+            
+            {activeTab === 'hero' && (
+            <div className="space-y-6">
+              {/* Hero Service */}
+              <div>
+                <label htmlFor="hero_service" className="block text-sm font-medium text-gray-700 mb-1">
+                  Service Name
+                </label>
+                <input
+                  type="text"
+                  id="hero_service"
+                  name="hero_service"
+                  value={formData.hero_service}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Service name displayed in the hero section
+                </p>
+              </div>
+              
+              {/* Hero Title */}
+              <div>
+                <label htmlFor="hero_title" className="block text-sm font-medium text-gray-700 mb-1">
+                  Hero Title
+                </label>
+                <input
+                  type="text"
+                  id="hero_title"
+                  name="hero_title"
+                  value={formData.hero_title}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                />
+              </div>
+              
+              {/* Hero Description */}
+              <div>
+                <label htmlFor="hero_description" className="block text-sm font-medium text-gray-700 mb-1">
+                  Hero Description
+                </label>
+                <textarea
+                  id="hero_description"
+                  name="hero_description"
+                  value={formData.hero_description}
+                  onChange={handleChange}
+                  rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                ></textarea>
+              </div>
+              
+              {/* Hero Image */}
+              <div>
+                <label htmlFor="hero_image" className="block text-sm font-medium text-gray-700 mb-1">
+                  Hero Image Path
+                </label>
+                <input
+                  type="text"
+                  id="hero_image"
+                  name="hero_image"
+                  value={formData.hero_image}
+                  onChange={handleChange}
+                  placeholder="/landing/hero-image.png"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                />
+              </div>
+              
+              {/* Hero Bulletpoints */}
+              <div className="border-t border-gray-200 pt-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Hero Bulletpoints</h3>
+                
+                <ul className="space-y-2 mb-4">
+                  {formData.hero_bulletpoints.map((point, index) => (
+                    <li key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-md">
+                      <span>{point}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveBulletpoint(index)}
+                        className="text-gray-400 hover:text-red-500"
+                      >
+                        <Trash className="w-4 h-4" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                
+                <div className="flex items-end space-x-2">
+                  <div className="flex-grow">
+                    <label htmlFor="newBulletpoint" className="block text-sm font-medium text-gray-700 mb-1">
+                      Add Bulletpoint
+                    </label>
+                    <input
+                      type="text"
+                      id="newBulletpoint"
+                      value={newBulletpoint}
+                      onChange={(e) => setNewBulletpoint(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                      placeholder="Enter a bulletpoint"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAddBulletpoint}
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none"
+                  >
+                    <Plus className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+            )}
+            
+            {activeTab === 'potential' && (
+            <div className="space-y-6">
+              {/* Potential Description */}
+              <div>
+                <label htmlFor="potential_description" className="block text-sm font-medium text-gray-700 mb-1">
+                  Potential Description
+                </label>
+                <textarea
+                  id="potential_description"
+                  name="potential_description"
+                  value={formData.potential_description}
+                  onChange={handleChange}
+                  rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                ></textarea>
+              </div>
+              
+              {/* Potential Service Cards */}
+              <div className="border-t border-gray-200 pt-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Potential Service Cards</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  {formData.potential_service_cards.map((card, index) => (
+                    <div key={index} className="bg-gray-50 p-4 rounded-md relative">
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveCard(index)}
+                        className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
+                      >
+                        <Trash className="w-4 h-4" />
+                      </button>
+                      <h4 className="font-medium">{card.title}</h4>
+                      <p className="text-sm text-gray-600 mt-1">{card.description}</p>
+                      <div className="text-xs text-gray-500 mt-2">Icon: {card.icon}</div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* New card form */}
+                <div className="space-y-3 bg-gray-50 p-4 rounded-md">
+                  <h4 className="font-medium">Add New Card</h4>
+                  
+                  <div>
+                    <label htmlFor="newCardTitle" className="block text-sm font-medium text-gray-700 mb-1">
+                      Title
+                    </label>
+                    <input
+                      type="text"
+                      id="newCardTitle"
+                      value={newCard.title}
+                      onChange={(e) => setNewCard({...newCard, title: e.target.value})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="newCardDescription" className="block text-sm font-medium text-gray-700 mb-1">
+                      Description
+                    </label>
+                    <textarea
+                      id="newCardDescription"
+                      value={newCard.description}
+                      onChange={(e) => setNewCard({...newCard, description: e.target.value})}
+                      rows={2}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                    ></textarea>
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="newCardIcon" className="block text-sm font-medium text-gray-700 mb-1">
+                      Icon
+                    </label>
+                    <select
+                      id="newCardIcon"
+                      value={newCard.icon}
+                      onChange={(e) => setNewCard({...newCard, icon: e.target.value})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                    >
+                      <option value="">-- Select an icon --</option>
+                      {iconOptions.map((icon) => (
+                        <option key={icon} value={icon}>{icon}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={handleAddCard}
+                      className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none flex items-center justify-center"
+                    >
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add Card
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            )}
+            
+            {activeTab === 'explore' && (
+            <div className="space-y-6">
+              {/* Explore Service Features */}
+              <div className="border-b border-gray-200 pb-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Service Features</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  {formData.explore_service_features.map((feature, index) => (
+                    <div key={index} className="bg-gray-50 p-4 rounded-md relative">
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveFeature(index)}
+                        className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
+                      >
+                        <Trash className="w-4 h-4" />
+                      </button>
+                      <div><strong>ID:</strong> {feature.id}</div>
+                      <div><strong>Title:</strong> {feature.title}</div>
+                      <div><strong>Icon:</strong> {feature.icon}</div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* New feature form */}
+                <div className="space-y-3 bg-gray-50 p-4 rounded-md">
+                  <h4 className="font-medium">Add New Feature</h4>
+                  
+                  <div>
+                    <label htmlFor="newFeatureId" className="block text-sm font-medium text-gray-700 mb-1">
+                      ID
+                    </label>
+                    <input
+                      type="text"
+                      id="newFeatureId"
+                      value={newFeature.id}
+                      onChange={(e) => setNewFeature({...newFeature, id: e.target.value})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="newFeatureTitle" className="block text-sm font-medium text-gray-700 mb-1">
+                      Title
+                    </label>
+                    <input
+                      type="text"
+                      id="newFeatureTitle"
+                      value={newFeature.title}
+                      onChange={(e) => setNewFeature({...newFeature, title: e.target.value})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="newFeatureIcon" className="block text-sm font-medium text-gray-700 mb-1">
+                      Icon
+                    </label>
+                    <select
+                      id="newFeatureIcon"
+                      value={newFeature.icon}
+                      onChange={(e) => setNewFeature({...newFeature, icon: e.target.value})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                    >
+                      <option value="">-- Select an icon --</option>
+                      {iconOptions.map((icon) => (
+                        <option key={icon} value={icon}>{icon}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={handleAddFeature}
+                      className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none flex items-center justify-center"
+                    >
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add Feature
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            )}
+            
+            {/* Form actions */}
+            <div className="flex items-center justify-end space-x-3 pt-4">
+                <Link 
+                  href="/admin/dashboard/services"
+                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </Link>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-5 h-5 mr-1" />
+                      Update Service
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
