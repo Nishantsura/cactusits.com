@@ -31,51 +31,55 @@ export default function JobListings() {
       setIsLoading(true);
       try {
         const { data, error } = await getJobs();
-        
+
         if (error) {
-          throw new Error('Failed to fetch jobs');
+          throw new Error("Failed to fetch jobs");
         }
-        
+
         // Transform the data from Supabase format to our Job type
-        const transformedJobs: Job[] = data?.map((job: any) => ({
-          id: job.id,
-          title: job.title,
-          salary: job.salary || 'Competitive',
-          location: job.location,
-          type: job.type,
-          postedDays: Math.ceil((new Date().getTime() - new Date(job.posted_date).getTime()) / (1000 * 3600 * 24)),
-          category: job.category?.toLowerCase() || 'other',
-          company: job.company || 'Cactus IT Solutions',
-          applyLink: job.apply_link,
-          description: job.description
-        })) || [];
-        
+        const transformedJobs: Job[] =
+          data?.map((job: any) => ({
+            id: job.id,
+            title: job.title,
+            salary: job.salary || "Competitive",
+            location: job.location,
+            type: job.type,
+            postedDays: Math.ceil(
+              (new Date().getTime() - new Date(job.posted_date).getTime()) /
+                (1000 * 3600 * 24),
+            ),
+            category: job.category?.toLowerCase() || "other",
+            company: job.company || "Cactus IT Solutions",
+            applyLink: job.apply_link,
+            description: job.description,
+          })) || [];
+
         setJobs(transformedJobs);
-        
+
         // Extract unique categories from jobs
         const uniqueCategories = new Set<string>();
-        transformedJobs.forEach(job => {
+        transformedJobs.forEach((job) => {
           if (job.category) uniqueCategories.add(job.category.toLowerCase());
         });
-        
+
         // Update categories list with actual categories from jobs
         const newCategories = [
-          { id: 'all', name: 'Show all' },
-          ...Array.from(uniqueCategories).map(cat => ({
+          { id: "all", name: "Show all" },
+          ...Array.from(uniqueCategories).map((cat) => ({
             id: cat,
-            name: cat.charAt(0).toUpperCase() + cat.slice(1)
-          }))
+            name: cat.charAt(0).toUpperCase() + cat.slice(1),
+          })),
         ];
-        
+
         setCategories(newCategories);
       } catch (err: any) {
-        setError(err.message || 'An error occurred while fetching jobs');
-        console.error('Error fetching jobs:', err);
+        setError(err.message || "An error occurred while fetching jobs");
+        console.error("Error fetching jobs:", err);
       } finally {
         setIsLoading(false);
       }
     };
-    
+
     fetchJobs();
   }, []);
 
@@ -96,7 +100,6 @@ export default function JobListings() {
     setIsModalOpen(true);
   };
 
-
   return (
     <div
       className="container mx-auto px-4 py-8 max-w-[85vw] min-h-screen"
@@ -111,14 +114,14 @@ export default function JobListings() {
           We&apos;re hiring! Join us as we&apos;re passionate about finding you
           the right role.
         </h1>
-        
+
         {isLoading && (
           <div className="flex justify-center items-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
             <span className="ml-3 text-gray-600">Loading jobs...</span>
           </div>
         )}
-        
+
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
             {error}
@@ -149,7 +152,9 @@ export default function JobListings() {
                         ? "font-medium"
                         : ""
                     }`}
-                    onClick={() => setSelectedCategory(category.id.toLowerCase())}
+                    onClick={() =>
+                      setSelectedCategory(category.id.toLowerCase())
+                    }
                   >
                     {category.name}
                   </button>
@@ -171,7 +176,10 @@ export default function JobListings() {
                 ))
               ) : (
                 <div className="bg-gray-50 rounded-lg p-8 text-center">
-                  <p className="text-gray-500">No jobs found in this category. Please check back later or select a different category.</p>
+                  <p className="text-gray-500">
+                    No jobs found in this category. Please check back later or
+                    select a different category.
+                  </p>
                 </div>
               )}
             </div>

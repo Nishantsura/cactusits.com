@@ -5,7 +5,7 @@ import { Send } from "lucide-react";
 export default function ContactForm() {
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [formError, setFormError] = useState<string>('');
+  const [formError, setFormError] = useState<string>("");
   const [userType, setUserType] = useState<"hiringManager" | "jobSeeker">(
     "hiringManager",
   );
@@ -280,62 +280,84 @@ export default function ContactForm() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setFormError('');
-    
+    setFormError("");
+
     try {
       // Get form elements as HTMLFormElement
       const form = e.currentTarget as HTMLFormElement;
-      
+
       // Build form data based on user type
       const formData = {
-        name: form.elements.namedItem('name') ? (form.elements.namedItem('name') as HTMLInputElement).value : '',
-        email: form.elements.namedItem('email') ? (form.elements.namedItem('email') as HTMLInputElement).value : '',
-        message: form.elements.namedItem('message') ? (form.elements.namedItem('message') as HTMLTextAreaElement).value : '',
+        name: form.elements.namedItem("name")
+          ? (form.elements.namedItem("name") as HTMLInputElement).value
+          : "",
+        email: form.elements.namedItem("email")
+          ? (form.elements.namedItem("email") as HTMLInputElement).value
+          : "",
+        message: form.elements.namedItem("message")
+          ? (form.elements.namedItem("message") as HTMLTextAreaElement).value
+          : "",
         userType: userType,
         // Include relevant fields based on user type
-        ...(userType === "hiringManager" ? {
-          organization: form.elements.namedItem('organizationName') ? (form.elements.namedItem('organizationName') as HTMLInputElement).value : '',
-          website: form.elements.namedItem('organizationWebsite') ? (form.elements.namedItem('organizationWebsite') as HTMLInputElement).value : '',
-          hiringPositions,
-          hiringType
-        } : {}),
-        ...(userType === "jobSeeker" ? {
-          roles,
-          nationality,
-          fileName
-        } : {})
+        ...(userType === "hiringManager"
+          ? {
+              organization: form.elements.namedItem("organizationName")
+                ? (
+                    form.elements.namedItem(
+                      "organizationName",
+                    ) as HTMLInputElement
+                  ).value
+                : "",
+              website: form.elements.namedItem("organizationWebsite")
+                ? (
+                    form.elements.namedItem(
+                      "organizationWebsite",
+                    ) as HTMLInputElement
+                  ).value
+                : "",
+              hiringPositions,
+              hiringType,
+            }
+          : {}),
+        ...(userType === "jobSeeker"
+          ? {
+              roles,
+              nationality,
+              fileName,
+            }
+          : {}),
       };
-      
+
       // Submit to our API endpoint
-      const response = await fetch('/api/contact', {
-        method: 'POST',
+      const response = await fetch("/api/contact", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
-      
+
       const result = await response.json();
-      
+
       if (!response.ok) {
-        throw new Error(result.error || 'Form submission failed');
+        throw new Error(result.error || "Form submission failed");
       }
-      
+
       // Show success message and reset form
       setShowSuccess(true);
       form.reset();
-      
+
       // Reset tag inputs
       if (userType === "hiringManager") {
         setHiringPositions([]);
       } else {
         setRoles([]);
       }
-      
-      setFileName('');
+
+      setFileName("");
     } catch (error: any) {
-      console.error('Error submitting form:', error);
-      setFormError(error.message || 'Failed to submit form. Please try again.');
+      console.error("Error submitting form:", error);
+      setFormError(error.message || "Failed to submit form. Please try again.");
     } finally {
       setLoading(false);
     }

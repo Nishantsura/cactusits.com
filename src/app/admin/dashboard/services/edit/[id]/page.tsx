@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
-import { ArrowLeft, Save, Plus, Trash, Edit2, Upload } from 'lucide-react';
-import { getServiceById, updateService } from '@/lib/data-utils';
-import { uploadImage } from '@/lib/upload-utils';
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
+import { ArrowLeft, Save, Plus, Trash, Edit2, Upload } from "lucide-react";
+import { getServiceById, updateService } from "@/lib/data-utils";
+import { uploadImage } from "@/lib/upload-utils";
 
 // Type definitions for service data
 interface ServiceCardType {
@@ -36,116 +36,151 @@ interface ServiceFormData {
   is_active: boolean;
   created_at?: string;
   updated_at?: string;
-  
+
   // Hero section
   hero_service: string;
   hero_title: string;
   hero_description: string;
   hero_bulletpoints: string[];
   hero_image: string;
-  
+
   // Potential section
   potential_description: string;
   potential_service_cards: ServiceCardType[];
 }
 
-export default function EditServicePage({ params }: { params: { id: string } }) {
+export default function EditServicePage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'basic' | 'hero' | 'potential'>('basic');
+  const [activeTab, setActiveTab] = useState<"basic" | "hero" | "potential">(
+    "basic",
+  );
   const serviceId = parseInt(params.id);
-  
+
   // States for adding new items
-  const [newBulletpoint, setNewBulletpoint] = useState('');
-  const [newCard, setNewCard] = useState<ServiceCardType>({ title: '', description: '', icon: '' });
+  const [newBulletpoint, setNewBulletpoint] = useState("");
+  const [newCard, setNewCard] = useState<ServiceCardType>({
+    title: "",
+    description: "",
+    icon: "",
+  });
 
   // Form state
   const [formData, setFormData] = useState<ServiceFormData>({
     // Basic info
-    title: '',
-    slug: '',
-    description: '',
-    short_description: '',
-    long_description: '',
-    icon_name: '',
-    accent_color: '',
-    accent_position: '',
-    image: '',
-    image_path: '',
-    image_position: '',
+    title: "",
+    slug: "",
+    description: "",
+    short_description: "",
+    long_description: "",
+    icon_name: "",
+    accent_color: "",
+    accent_position: "",
+    image: "",
+    image_path: "",
+    image_position: "",
     image_width: 500,
     image_height: 500,
-    image_alt: '',
+    image_alt: "",
     order_index: 0,
     is_active: true,
-    
+
     // Hero section
-    hero_service: '',
-    hero_title: '',
-    hero_description: '',
+    hero_service: "",
+    hero_title: "",
+    hero_description: "",
     hero_bulletpoints: [],
-    hero_image: '',
-    
+    hero_image: "",
+
     // Potential section
-    potential_description: '',
+    potential_description: "",
     potential_service_cards: [],
   });
-  
+
   // Image upload states
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const heroFileInputRef = useRef<HTMLInputElement>(null);
-  
+
   // Available icon options
   const iconOptions = [
-    'Settings', 'BarChart', 'Database', 'Server', 'Link', 'Code', 'Activity',
-    'Moon', 'Sun', 'Star', 'Image', 'FileText', 'MessageSquare', 'Mail', 'Layers',
-    'Package', 'Briefcase', 'ShieldCheck', 'Globe', 'Zap', 'Share', 'Search',
-    'Award', 'Users', 'MessageCircle', 'Heart', 'Smile', 'Crosshair', 'Terminal'
+    "Settings",
+    "BarChart",
+    "Database",
+    "Server",
+    "Link",
+    "Code",
+    "Activity",
+    "Moon",
+    "Sun",
+    "Star",
+    "Image",
+    "FileText",
+    "MessageSquare",
+    "Mail",
+    "Layers",
+    "Package",
+    "Briefcase",
+    "ShieldCheck",
+    "Globe",
+    "Zap",
+    "Share",
+    "Search",
+    "Award",
+    "Users",
+    "MessageCircle",
+    "Heart",
+    "Smile",
+    "Crosshair",
+    "Terminal",
   ];
 
   useEffect(() => {
     const fetchServiceData = async () => {
       if (isNaN(serviceId)) {
-        setError('Invalid service ID');
+        setError("Invalid service ID");
         setIsFetching(false);
         return;
       }
-      
+
       try {
         // Check authentication
-        const authData = localStorage.getItem('adminAuth');
+        const authData = localStorage.getItem("adminAuth");
         if (!authData) {
-          router.push('/admin');
+          router.push("/admin");
           return;
         }
-        
+
         try {
           const { authenticated, expires } = JSON.parse(authData);
           if (!authenticated || new Date(expires) < new Date()) {
-            localStorage.removeItem('adminAuth');
-            router.push('/admin');
+            localStorage.removeItem("adminAuth");
+            router.push("/admin");
             return;
           }
         } catch (e) {
-          localStorage.removeItem('adminAuth');
-          router.push('/admin');
+          localStorage.removeItem("adminAuth");
+          router.push("/admin");
           return;
         }
-        
+
         // Fetch service data
         const { data, error } = await getServiceById(serviceId);
-        
+
         if (error) {
-          throw new Error('Failed to fetch service data');
+          throw new Error("Failed to fetch service data");
         }
-        
+
         if (!data) {
-          throw new Error('Service not found');
+          throw new Error("Service not found");
         }
 
         // Parse JSON fields if they're stored as strings
@@ -154,125 +189,142 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
 
         try {
           if (data.hero_bulletpoints) {
-            heroPoints = typeof data.hero_bulletpoints === 'string' ? 
-              JSON.parse(data.hero_bulletpoints) : data.hero_bulletpoints;
+            heroPoints =
+              typeof data.hero_bulletpoints === "string"
+                ? JSON.parse(data.hero_bulletpoints)
+                : data.hero_bulletpoints;
           }
-          
+
           if (data.potential_service_cards) {
-            potentialCards = typeof data.potential_service_cards === 'string' ? 
-              JSON.parse(data.potential_service_cards) : data.potential_service_cards;
+            potentialCards =
+              typeof data.potential_service_cards === "string"
+                ? JSON.parse(data.potential_service_cards)
+                : data.potential_service_cards;
           }
         } catch (parseError) {
-          console.error('Error parsing JSON fields:', parseError);
+          console.error("Error parsing JSON fields:", parseError);
         }
-        
+
         // Populate form with service data
         setFormData({
           // Basic info
           id: data.id,
-          title: data.title || '',
-          slug: data.slug || '',
-          description: data.description || '',
-          short_description: data.short_description || '',
-          long_description: data.long_description || '',
-          icon_name: data.icon_name || '',
-          accent_color: data.accent_color || '',
-          accent_position: data.accent_position || '',
-          image: data.image || '',
-          image_path: data.image_path || '',
-          image_position: data.image_position || '',
+          title: data.title || "",
+          slug: data.slug || "",
+          description: data.description || "",
+          short_description: data.short_description || "",
+          long_description: data.long_description || "",
+          icon_name: data.icon_name || "",
+          accent_color: data.accent_color || "",
+          accent_position: data.accent_position || "",
+          image: data.image || "",
+          image_path: data.image_path || "",
+          image_position: data.image_position || "",
           image_width: data.image_width || 500,
           image_height: data.image_height || 500,
-          image_alt: data.image_alt || '',
+          image_alt: data.image_alt || "",
           order_index: data.order_index || 0,
           is_active: data.is_active !== false, // default to true if undefined
           created_at: data.created_at,
           updated_at: data.updated_at,
-          
+
           // Hero section
-          hero_service: data.hero_service || '',
-          hero_title: data.hero_title || '',
-          hero_description: data.hero_description || '',
+          hero_service: data.hero_service || "",
+          hero_title: data.hero_title || "",
+          hero_description: data.hero_description || "",
           hero_bulletpoints: Array.isArray(heroPoints) ? heroPoints : [],
-          hero_image: data.hero_image || '',
-          
+          hero_image: data.hero_image || "",
+
           // Potential section
-          potential_description: data.potential_description || '',
-          potential_service_cards: Array.isArray(potentialCards) ? potentialCards : [],
+          potential_description: data.potential_description || "",
+          potential_service_cards: Array.isArray(potentialCards)
+            ? potentialCards
+            : [],
         });
       } catch (err: any) {
-        console.error('Error fetching service:', err);
-        setError(err.message || 'An error occurred while fetching service data');
+        console.error("Error fetching service:", err);
+        setError(
+          err.message || "An error occurred while fetching service data",
+        );
       } finally {
         setIsFetching(false);
       }
     };
-    
+
     fetchServiceData();
   }, [serviceId, router]);
-  
+
   // Handle form input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
     const { name, value } = e.target;
-    
+
     // Convert to number if it's a numeric field
-    if (name === 'order_index' || name === 'image_width' || name === 'image_height') {
-      setFormData(prev => ({
+    if (
+      name === "order_index" ||
+      name === "image_width" ||
+      name === "image_height"
+    ) {
+      setFormData((prev) => ({
         ...prev,
-        [name]: parseInt(value) || 0
+        [name]: parseInt(value) || 0,
       }));
-    } else if (name === 'is_active') {
-      setFormData(prev => ({
+    } else if (name === "is_active") {
+      setFormData((prev) => ({
         ...prev,
-        [name]: value === 'true'
+        [name]: value === "true",
       }));
     } else {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        [name]: value
+        [name]: value,
       }));
     }
   };
-  
+
   // Auto-generate slug from title
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const title = e.target.value;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       title,
       // Only auto-generate slug if user hasn't manually edited it
-      slug: formData.slug === slugify(prev.title) ? slugify(title) : formData.slug
+      slug:
+        formData.slug === slugify(prev.title) ? slugify(title) : formData.slug,
     }));
   };
-  
+
   // Simple function to convert title to slug
   const slugify = (text: string) => {
     return text
       .toString()
       .toLowerCase()
       .trim()
-      .replace(/\s+/g, '-')       // Replace spaces with -
-      .replace(/&/g, '-and-')     // Replace & with 'and'
-      .replace(/[^\w\-]+/g, '')   // Remove all non-word chars
-      .replace(/\-\-+/g, '-');    // Replace multiple - with single -
+      .replace(/\s+/g, "-") // Replace spaces with -
+      .replace(/&/g, "-and-") // Replace & with 'and'
+      .replace(/[^\w\-]+/g, "") // Remove all non-word chars
+      .replace(/\-\-+/g, "-"); // Replace multiple - with single -
   };
-  
-  // Handle adding a bulletpoint 
+
+  // Handle adding a bulletpoint
   const handleAddBulletpoint = () => {
     if (newBulletpoint.trim()) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        hero_bulletpoints: [...prev.hero_bulletpoints, newBulletpoint.trim()]
+        hero_bulletpoints: [...prev.hero_bulletpoints, newBulletpoint.trim()],
       }));
-      setNewBulletpoint('');
+      setNewBulletpoint("");
     }
   };
 
   // Handle removing a bulletpoint
   const handleRemoveBulletpoint = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      hero_bulletpoints: prev.hero_bulletpoints.filter((_, i) => i !== index)
+      hero_bulletpoints: prev.hero_bulletpoints.filter((_, i) => i !== index),
     }));
   };
 
@@ -280,18 +332,23 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
   const handleAddCard = () => {
     if (!newCard.title.trim() || !newCard.description.trim()) return;
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      potential_service_cards: [...prev.potential_service_cards, { ...newCard }]
+      potential_service_cards: [
+        ...prev.potential_service_cards,
+        { ...newCard },
+      ],
     }));
-    setNewCard({ title: '', description: '', icon: '' });
+    setNewCard({ title: "", description: "", icon: "" });
   };
 
   // Handle removing a card
   const handleRemoveCard = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      potential_service_cards: prev.potential_service_cards.filter((_, i) => i !== index)
+      potential_service_cards: prev.potential_service_cards.filter(
+        (_, i) => i !== index,
+      ),
     }));
   };
 
@@ -299,31 +356,31 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     setIsUploading(true);
     setUploadProgress(10);
     setUploadError(null);
-    
+
     try {
       // Simulate progress for better UX
       const progressInterval = setInterval(() => {
-        setUploadProgress(prev => Math.min(prev + 10, 90));
+        setUploadProgress((prev) => Math.min(prev + 10, 90));
       }, 200);
-      
+
       // Upload image to Supabase Storage
-      const { data, error } = await uploadImage(file, 'images', 'services');
-      
+      const { data, error } = await uploadImage(file, "images", "services");
+
       clearInterval(progressInterval);
-      
+
       if (error) throw error;
-      
+
       if (data) {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          image_path: data.url
+          image_path: data.url,
         }));
         setUploadProgress(100);
-        
+
         // Reset progress after a delay
         setTimeout(() => {
           setIsUploading(false);
@@ -331,41 +388,43 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
         }, 1000);
       }
     } catch (err: any) {
-      console.error('Error uploading image:', err);
-      setUploadError(err.message || 'Failed to upload image');
+      console.error("Error uploading image:", err);
+      setUploadError(err.message || "Failed to upload image");
       setIsUploading(false);
     }
   };
-  
+
   // Handle hero image upload
-  const handleHeroImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleHeroImageUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     setIsUploading(true);
     setUploadProgress(10);
     setUploadError(null);
-    
+
     try {
       // Simulate progress for better UX
       const progressInterval = setInterval(() => {
-        setUploadProgress(prev => Math.min(prev + 10, 90));
+        setUploadProgress((prev) => Math.min(prev + 10, 90));
       }, 200);
-      
+
       // Upload image to Supabase Storage
-      const { data, error } = await uploadImage(file, 'images', 'heroes');
-      
+      const { data, error } = await uploadImage(file, "images", "heroes");
+
       clearInterval(progressInterval);
-      
+
       if (error) throw error;
-      
+
       if (data) {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          hero_image: data.url
+          hero_image: data.url,
         }));
         setUploadProgress(100);
-        
+
         // Reset progress after a delay
         setTimeout(() => {
           setIsUploading(false);
@@ -373,8 +432,8 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
         }, 1000);
       }
     } catch (err: any) {
-      console.error('Error uploading hero image:', err);
-      setUploadError(err.message || 'Failed to upload hero image');
+      console.error("Error uploading hero image:", err);
+      setUploadError(err.message || "Failed to upload hero image");
       setIsUploading(false);
     }
   };
@@ -387,14 +446,14 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
 
     try {
       const { data, error } = await updateService(serviceId, formData);
-      
+
       if (error) throw error;
-      
-      alert('Service updated successfully!');
-      router.push('/admin/dashboard/services');
+
+      alert("Service updated successfully!");
+      router.push("/admin/dashboard/services");
     } catch (err: any) {
-      console.error('Error updating service:', err);
-      setError(err.message || 'Failed to update service');
+      console.error("Error updating service:", err);
+      setError(err.message || "Failed to update service");
     } finally {
       setIsLoading(false);
     }
@@ -406,12 +465,18 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center mb-6">
-            <Link href="/admin/dashboard/services" className="text-gray-500 hover:text-gray-700 mr-2">
+            <Link
+              href="/admin/dashboard/services"
+              className="text-gray-500 hover:text-gray-700 mr-2"
+            >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <h1 className="text-2xl font-bold">Edit Service</h1>
           </div>
-          <div className="bg-white rounded-lg shadow p-6 flex items-center justify-center" style={{ minHeight: '300px' }}>
+          <div
+            className="bg-white rounded-lg shadow p-6 flex items-center justify-center"
+            style={{ minHeight: "300px" }}
+          >
             <div className="text-center">
               <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
               <p className="text-gray-600">Loading service data...</p>
@@ -427,7 +492,10 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
       <div className="max-w-4xl mx-auto">
         {/* Header with back button */}
         <div className="flex items-center mb-6">
-          <Link href="/admin/dashboard/services" className="text-gray-500 hover:text-gray-700 mr-2">
+          <Link
+            href="/admin/dashboard/services"
+            className="text-gray-500 hover:text-gray-700 mr-2"
+          >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <h1 className="text-2xl font-bold">Edit Service: {formData.title}</h1>
@@ -447,22 +515,22 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
             <nav className="flex -mb-px">
               <button
                 type="button"
-                onClick={() => setActiveTab('basic')}
-                className={`px-4 py-3 font-medium text-sm ${activeTab === 'basic' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-gray-700'}`}
+                onClick={() => setActiveTab("basic")}
+                className={`px-4 py-3 font-medium text-sm ${activeTab === "basic" ? "border-b-2 border-primary text-primary" : "text-gray-500 hover:text-gray-700"}`}
               >
                 Basic Info
               </button>
               <button
                 type="button"
-                onClick={() => setActiveTab('hero')}
-                className={`px-4 py-3 font-medium text-sm ${activeTab === 'hero' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-gray-700'}`}
+                onClick={() => setActiveTab("hero")}
+                className={`px-4 py-3 font-medium text-sm ${activeTab === "hero" ? "border-b-2 border-primary text-primary" : "text-gray-500 hover:text-gray-700"}`}
               >
                 Hero Section
               </button>
               <button
                 type="button"
-                onClick={() => setActiveTab('potential')}
-                className={`px-4 py-3 font-medium text-sm ${activeTab === 'potential' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-gray-700'}`}
+                onClick={() => setActiveTab("potential")}
+                className={`px-4 py-3 font-medium text-sm ${activeTab === "potential" ? "border-b-2 border-primary text-primary" : "text-gray-500 hover:text-gray-700"}`}
               >
                 Potential Section
               </button>
@@ -471,371 +539,468 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
 
           <form onSubmit={handleSubmit}>
             {/* Hero section fields - Placeholder */}
-            {activeTab === 'hero' && (
+            {activeTab === "hero" && (
               <div className="p-6 space-y-6">
-                    {/* Hero Service Name */}
-    <div>
-      <label htmlFor="hero_service" className="block text-sm font-medium text-gray-700 mb-1">Hero Service Name</label>
-      <input
-        type="text"
-        id="hero_service"
-        name="hero_service"
-        value={formData.hero_service}
-        onChange={handleChange}
-        className="w-full p-2 border border-gray-300 rounded-md"
-      />
-    </div>
+                {/* Hero Service Name */}
+                <div>
+                  <label
+                    htmlFor="hero_service"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Hero Service Name
+                  </label>
+                  <input
+                    type="text"
+                    id="hero_service"
+                    name="hero_service"
+                    value={formData.hero_service}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  />
+                </div>
 
-    {/* Hero Title */}
-    <div>
-      <label htmlFor="hero_title" className="block text-sm font-medium text-gray-700 mb-1">Hero Title</label>
-      <input
-        type="text"
-        id="hero_title"
-        name="hero_title"
-        value={formData.hero_title}
-        onChange={handleChange}
-        className="w-full p-2 border border-gray-300 rounded-md"
-      />
-    </div>
+                {/* Hero Title */}
+                <div>
+                  <label
+                    htmlFor="hero_title"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Hero Title
+                  </label>
+                  <input
+                    type="text"
+                    id="hero_title"
+                    name="hero_title"
+                    value={formData.hero_title}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  />
+                </div>
 
-    {/* Hero Description */}
-    <div>
-      <label htmlFor="hero_description" className="block text-sm font-medium text-gray-700 mb-1">Hero Description</label>
-      <textarea
-        id="hero_description"
-        name="hero_description"
-        value={formData.hero_description}
-        onChange={handleChange}
-        rows={3}
-        className="w-full p-2 border border-gray-300 rounded-md"
-      />
-    </div>
+                {/* Hero Description */}
+                <div>
+                  <label
+                    htmlFor="hero_description"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Hero Description
+                  </label>
+                  <textarea
+                    id="hero_description"
+                    name="hero_description"
+                    value={formData.hero_description}
+                    onChange={handleChange}
+                    rows={3}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  />
+                </div>
 
-    {/* Hero Image Upload */}
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">Hero Image</label>
-      
-      {/* Preview current hero image if exists */}
-      {formData.hero_image && (
-        <div className="relative w-full h-48 bg-gray-100 rounded-md overflow-hidden mb-2">
-          <Image 
-            src={formData.hero_image.startsWith('http') ? formData.hero_image : `/images/${formData.hero_image}`}
-            alt="Hero image" 
-            fill
-            style={{ objectFit: 'contain' }}
-          />
-        </div>
-      )}
-      
-      {/* Hero image path input */}
-      <div className="flex items-center space-x-2">
-        <input
-          type="text"
-          id="hero_image"
-          name="hero_image"
-          value={formData.hero_image}
-          onChange={handleChange}
-          placeholder="e.g., /images/hero.png or https://example.com/hero.jpg"
-          className="w-full p-2 border border-gray-300 rounded-md"
-        />
-        
-        {/* Hidden file input for hero image */}
-        <input 
-          type="file" 
-          ref={heroFileInputRef}
-          accept="image/*" 
-          className="hidden" 
-          onChange={handleHeroImageUpload}
-        />
-        
-        {/* Upload button for hero image */}
-        <button
-          type="button"
-          onClick={() => heroFileInputRef.current?.click()}
-          className="flex items-center px-3 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-          disabled={isUploading}
-        >
-          <Upload className="w-4 h-4 mr-1" />
-          {isUploading ? 'Uploading...' : 'Upload'}
-        </button>
-      </div>
-    </div>
+                {/* Hero Image Upload */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Hero Image
+                  </label>
 
-    {/* Hero Bullet Points */}
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">Hero Bullet Points</label>
-      {formData.hero_bulletpoints.map((point, index) => (
-        <div key={index} className="flex items-center space-x-2 mb-2">
-          <input
-            type="text"
-            value={point}
-            onChange={(e) => {
-              const newPoints = [...formData.hero_bulletpoints];
-              newPoints[index] = e.target.value;
-              setFormData(prev => ({ ...prev, hero_bulletpoints: newPoints }));
-            }}
-            className="w-full p-2 border border-gray-300 rounded-md"
-          />
-          <button
-            type="button"
-            onClick={() => handleRemoveBulletpoint(index)} // Assuming handleRemoveBulletpoint exists
-            className="p-2 text-red-500 hover:text-red-700"
-          >
-            <Trash className="w-5 h-5" />
-          </button>
-        </div>
-      ))}
-      <div className="flex items-center space-x-2 mt-2">
-        <input
-          type="text"
-          value={newBulletpoint} // Assuming newBulletpoint state exists
-          onChange={(e) => setNewBulletpoint(e.target.value)} // Assuming setNewBulletpoint exists
-          placeholder="Add a new bullet point"
-          className="w-full p-2 border border-gray-300 rounded-md"
-        />
-        <button
-          type="button"
-          onClick={handleAddBulletpoint} // Assuming handleAddBulletpoint exists
-          className="px-3 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 flex items-center"
-        >
-          <Plus className="w-4 h-4 mr-1" /> Add
-        </button>
-      </div>
-    </div>
+                  {/* Preview current hero image if exists */}
+                  {formData.hero_image && (
+                    <div className="relative w-full h-48 bg-gray-100 rounded-md overflow-hidden mb-2">
+                      <Image
+                        src={
+                          formData.hero_image.startsWith("http")
+                            ? formData.hero_image
+                            : `/images/${formData.hero_image}`
+                        }
+                        alt="Hero image"
+                        fill
+                        style={{ objectFit: "contain" }}
+                      />
+                    </div>
+                  )}
+
+                  {/* Hero image path input */}
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      id="hero_image"
+                      name="hero_image"
+                      value={formData.hero_image}
+                      onChange={handleChange}
+                      placeholder="e.g., /images/hero.png or https://example.com/hero.jpg"
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                    />
+
+                    {/* Hidden file input for hero image */}
+                    <input
+                      type="file"
+                      ref={heroFileInputRef}
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleHeroImageUpload}
+                    />
+
+                    {/* Upload button for hero image */}
+                    <button
+                      type="button"
+                      onClick={() => heroFileInputRef.current?.click()}
+                      className="flex items-center px-3 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                      disabled={isUploading}
+                    >
+                      <Upload className="w-4 h-4 mr-1" />
+                      {isUploading ? "Uploading..." : "Upload"}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Hero Bullet Points */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Hero Bullet Points
+                  </label>
+                  {formData.hero_bulletpoints.map((point, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center space-x-2 mb-2"
+                    >
+                      <input
+                        type="text"
+                        value={point}
+                        onChange={(e) => {
+                          const newPoints = [...formData.hero_bulletpoints];
+                          newPoints[index] = e.target.value;
+                          setFormData((prev) => ({
+                            ...prev,
+                            hero_bulletpoints: newPoints,
+                          }));
+                        }}
+                        className="w-full p-2 border border-gray-300 rounded-md"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveBulletpoint(index)} // Assuming handleRemoveBulletpoint exists
+                        className="p-2 text-red-500 hover:text-red-700"
+                      >
+                        <Trash className="w-5 h-5" />
+                      </button>
+                    </div>
+                  ))}
+                  <div className="flex items-center space-x-2 mt-2">
+                    <input
+                      type="text"
+                      value={newBulletpoint} // Assuming newBulletpoint state exists
+                      onChange={(e) => setNewBulletpoint(e.target.value)} // Assuming setNewBulletpoint exists
+                      placeholder="Add a new bullet point"
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddBulletpoint} // Assuming handleAddBulletpoint exists
+                      className="px-3 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 flex items-center"
+                    >
+                      <Plus className="w-4 h-4 mr-1" /> Add
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
 
             {/* Basic Info Tab - Placeholder */}
-            {activeTab === 'basic' && (
+            {activeTab === "basic" && (
               <div className="p-6 space-y-6">
-                  {/* Title */}
-                  <div>
-                    <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">Service Name*</label>
-                    <input
-                      type="text"
-                      id="title"
-                      name="title"
-                      value={formData.title}
-                      onChange={handleTitleChange}
-                      className="w-full p-2 border border-gray-300 rounded-md"
-                      required
-                    />
-                  </div>
-                  
-                  {/* Slug */}
-                  <div>
-                    <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">Slug*</label>
-                    <input
-                      type="text"
-                      id="slug"
-                      name="slug"
-                      value={formData.slug}
-                      onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-md"
-                      required
-                    />
-                  </div>
+                {/* Title */}
+                <div>
+                  <label
+                    htmlFor="title"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Service Name*
+                  </label>
+                  <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleTitleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                    required
+                  />
+                </div>
 
-                  {/* Icon */}
-                  <div>
-                    <label htmlFor="icon_name" className="block text-sm font-medium text-gray-700 mb-1">Icon Name</label>
-                    <select
-                      id="icon_name"
-                      name="icon_name"
-                      value={formData.icon_name}
-                      onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-md"
-                    >
-                      <option value="">Select an icon</option>
-                      {iconOptions.map(icon => (
-                        <option key={icon} value={icon}>{icon}</option>
-                      ))}
-                    </select>
-                  </div>
+                {/* Slug */}
+                <div>
+                  <label
+                    htmlFor="slug"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Slug*
+                  </label>
+                  <input
+                    type="text"
+                    id="slug"
+                    name="slug"
+                    value={formData.slug}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                    required
+                  />
+                </div>
 
-                  {/* Accent Color */}
-                  <div>
-                    <label htmlFor="accent_color" className="block text-sm font-medium text-gray-700 mb-1">Accent Color</label>
-                    <input
-                      type="text"
-                      id="accent_color"
-                      name="accent_color"
-                      value={formData.accent_color}
-                      onChange={handleChange}
-                      placeholder="e.g. #3B82F6 or blue-500"
-                      className="w-full p-2 border border-gray-300 rounded-md"
-                    />
-                  </div>
+                {/* Icon */}
+                <div>
+                  <label
+                    htmlFor="icon_name"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Icon Name
+                  </label>
+                  <select
+                    id="icon_name"
+                    name="icon_name"
+                    value={formData.icon_name}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  >
+                    <option value="">Select an icon</option>
+                    {iconOptions.map((icon) => (
+                      <option key={icon} value={icon}>
+                        {icon}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-                  {/* Accent Position */}
-                  <div>
-                    <label htmlFor="accent_position" className="block text-sm font-medium text-gray-700 mb-1">Accent Position</label>
-                    <select
-                      id="accent_position"
-                      name="accent_position"
-                      value={formData.accent_position}
-                      onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-md"
-                    >
-                      <option value="">Select a position</option>
-                      <option value="left">Left</option>
-                      <option value="right">Right</option>
-                      <option value="top">Top</option>
-                      <option value="bottom">Bottom</option>
-                    </select>
-                  </div>
+                {/* Accent Color */}
+                <div>
+                  <label
+                    htmlFor="accent_color"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Accent Color
+                  </label>
+                  <input
+                    type="text"
+                    id="accent_color"
+                    name="accent_color"
+                    value={formData.accent_color}
+                    onChange={handleChange}
+                    placeholder="e.g. #3B82F6 or blue-500"
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  />
+                </div>
 
-                  {/* Description */}
-                  <div>
-                    <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                    <textarea
-                      id="description"
-                      name="description"
-                      value={formData.description}
-                      onChange={handleChange}
-                      rows={3}
-                      className="w-full p-2 border border-gray-300 rounded-md"
-                    />
-                  </div>
+                {/* Accent Position */}
+                <div>
+                  <label
+                    htmlFor="accent_position"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Accent Position
+                  </label>
+                  <select
+                    id="accent_position"
+                    name="accent_position"
+                    value={formData.accent_position}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  >
+                    <option value="">Select a position</option>
+                    <option value="left">Left</option>
+                    <option value="right">Right</option>
+                    <option value="top">Top</option>
+                    <option value="bottom">Bottom</option>
+                  </select>
+                </div>
 
-                  {/* Short Description */}
-                  <div>
-                    <label htmlFor="short_description" className="block text-sm font-medium text-gray-700 mb-1">Short Description</label>
-                    <textarea
-                      id="short_description"
-                      name="short_description"
-                      value={formData.short_description}
-                      onChange={handleChange}
-                      rows={2}
-                      className="w-full p-2 border border-gray-300 rounded-md"
-                    />
-                  </div>
+                {/* Description */}
+                <div>
+                  <label
+                    htmlFor="description"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Description
+                  </label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    rows={3}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  />
+                </div>
 
-                  {/* Long Description */}
-                  <div>
-                    <label htmlFor="long_description" className="block text-sm font-medium text-gray-700 mb-1">Long Description</label>
-                    <textarea
-                      id="long_description"
-                      name="long_description"
-                      value={formData.long_description}
-                      onChange={handleChange}
-                      rows={5}
-                      className="w-full p-2 border border-gray-300 rounded-md"
-                    />
-                  </div>
+                {/* Short Description */}
+                <div>
+                  <label
+                    htmlFor="short_description"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Short Description
+                  </label>
+                  <textarea
+                    id="short_description"
+                    name="short_description"
+                    value={formData.short_description}
+                    onChange={handleChange}
+                    rows={2}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  />
+                </div>
 
-                  {/* Image Upload */}
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">Image</label>
-                    
-                    {/* Preview current image if exists */}
-                    {formData.image_path && (
-                      <div className="relative w-full h-48 bg-gray-100 rounded-md overflow-hidden mb-2">
-                        <Image 
-                          src={formData.image_path.startsWith('http') ? formData.image_path : `/images/${formData.image_path}`}
-                          alt={formData.image_alt || 'Service image'} 
-                          fill
-                          style={{ objectFit: 'contain' }}
-                        />
-                      </div>
-                    )}
-                    
-                    {/* Image path input */}
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="text"
-                        id="image_path"
-                        name="image_path"
-                        value={formData.image_path}
-                        onChange={handleChange}
-                        placeholder="e.g., /images/service.png or https://example.com/image.jpg"
-                        className="w-full p-2 border border-gray-300 rounded-md"
+                {/* Long Description */}
+                <div>
+                  <label
+                    htmlFor="long_description"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Long Description
+                  </label>
+                  <textarea
+                    id="long_description"
+                    name="long_description"
+                    value={formData.long_description}
+                    onChange={handleChange}
+                    rows={5}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+
+                {/* Image Upload */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Image
+                  </label>
+
+                  {/* Preview current image if exists */}
+                  {formData.image_path && (
+                    <div className="relative w-full h-48 bg-gray-100 rounded-md overflow-hidden mb-2">
+                      <Image
+                        src={
+                          formData.image_path.startsWith("http")
+                            ? formData.image_path
+                            : `/images/${formData.image_path}`
+                        }
+                        alt={formData.image_alt || "Service image"}
+                        fill
+                        style={{ objectFit: "contain" }}
                       />
-                      
-                      {/* Hidden file input */}
-                      <input 
-                        type="file" 
-                        ref={fileInputRef}
-                        accept="image/*" 
-                        className="hidden" 
-                        onChange={handleImageUpload}
-                      />
-                      
-                      {/* Upload button */}
-                      <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="flex items-center px-3 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-                        disabled={isUploading}
-                      >
-                        <Upload className="w-4 h-4 mr-1" />
-                        {isUploading ? 'Uploading...' : 'Upload'}
-                      </button>
                     </div>
-                    
-                    {/* Upload progress */}
-                    {isUploading && (
-                      <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-                        <div 
-                          className="bg-blue-600 h-2.5 rounded-full" 
-                          style={{ width: `${uploadProgress}%` }}
-                        ></div>
-                      </div>
-                    )}
-                    
-                    {/* Upload error */}
-                    {uploadError && (
-                      <p className="text-red-500 text-sm mt-1">{uploadError}</p>
-                    )}
-                  </div>
+                  )}
 
-                  {/* Image Alt Text */}
-                  <div>
-                    <label htmlFor="image_alt" className="block text-sm font-medium text-gray-700 mb-1">Image Alt Text</label>
+                  {/* Image path input */}
+                  <div className="flex items-center space-x-2">
                     <input
                       type="text"
-                      id="image_alt"
-                      name="image_alt"
-                      value={formData.image_alt}
+                      id="image_path"
+                      name="image_path"
+                      value={formData.image_path}
                       onChange={handleChange}
+                      placeholder="e.g., /images/service.png or https://example.com/image.jpg"
                       className="w-full p-2 border border-gray-300 rounded-md"
                     />
+
+                    {/* Hidden file input */}
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageUpload}
+                    />
+
+                    {/* Upload button */}
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="flex items-center px-3 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                      disabled={isUploading}
+                    >
+                      <Upload className="w-4 h-4 mr-1" />
+                      {isUploading ? "Uploading..." : "Upload"}
+                    </button>
                   </div>
 
-                  {/* Order Index */}
-                  <div>
-                    <label htmlFor="order_index" className="block text-sm font-medium text-gray-700 mb-1">Order Index</label>
-                    <input
-                      type="number"
-                      id="order_index"
-                      name="order_index"
-                      value={formData.order_index}
-                      onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-md"
-                    />
-                  </div>
+                  {/* Upload progress */}
+                  {isUploading && (
+                    <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+                      <div
+                        className="bg-blue-600 h-2.5 rounded-full"
+                        style={{ width: `${uploadProgress}%` }}
+                      ></div>
+                    </div>
+                  )}
 
-                  {/* Is Active */}
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id="is_active"
-                      name="is_active"
-                      checked={formData.is_active}
-                      onChange={handleChange}
-                      className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
-                    />
-                    <label htmlFor="is_active" className="ml-2 block text-sm text-gray-900">Is Active</label>
-                  </div>
+                  {/* Upload error */}
+                  {uploadError && (
+                    <p className="text-red-500 text-sm mt-1">{uploadError}</p>
+                  )}
+                </div>
+
+                {/* Image Alt Text */}
+                <div>
+                  <label
+                    htmlFor="image_alt"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Image Alt Text
+                  </label>
+                  <input
+                    type="text"
+                    id="image_alt"
+                    name="image_alt"
+                    value={formData.image_alt}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+
+                {/* Order Index */}
+                <div>
+                  <label
+                    htmlFor="order_index"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Order Index
+                  </label>
+                  <input
+                    type="number"
+                    id="order_index"
+                    name="order_index"
+                    value={formData.order_index}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+
+                {/* Is Active */}
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="is_active"
+                    name="is_active"
+                    checked={formData.is_active}
+                    onChange={handleChange}
+                    className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
+                  />
+                  <label
+                    htmlFor="is_active"
+                    className="ml-2 block text-sm text-gray-900"
+                  >
+                    Is Active
+                  </label>
+                </div>
               </div>
             )}
 
             {/* Potential section fields - Placeholder */}
-            {activeTab === 'potential' && (
+            {activeTab === "potential" && (
               <div className="p-6 space-y-6">
                 <div>
-                  <label htmlFor="potential_description" className="block text-sm font-medium text-gray-700 mb-1">Potential Section Description</label>
+                  <label
+                    htmlFor="potential_description"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Potential Section Description
+                  </label>
                   <textarea
                     id="potential_description"
                     name="potential_description"
@@ -847,11 +1012,18 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Potential Service Cards</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    Potential Service Cards
+                  </h3>
                   {formData.potential_service_cards.map((card, index) => (
-                    <div key={index} className="p-4 border border-gray-200 rounded-md mb-4 space-y-3">
+                    <div
+                      key={index}
+                      className="p-4 border border-gray-200 rounded-md mb-4 space-y-3"
+                    >
                       <div className="flex justify-between items-center">
-                        <h4 className="text-md font-semibold">Card {index + 1}</h4>
+                        <h4 className="text-md font-semibold">
+                          Card {index + 1}
+                        </h4>
                         <button
                           type="button"
                           onClick={() => handleRemoveCard(index)} // Assuming handleRemoveCard exists
@@ -861,48 +1033,80 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                         </button>
                       </div>
                       <div>
-                        <label htmlFor={`card_title_${index}`} className="block text-xs font-medium text-gray-600 mb-1">Card Title</label>
+                        <label
+                          htmlFor={`card_title_${index}`}
+                          className="block text-xs font-medium text-gray-600 mb-1"
+                        >
+                          Card Title
+                        </label>
                         <input
                           type="text"
                           id={`card_title_${index}`}
                           value={card.title}
                           onChange={(e) => {
-                            const newCards = [...formData.potential_service_cards];
+                            const newCards = [
+                              ...formData.potential_service_cards,
+                            ];
                             newCards[index].title = e.target.value;
-                            setFormData(prev => ({ ...prev, potential_service_cards: newCards }));
+                            setFormData((prev) => ({
+                              ...prev,
+                              potential_service_cards: newCards,
+                            }));
                           }}
                           className="w-full p-2 border border-gray-300 rounded-md text-sm"
                         ></input>
                       </div>
                       <div>
-                        <label htmlFor={`card_description_${index}`} className="block text-xs font-medium text-gray-600 mb-1">Card Description</label>
+                        <label
+                          htmlFor={`card_description_${index}`}
+                          className="block text-xs font-medium text-gray-600 mb-1"
+                        >
+                          Card Description
+                        </label>
                         <textarea
                           id={`card_description_${index}`}
                           value={card.description}
                           onChange={(e) => {
-                            const newCards = [...formData.potential_service_cards];
+                            const newCards = [
+                              ...formData.potential_service_cards,
+                            ];
                             newCards[index].description = e.target.value;
-                            setFormData(prev => ({ ...prev, potential_service_cards: newCards }));
+                            setFormData((prev) => ({
+                              ...prev,
+                              potential_service_cards: newCards,
+                            }));
                           }}
                           rows={2}
                           className="w-full p-2 border border-gray-300 rounded-md text-sm"
                         ></textarea>
                       </div>
                       <div>
-                        <label htmlFor={`card_icon_${index}`} className="block text-xs font-medium text-gray-600 mb-1">Card Icon</label>
+                        <label
+                          htmlFor={`card_icon_${index}`}
+                          className="block text-xs font-medium text-gray-600 mb-1"
+                        >
+                          Card Icon
+                        </label>
                         <select
                           id={`card_icon_${index}`}
                           value={card.icon}
                           onChange={(e) => {
-                            const newCards = [...formData.potential_service_cards];
+                            const newCards = [
+                              ...formData.potential_service_cards,
+                            ];
                             newCards[index].icon = e.target.value;
-                            setFormData(prev => ({ ...prev, potential_service_cards: newCards }));
+                            setFormData((prev) => ({
+                              ...prev,
+                              potential_service_cards: newCards,
+                            }));
                           }}
                           className="w-full p-2 border border-gray-300 rounded-md text-sm"
                         >
                           <option value="">Select an icon</option>
-                          {iconOptions.map(icon => (
-                            <option key={icon} value={icon}>{icon}</option>
+                          {iconOptions.map((icon) => (
+                            <option key={icon} value={icon}>
+                              {icon}
+                            </option>
                           ))}
                         </select>
                       </div>
@@ -912,36 +1116,68 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                   <div className="mt-6 p-4 border border-dashed border-gray-300 rounded-md space-y-3">
                     <h4 className="text-md font-semibold">Add New Card</h4>
                     <div>
-                      <label htmlFor="new_card_title" className="block text-xs font-medium text-gray-600 mb-1">New Card Title</label>
+                      <label
+                        htmlFor="new_card_title"
+                        className="block text-xs font-medium text-gray-600 mb-1"
+                      >
+                        New Card Title
+                      </label>
                       <input
                         type="text"
                         id="new_card_title"
                         value={newCard.title} // Assuming newCard state exists
-                        onChange={(e) => setNewCard(prev => ({ ...prev, title: e.target.value }))} // Assuming setNewCard exists
+                        onChange={(e) =>
+                          setNewCard((prev) => ({
+                            ...prev,
+                            title: e.target.value,
+                          }))
+                        } // Assuming setNewCard exists
                         className="w-full p-2 border border-gray-300 rounded-md text-sm"
                       />
                     </div>
                     <div>
-                      <label htmlFor="new_card_description" className="block text-xs font-medium text-gray-600 mb-1">New Card Description</label>
+                      <label
+                        htmlFor="new_card_description"
+                        className="block text-xs font-medium text-gray-600 mb-1"
+                      >
+                        New Card Description
+                      </label>
                       <textarea
                         id="new_card_description"
                         value={newCard.description} // Assuming newCard state exists
-                        onChange={(e) => setNewCard(prev => ({ ...prev, description: e.target.value }))} // Assuming setNewCard exists
+                        onChange={(e) =>
+                          setNewCard((prev) => ({
+                            ...prev,
+                            description: e.target.value,
+                          }))
+                        } // Assuming setNewCard exists
                         rows={2}
                         className="w-full p-2 border border-gray-300 rounded-md text-sm"
                       />
                     </div>
                     <div>
-                      <label htmlFor="new_card_icon" className="block text-xs font-medium text-gray-600 mb-1">New Card Icon</label>
+                      <label
+                        htmlFor="new_card_icon"
+                        className="block text-xs font-medium text-gray-600 mb-1"
+                      >
+                        New Card Icon
+                      </label>
                       <select
                         id="new_card_icon"
                         value={newCard.icon} // Assuming newCard state exists
-                        onChange={(e) => setNewCard(prev => ({ ...prev, icon: e.target.value }))} // Assuming setNewCard exists
+                        onChange={(e) =>
+                          setNewCard((prev) => ({
+                            ...prev,
+                            icon: e.target.value,
+                          }))
+                        } // Assuming setNewCard exists
                         className="w-full p-2 border border-gray-300 rounded-md text-sm"
                       >
                         <option value="">Select an icon</option>
-                        {iconOptions.map(icon => (
-                          <option key={icon} value={icon}>{icon}</option>
+                        {iconOptions.map((icon) => (
+                          <option key={icon} value={icon}>
+                            {icon}
+                          </option>
                         ))}
                       </select>
                     </div>

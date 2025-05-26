@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useEffect, FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { ArrowLeft, Plus, X, Save } from 'lucide-react';
-import { getIndustryById, updateIndustry } from '@/lib/data-utils';
+import { useState, useEffect, FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft, Plus, X, Save } from "lucide-react";
+import { getIndustryById, updateIndustry } from "@/lib/data-utils";
 
 // Component for editing an existing industry
 export default function EditIndustry({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('basic');
+  const [activeTab, setActiveTab] = useState("basic");
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -17,190 +17,208 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
   // Form state
   const [formData, setFormData] = useState({
     // Basic info
-    name: '',
-    slug: '',
-    description: '',
-    image: '',
+    name: "",
+    slug: "",
+    description: "",
+    image: "",
     order_index: 0,
     is_active: true,
-    
+
     // Hero section
-    hero_industry: '',
-    hero_title: '',
-    hero_description: '',
-    hero_image: '',
-    
+    hero_industry: "",
+    hero_title: "",
+    hero_description: "",
+    hero_image: "",
+
     // Approach section (JSON)
-    approach_items: null as any
+    approach_items: null as any,
   });
-  
-  // Approach items state 
-  const [approachItems, setApproachItems] = useState<{ title: string; description: string }[]>([]);
-  
+
+  // Approach items state
+  const [approachItems, setApproachItems] = useState<
+    { title: string; description: string }[]
+  >([]);
+
   // Fetch industry data on load
   useEffect(() => {
     const checkAuthAndFetchData = async () => {
       // Check if authenticated
-      const authData = localStorage.getItem('adminAuth');
+      const authData = localStorage.getItem("adminAuth");
       if (!authData) {
-        router.push('/admin');
+        router.push("/admin");
         return;
       }
-      
+
       try {
         const { authenticated, expires } = JSON.parse(authData);
         if (!authenticated || new Date(expires) < new Date()) {
-          localStorage.removeItem('adminAuth');
-          router.push('/admin');
+          localStorage.removeItem("adminAuth");
+          router.push("/admin");
           return;
         }
-        
+
         // Fetch industry data
         await fetchIndustry();
       } catch (error) {
-        localStorage.removeItem('adminAuth');
-        router.push('/admin');
+        localStorage.removeItem("adminAuth");
+        router.push("/admin");
       }
     };
-    
+
     checkAuthAndFetchData();
   }, [params.id, router]);
-  
+
   // Fetch industry from the database
   const fetchIndustry = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const industryId = parseInt(params.id);
       const { data, error } = await getIndustryById(industryId);
-      
+
       if (error) {
-        throw new Error('Failed to fetch industry');
+        throw new Error("Failed to fetch industry");
       }
-      
+
       if (!data) {
-        throw new Error('Industry not found');
+        throw new Error("Industry not found");
       }
-      
+
       // Set form data from fetched industry
       setFormData({
-        name: data.name || '',
-        slug: data.slug || '',
-        description: data.description || '',
-        image: data.image || '',
+        name: data.name || "",
+        slug: data.slug || "",
+        description: data.description || "",
+        image: data.image || "",
         order_index: data.order_index || 0,
         is_active: data.is_active !== false, // default to true if not explicitly false
-        
-        hero_industry: data.hero_industry || '',
-        hero_title: data.hero_title || '',
-        hero_description: data.hero_description || '',
-        hero_image: data.hero_image || '',
-        
-        approach_items: data.approach_items
+
+        hero_industry: data.hero_industry || "",
+        hero_title: data.hero_title || "",
+        hero_description: data.hero_description || "",
+        hero_image: data.hero_image || "",
+
+        approach_items: data.approach_items,
       });
-      
+
       // Set approach items
       if (data.approach_items && Array.isArray(data.approach_items)) {
         setApproachItems(data.approach_items);
       }
-      
     } catch (err: any) {
-      setError(err.message || 'An error occurred while fetching the industry');
-      console.error('Error fetching industry:', err);
+      setError(err.message || "An error occurred while fetching the industry");
+      console.error("Error fetching industry:", err);
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   // Handle input change
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
-  
+
   // Handle checkbox change
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: checked
+      [name]: checked,
     }));
   };
-  
+
   // Handle number input change
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: parseInt(value) || 0
+      [name]: parseInt(value) || 0,
     }));
   };
-  
+
   // Handle approach item changes
-  const handleApproachItemChange = (index: number, field: 'title' | 'description', value: string) => {
+  const handleApproachItemChange = (
+    index: number,
+    field: "title" | "description",
+    value: string,
+  ) => {
     const updatedItems = [...approachItems];
     updatedItems[index] = {
       ...updatedItems[index],
-      [field]: value
+      [field]: value,
     };
     setApproachItems(updatedItems);
   };
-  
+
   // Add new approach item
   const addApproachItem = () => {
-    setApproachItems([...approachItems, { title: '', description: '' }]);
+    setApproachItems([...approachItems, { title: "", description: "" }]);
   };
-  
+
   // Remove approach item
   const removeApproachItem = (index: number) => {
     setApproachItems(approachItems.filter((_, i) => i !== index));
   };
-  
+
   // Form submission
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
-    
+
     try {
       // Validate required fields
-      if (!formData.name || !formData.slug || !formData.hero_industry || !formData.hero_title || !formData.hero_description) {
-        throw new Error('Please fill in all required fields');
+      if (
+        !formData.name ||
+        !formData.slug ||
+        !formData.hero_industry ||
+        !formData.hero_title ||
+        !formData.hero_description
+      ) {
+        throw new Error("Please fill in all required fields");
       }
-      
+
       const industryId = parseInt(params.id);
-      
+
       // Prepare final data with JSON fields
       const finalData = {
         ...formData,
-        approach_items: approachItems.length > 0 ? approachItems : null
+        approach_items: approachItems.length > 0 ? approachItems : null,
       };
-      
+
       // Send to API
       const { data, error } = await updateIndustry(industryId, finalData);
-      
+
       if (error) {
-        throw new Error(error.message || 'Failed to update industry');
+        const errorMessage =
+          typeof error === "object" && error !== null && "message" in error
+            ? (error as { message: string }).message
+            : "Failed to update industry";
+        throw new Error(errorMessage);
       }
-      
+
       // Redirect on success
-      router.push('/admin/dashboard/industries');
-      
+      router.push("/admin/dashboard/industries");
     } catch (err: any) {
-      setError(err.message || 'An error occurred while updating the industry');
-      console.error('Error updating industry:', err);
-      
+      setError(err.message || "An error occurred while updating the industry");
+      console.error("Error updating industry:", err);
+
       // Scroll to error message
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } finally {
       setIsSubmitting(false);
     }
   };
-  
+
   // Tab content components
   const basicInfoTab = (
     <div className="space-y-6">
@@ -217,9 +235,11 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
             required
           />
-          <p className="mt-1 text-sm text-gray-500">The display name for this industry</p>
+          <p className="mt-1 text-sm text-gray-500">
+            The display name for this industry
+          </p>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Slug <span className="text-red-500">*</span>
@@ -232,10 +252,12 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
             required
           />
-          <p className="mt-1 text-sm text-gray-500">URL-friendly version (e.g., "information-technology")</p>
+          <p className="mt-1 text-sm text-gray-500">
+            URL-friendly version (e.g., "information-technology")
+          </p>
         </div>
       </div>
-      
+
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Description
@@ -247,9 +269,11 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
           rows={3}
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
         ></textarea>
-        <p className="mt-1 text-sm text-gray-500">Brief description for admin listing</p>
+        <p className="mt-1 text-sm text-gray-500">
+          Brief description for admin listing
+        </p>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -262,9 +286,11 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
             onChange={handleInputChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
           />
-          <p className="mt-1 text-sm text-gray-500">Optional image path for listing</p>
+          <p className="mt-1 text-sm text-gray-500">
+            Optional image path for listing
+          </p>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Order Index
@@ -277,10 +303,12 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
             min="0"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
           />
-          <p className="mt-1 text-sm text-gray-500">For custom ordering (lower numbers appear first)</p>
+          <p className="mt-1 text-sm text-gray-500">
+            For custom ordering (lower numbers appear first)
+          </p>
         </div>
       </div>
-      
+
       <div>
         <label className="flex items-center">
           <input
@@ -290,12 +318,14 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
             onChange={handleCheckboxChange}
             className="h-4 w-4 text-primary focus:ring-primary/50 border-gray-300 rounded"
           />
-          <span className="ml-2 text-sm text-gray-700">Active (visible on site)</span>
+          <span className="ml-2 text-sm text-gray-700">
+            Active (visible on site)
+          </span>
         </label>
       </div>
     </div>
   );
-  
+
   const heroSectionTab = (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -311,9 +341,11 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
             required
           />
-          <p className="mt-1 text-sm text-gray-500">Display name for hero section (e.g., "Information Technology")</p>
+          <p className="mt-1 text-sm text-gray-500">
+            Display name for hero section (e.g., "Information Technology")
+          </p>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Hero Image URL
@@ -325,10 +357,12 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
             onChange={handleInputChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
           />
-          <p className="mt-1 text-sm text-gray-500">Path to hero section image</p>
+          <p className="mt-1 text-sm text-gray-500">
+            Path to hero section image
+          </p>
         </div>
       </div>
-      
+
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Hero Title <span className="text-red-500">*</span>
@@ -341,9 +375,11 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
           required
         />
-        <p className="mt-1 text-sm text-gray-500">Main title in the hero section</p>
+        <p className="mt-1 text-sm text-gray-500">
+          Main title in the hero section
+        </p>
       </div>
-      
+
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Hero Description <span className="text-red-500">*</span>
@@ -356,11 +392,13 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
           required
         ></textarea>
-        <p className="mt-1 text-sm text-gray-500">Detailed description for the hero section</p>
+        <p className="mt-1 text-sm text-gray-500">
+          Detailed description for the hero section
+        </p>
       </div>
     </div>
   );
-  
+
   const approachSectionTab = (
     <div className="space-y-6">
       <div className="flex justify-between items-center mb-4">
@@ -374,7 +412,7 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
           Add Item
         </button>
       </div>
-      
+
       {/* Approach items list */}
       <div className="space-y-4">
         {approachItems.length === 0 ? (
@@ -390,7 +428,10 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
           </div>
         ) : (
           approachItems.map((item, index) => (
-            <div key={index} className="border border-gray-200 rounded-md p-4 bg-white">
+            <div
+              key={index}
+              className="border border-gray-200 rounded-md p-4 bg-white"
+            >
               <div className="flex justify-between items-start mb-3">
                 <span className="inline-block bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">
                   Item #{index + 1}
@@ -403,7 +444,7 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -412,18 +453,26 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
                   <input
                     type="text"
                     value={item.title}
-                    onChange={(e) => handleApproachItemChange(index, 'title', e.target.value)}
+                    onChange={(e) =>
+                      handleApproachItemChange(index, "title", e.target.value)
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Description
                   </label>
                   <textarea
                     value={item.description}
-                    onChange={(e) => handleApproachItemChange(index, 'description', e.target.value)}
+                    onChange={(e) =>
+                      handleApproachItemChange(
+                        index,
+                        "description",
+                        e.target.value,
+                      )
+                    }
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
                   ></textarea>
@@ -435,21 +484,21 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
       </div>
     </div>
   );
-  
+
   // Get active tab content
   const getTabContent = () => {
-    switch(activeTab) {
-      case 'basic':
+    switch (activeTab) {
+      case "basic":
         return basicInfoTab;
-      case 'hero':
+      case "hero":
         return heroSectionTab;
-      case 'approach':
+      case "approach":
         return approachSectionTab;
       default:
         return basicInfoTab;
     }
   };
-  
+
   // Loading state
   if (isLoading) {
     return (
@@ -457,13 +506,19 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center">
-              <Link href="/admin/dashboard/industries" className="text-gray-500 hover:text-gray-700 mr-2">
+              <Link
+                href="/admin/dashboard/industries"
+                className="text-gray-500 hover:text-gray-700 mr-2"
+              >
                 <ArrowLeft className="w-5 h-5" />
               </Link>
               <h1 className="text-2xl font-bold">Edit Industry</h1>
             </div>
           </div>
-          <div className="bg-white rounded-lg shadow p-6 flex items-center justify-center" style={{ minHeight: '300px' }}>
+          <div
+            className="bg-white rounded-lg shadow p-6 flex items-center justify-center"
+            style={{ minHeight: "300px" }}
+          >
             <div className="text-center">
               <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
               <p className="text-gray-600">Loading industry data...</p>
@@ -473,27 +528,32 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
       </div>
     );
   }
-  
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center">
-            <Link href="/admin/dashboard/industries" className="text-gray-500 hover:text-gray-700 mr-2">
+            <Link
+              href="/admin/dashboard/industries"
+              className="text-gray-500 hover:text-gray-700 mr-2"
+            >
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <h1 className="text-2xl font-bold">Edit Industry: {formData.name}</h1>
+            <h1 className="text-2xl font-bold">
+              Edit Industry: {formData.name}
+            </h1>
           </div>
         </div>
-        
+
         {/* Error message */}
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
             {error}
           </div>
         )}
-        
+
         {/* Form with tabs */}
         <form onSubmit={handleSubmit}>
           <div className="bg-white rounded-lg shadow">
@@ -502,45 +562,43 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
               <nav className="flex -mb-px">
                 <button
                   type="button"
-                  onClick={() => setActiveTab('basic')}
+                  onClick={() => setActiveTab("basic")}
                   className={`py-4 px-6 font-medium text-sm border-b-2 ${
-                    activeTab === 'basic'
-                      ? 'border-primary text-primary'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    activeTab === "basic"
+                      ? "border-primary text-primary"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                   }`}
                 >
                   Basic Info
                 </button>
                 <button
                   type="button"
-                  onClick={() => setActiveTab('hero')}
+                  onClick={() => setActiveTab("hero")}
                   className={`py-4 px-6 font-medium text-sm border-b-2 ${
-                    activeTab === 'hero'
-                      ? 'border-primary text-primary'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    activeTab === "hero"
+                      ? "border-primary text-primary"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                   }`}
                 >
                   Hero Section
                 </button>
                 <button
                   type="button"
-                  onClick={() => setActiveTab('approach')}
+                  onClick={() => setActiveTab("approach")}
                   className={`py-4 px-6 font-medium text-sm border-b-2 ${
-                    activeTab === 'approach'
-                      ? 'border-primary text-primary'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    activeTab === "approach"
+                      ? "border-primary text-primary"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                   }`}
                 >
                   Approach Section
                 </button>
               </nav>
             </div>
-            
+
             {/* Tab content */}
-            <div className="p-6">
-              {getTabContent()}
-            </div>
-            
+            <div className="p-6">{getTabContent()}</div>
+
             {/* Form actions */}
             <div className="bg-gray-50 px-6 py-3 flex justify-end rounded-b-lg border-t border-gray-100">
               <Link
@@ -556,9 +614,25 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
               >
                 {isSubmitting ? (
                   <>
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                     Updating...
                   </>

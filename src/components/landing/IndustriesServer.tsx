@@ -38,7 +38,7 @@ const IndustryCard: React.FC<IndustryCardProps> = ({
 export default async function IndustriesServerSection() {
   // Fetch industries from Supabase
   const industries = await getIndustriesForLanding();
-  
+
   return (
     <div className="w-full max-w-[85vw] mx-auto px-4 py-6">
       {/* Header */}

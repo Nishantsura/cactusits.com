@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { FadeInSection } from '@/components/Services/ServicePageLayout';
+import React, { useState } from "react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { FadeInSection } from "@/components/Services/ServicePageLayout";
 
 // Default icons that can be used if no icons are provided from database
 import {
@@ -18,7 +18,7 @@ import {
   Cloud,
   Database,
   LockKeyhole,
-} from 'lucide-react';
+} from "lucide-react";
 
 // Map string icon names to actual React components
 const iconMap: Record<string, React.ReactNode> = {
@@ -57,24 +57,36 @@ interface ExploreProps {
   serviceDetails: Record<string, ServiceDetail>;
 }
 
-export default function Explore({ serviceFeatures, serviceDetails }: ExploreProps) {
+export default function Explore({
+  serviceFeatures,
+  serviceDetails,
+}: ExploreProps) {
   const [activeTab, setActiveTab] = useState<string | null>(
-    serviceFeatures.length > 0 ? serviceFeatures[0].id : null
+    serviceFeatures.length > 0 ? serviceFeatures[0].id : null,
   );
 
   // Process features to resolve icon strings to React components
   const processedFeatures = serviceFeatures.map((feature) => ({
     ...feature,
-    icon: typeof feature.icon === 'string' ? 
-      (iconMap[feature.icon as string] || <ClipboardList className="w-6 h-6 text-purple-500" />) : 
-      feature.icon
+    icon:
+      typeof feature.icon === "string"
+        ? iconMap[feature.icon as string] || (
+            <ClipboardList className="w-6 h-6 text-purple-500" />
+          )
+        : feature.icon,
   }));
 
   // If no features or details, display a fallback message
-  if (processedFeatures.length === 0 || !serviceDetails || Object.keys(serviceDetails).length === 0) {
+  if (
+    processedFeatures.length === 0 ||
+    !serviceDetails ||
+    Object.keys(serviceDetails).length === 0
+  ) {
     return (
       <div className="text-center p-8">
-        <p className="text-gray-500">No feature information available for this service.</p>
+        <p className="text-gray-500">
+          No feature information available for this service.
+        </p>
       </div>
     );
   }
@@ -82,7 +94,11 @@ export default function Explore({ serviceFeatures, serviceDetails }: ExploreProp
   return (
     <FadeInSection>
       <div className="w-full max-w-7xl mx-auto">
-        <Tabs defaultValue={activeTab || undefined} className="w-full" onValueChange={setActiveTab as (value: string) => void}>
+        <Tabs
+          defaultValue={activeTab || undefined}
+          className="w-full"
+          onValueChange={setActiveTab as (value: string) => void}
+        >
           {/* Features Tabs List */}
           <TabsList className="flex flex-wrap justify-center gap-2 mb-8 bg-transparent">
             {processedFeatures.map((feature) => (
@@ -101,7 +117,7 @@ export default function Explore({ serviceFeatures, serviceDetails }: ExploreProp
           {processedFeatures.map((feature) => {
             const detail = serviceDetails[feature.id];
             if (!detail) return null;
-            
+
             return (
               <TabsContent key={feature.id} value={feature.id} className="pt-4">
                 <div className="grid md:grid-cols-5 gap-8">
@@ -114,11 +130,13 @@ export default function Explore({ serviceFeatures, serviceDetails }: ExploreProp
                   <div className="md:col-span-3">
                     <div className="grid sm:grid-cols-2 gap-4">
                       {detail.features.map((item) => (
-                        <div 
-                          key={item.id} 
+                        <div
+                          key={item.id}
                           className="bg-white p-5 rounded-md shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
                         >
-                          <h4 className="font-semibold text-lg mb-2">{item.title}</h4>
+                          <h4 className="font-semibold text-lg mb-2">
+                            {item.title}
+                          </h4>
                         </div>
                       ))}
                     </div>

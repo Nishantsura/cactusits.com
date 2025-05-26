@@ -16,20 +16,22 @@ export async function generateMetadata({
 }) {
   const { service } = params;
   const pageData = await getServiceBySlug(service);
-  
+
   if (!pageData) {
     return {
       title: "Service Not Found | Cactus",
       description: "The requested service could not be found.",
     };
   }
-  
+
   // Extract metadata from the service data
   const { Hero } = pageData;
-  
+
   return {
     title: `${Hero.service} | IT Services | Cactus`,
-    description: Hero.description || `Learn about our ${Hero.service} IT service and how it can benefit your business.`,
+    description:
+      Hero.description ||
+      `Learn about our ${Hero.service} IT service and how it can benefit your business.`,
     keywords: ["IT services", "Cactus"],
     openGraph: {
       title: `${Hero.service} | IT Services | Cactus`,
@@ -83,24 +85,31 @@ export default async function Page({
         subtitle="Discover the comprehensive suite of features and capabilities that our service offers."
         background="light"
       >
-        <FadeInSection>
-          <Explore
-            serviceFeatures={pageData.Explore.serviceFeatures || []}
-            serviceDetails={pageData.Explore.serviceDetails || {}}
-          />
-        </FadeInSection>
+        <div className="w-full">
+          {/* Explore component temporarily commented out */}
+          <div className="p-4 text-center">
+            <p>
+              Features and capabilities for {Hero.service} will be displayed
+              here.
+            </p>
+          </div>
+        </div>
       </ServicePageSection>
 
       {/* Contact Form Section */}
       <ServicePageSection
         id="contact"
         title="Ready to Transform Your Business?"
-        subtitle={`Get in touch to learn how our ${Hero.service ? Hero.service.toLowerCase() : 'selected'} services can help you achieve your business goals.`}
+        subtitle={`Get in touch to learn how our ${Hero.service ? Hero.service.toLowerCase() : "selected"} services can help you achieve your business goals.`}
         background="white"
       >
         <FadeInSection>
           <div className="max-w-3xl mx-auto">
-            <ServiceContactForm serviceTitle={Hero.service ? Hero.service.toLowerCase() : 'selected service'} />
+            <ServiceContactForm
+              serviceTitle={
+                Hero.service ? Hero.service.toLowerCase() : "selected service"
+              }
+            />
           </div>
         </FadeInSection>
       </ServicePageSection>

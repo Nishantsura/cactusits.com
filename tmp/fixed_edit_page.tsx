@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { use } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { ArrowLeft, Save, Plus, Trash, Edit2 } from 'lucide-react';
-import { getServiceById, updateService } from '@/lib/data-utils';
+import { useState, useEffect } from "react";
+import { use } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft, Save, Plus, Trash, Edit2 } from "lucide-react";
+import { getServiceById, updateService } from "@/lib/data-utils";
 
 // Type definitions for service data
 interface ServiceCardType {
@@ -24,7 +24,7 @@ interface ServiceDetailType {
   id: string;
   title: string;
   description: string;
-  features: { id: string; title: string; }[];
+  features: { id: string; title: string }[];
 }
 
 interface ServiceFormData {
@@ -48,194 +48,249 @@ interface ServiceFormData {
   is_active: boolean;
   created_at?: string;
   updated_at?: string;
-  
+
   // Hero section
   hero_service: string;
   hero_title: string;
   hero_description: string;
   hero_bulletpoints: string[];
   hero_image: string;
-  
+
   // Potential section
   potential_description: string;
   potential_service_cards: ServiceCardType[];
-  
+
   // Explore section
   explore_service_features: ServiceFeatureType[];
   explore_service_details: Record<string, ServiceDetailType>;
 }
 
-export default function EditServicePage({ params }: { params: { id: string } }) {
+export default function EditServicePage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'basic' | 'hero' | 'potential' | 'explore'>('basic');
+  const [activeTab, setActiveTab] = useState<
+    "basic" | "hero" | "potential" | "explore"
+  >("basic");
   const serviceId = parseInt(params.id);
-  
+
   // States for adding new items
-  const [newBulletpoint, setNewBulletpoint] = useState('');
-  const [newCard, setNewCard] = useState<ServiceCardType>({ title: '', description: '', icon: '' });
-  const [newFeature, setNewFeature] = useState<ServiceFeatureType>({ id: '', title: '', icon: '' });
+  const [newBulletpoint, setNewBulletpoint] = useState("");
+  const [newCard, setNewCard] = useState<ServiceCardType>({
+    title: "",
+    description: "",
+    icon: "",
+  });
+  const [newFeature, setNewFeature] = useState<ServiceFeatureType>({
+    id: "",
+    title: "",
+    icon: "",
+  });
 
   // Form state
   const [formData, setFormData] = useState<ServiceFormData>({
     // Basic info
-    title: '',
-    slug: '',
-    description: '',
-    short_description: '',
-    long_description: '',
-    icon_name: '',
-    accent_color: '',
-    accent_position: '',
-    image: '',
-    image_path: '',
-    image_position: '',
+    title: "",
+    slug: "",
+    description: "",
+    short_description: "",
+    long_description: "",
+    icon_name: "",
+    accent_color: "",
+    accent_position: "",
+    image: "",
+    image_path: "",
+    image_position: "",
     image_width: 500,
     image_height: 500,
-    image_alt: '',
+    image_alt: "",
     order_index: 0,
     is_active: true,
-    
+
     // Hero section
-    hero_service: '',
-    hero_title: '',
-    hero_description: '',
+    hero_service: "",
+    hero_title: "",
+    hero_description: "",
     hero_bulletpoints: [],
-    hero_image: '',
-    
+    hero_image: "",
+
     // Potential section
-    potential_description: '',
+    potential_description: "",
     potential_service_cards: [],
-    
+
     // Explore section
     explore_service_features: [],
-    explore_service_details: {}
+    explore_service_details: {},
   });
-  
+
   // Available icon options
   const iconOptions = [
-    'Settings', 'BarChart', 'Database', 'Server', 'Link', 'Code', 'Activity',
-    'Moon', 'Sun', 'Star', 'Image', 'FileText', 'MessageSquare', 'Mail', 'Layers',
-    'Package', 'Briefcase', 'ShieldCheck', 'Globe', 'Zap', 'Share', 'Search',
-    'Award', 'Users', 'MessageCircle', 'Heart', 'Smile', 'Crosshair', 'Terminal'
+    "Settings",
+    "BarChart",
+    "Database",
+    "Server",
+    "Link",
+    "Code",
+    "Activity",
+    "Moon",
+    "Sun",
+    "Star",
+    "Image",
+    "FileText",
+    "MessageSquare",
+    "Mail",
+    "Layers",
+    "Package",
+    "Briefcase",
+    "ShieldCheck",
+    "Globe",
+    "Zap",
+    "Share",
+    "Search",
+    "Award",
+    "Users",
+    "MessageCircle",
+    "Heart",
+    "Smile",
+    "Crosshair",
+    "Terminal",
   ];
-  
+
   useEffect(() => {
     const fetchServiceData = async () => {
       if (isNaN(serviceId)) {
-        setError('Invalid service ID');
+        setError("Invalid service ID");
         setIsFetching(false);
         return;
       }
-      
+
       try {
         // Check authentication
-        const authData = localStorage.getItem('adminAuth');
+        const authData = localStorage.getItem("adminAuth");
         if (!authData) {
-          router.push('/admin');
+          router.push("/admin");
           return;
         }
-        
+
         try {
           const { authenticated, expires } = JSON.parse(authData);
           if (!authenticated || new Date(expires) < new Date()) {
-            localStorage.removeItem('adminAuth');
-            router.push('/admin');
+            localStorage.removeItem("adminAuth");
+            router.push("/admin");
             return;
           }
         } catch (e) {
-          localStorage.removeItem('adminAuth');
-          router.push('/admin');
+          localStorage.removeItem("adminAuth");
+          router.push("/admin");
           return;
         }
-        
+
         // Fetch service data
         const { data, error } = await getServiceById(serviceId);
-        
+
         if (error) {
-          throw new Error('Failed to fetch service data');
+          throw new Error("Failed to fetch service data");
         }
-        
+
         if (!data) {
-          throw new Error('Service not found');
+          throw new Error("Service not found");
         }
-        
+
         // Populate form with service data
         setFormData({
           // Basic info
           id: data.id,
-          title: data.title || '',
-          slug: data.slug || '',
-          description: data.description || '',
-          short_description: data.short_description || '',
-          long_description: data.long_description || '',
-          icon_name: data.icon_name || '',
-          accent_color: data.accent_color || '',
-          accent_position: data.accent_position || '',
-          image: data.image || '',
-          image_path: data.image_path || '',
-          image_position: data.image_position || '',
+          title: data.title || "",
+          slug: data.slug || "",
+          description: data.description || "",
+          short_description: data.short_description || "",
+          long_description: data.long_description || "",
+          icon_name: data.icon_name || "",
+          accent_color: data.accent_color || "",
+          accent_position: data.accent_position || "",
+          image: data.image || "",
+          image_path: data.image_path || "",
+          image_position: data.image_position || "",
           image_width: data.image_width || 500,
           image_height: data.image_height || 500,
-          image_alt: data.image_alt || '',
+          image_alt: data.image_alt || "",
           order_index: data.order_index || 0,
           is_active: data.is_active !== false,
-          
+
           // Hero section
-          hero_service: data.hero_service || '',
-          hero_title: data.hero_title || '',
-          hero_description: data.hero_description || '',
-          hero_bulletpoints: data.hero_bulletpoints ? 
-            (typeof data.hero_bulletpoints === 'string' ? JSON.parse(data.hero_bulletpoints) : data.hero_bulletpoints) : 
-            [],
-          hero_image: data.hero_image || '',
-          
+          hero_service: data.hero_service || "",
+          hero_title: data.hero_title || "",
+          hero_description: data.hero_description || "",
+          hero_bulletpoints: data.hero_bulletpoints
+            ? typeof data.hero_bulletpoints === "string"
+              ? JSON.parse(data.hero_bulletpoints)
+              : data.hero_bulletpoints
+            : [],
+          hero_image: data.hero_image || "",
+
           // Potential section
-          potential_description: data.potential_description || '',
-          potential_service_cards: data.potential_service_cards ? 
-            (typeof data.potential_service_cards === 'string' ? JSON.parse(data.potential_service_cards) : data.potential_service_cards) : 
-            [],
-          
+          potential_description: data.potential_description || "",
+          potential_service_cards: data.potential_service_cards
+            ? typeof data.potential_service_cards === "string"
+              ? JSON.parse(data.potential_service_cards)
+              : data.potential_service_cards
+            : [],
+
           // Explore section
-          explore_service_features: data.explore_service_features ? 
-            (typeof data.explore_service_features === 'string' ? JSON.parse(data.explore_service_features) : data.explore_service_features) : 
-            [],
-          explore_service_details: data.explore_service_details ? 
-            (typeof data.explore_service_details === 'string' ? JSON.parse(data.explore_service_details) : data.explore_service_details) : 
-            {}
+          explore_service_features: data.explore_service_features
+            ? typeof data.explore_service_features === "string"
+              ? JSON.parse(data.explore_service_features)
+              : data.explore_service_features
+            : [],
+          explore_service_details: data.explore_service_details
+            ? typeof data.explore_service_details === "string"
+              ? JSON.parse(data.explore_service_details)
+              : data.explore_service_details
+            : {},
         });
-        
+
         setError(null);
       } catch (err: any) {
-        console.error('Error loading service:', err);
-        setError(err.message || 'Failed to load service');
+        console.error("Error loading service:", err);
+        setError(err.message || "Failed to load service");
       } finally {
         setIsFetching(false);
       }
     };
-    
+
     fetchServiceData();
   }, [serviceId, router]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
     const { name, value } = e.target;
-    
-    if (name === 'order_index' || name === 'image_width' || name === 'image_height') {
-      setFormData(prev => ({
+
+    if (
+      name === "order_index" ||
+      name === "image_width" ||
+      name === "image_height"
+    ) {
+      setFormData((prev) => ({
         ...prev,
-        [name]: parseInt(value) || 0
+        [name]: parseInt(value) || 0,
       }));
-    } else if (name === 'is_active') {
-      setFormData(prev => ({
+    } else if (name === "is_active") {
+      setFormData((prev) => ({
         ...prev,
-        [name]: value === 'true'
+        [name]: value === "true",
       }));
     } else {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        [name]: value
+        [name]: value,
       }));
     }
   };
@@ -243,76 +298,86 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
   // Handle adding a bulletpoint
   const handleAddBulletpoint = () => {
     if (!newBulletpoint.trim()) return;
-    
-    setFormData(prev => ({
+
+    setFormData((prev) => ({
       ...prev,
-      hero_bulletpoints: [...prev.hero_bulletpoints, newBulletpoint.trim()]
+      hero_bulletpoints: [...prev.hero_bulletpoints, newBulletpoint.trim()],
     }));
-    setNewBulletpoint('');
+    setNewBulletpoint("");
   };
-  
+
   // Handle removing a bulletpoint
   const handleRemoveBulletpoint = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      hero_bulletpoints: prev.hero_bulletpoints.filter((_, i) => i !== index)
+      hero_bulletpoints: prev.hero_bulletpoints.filter((_, i) => i !== index),
     }));
   };
-  
+
   // Handle adding a service card
   const handleAddCard = () => {
     if (!newCard.title.trim() || !newCard.description.trim()) return;
-    
-    setFormData(prev => ({
+
+    setFormData((prev) => ({
       ...prev,
-      potential_service_cards: [...prev.potential_service_cards, { ...newCard }]
+      potential_service_cards: [
+        ...prev.potential_service_cards,
+        { ...newCard },
+      ],
     }));
-    setNewCard({ title: '', description: '', icon: '' });
+    setNewCard({ title: "", description: "", icon: "" });
   };
-  
+
   // Handle removing a card
   const handleRemoveCard = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      potential_service_cards: prev.potential_service_cards.filter((_, i) => i !== index)
+      potential_service_cards: prev.potential_service_cards.filter(
+        (_, i) => i !== index,
+      ),
     }));
   };
-  
+
   // Handle adding a feature
   const handleAddFeature = () => {
     if (!newFeature.id.trim() || !newFeature.title.trim()) return;
-    
-    setFormData(prev => ({
+
+    setFormData((prev) => ({
       ...prev,
-      explore_service_features: [...prev.explore_service_features, { ...newFeature }]
+      explore_service_features: [
+        ...prev.explore_service_features,
+        { ...newFeature },
+      ],
     }));
-    setNewFeature({ id: '', title: '', icon: '' });
+    setNewFeature({ id: "", title: "", icon: "" });
   };
-  
+
   // Handle removing a feature
   const handleRemoveFeature = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      explore_service_features: prev.explore_service_features.filter((_, i) => i !== index)
+      explore_service_features: prev.explore_service_features.filter(
+        (_, i) => i !== index,
+      ),
     }));
   };
-  
+
   // Submit form to update service
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const { data, error } = await updateService(serviceId, formData);
-      
+
       if (error) throw error;
-      
-      alert('Service updated successfully!');
-      router.push('/admin/dashboard/services');
+
+      alert("Service updated successfully!");
+      router.push("/admin/dashboard/services");
     } catch (err: any) {
-      console.error('Error updating service:', err);
-      setError(err.message || 'Failed to update service');
+      console.error("Error updating service:", err);
+      setError(err.message || "Failed to update service");
     } finally {
       setIsLoading(false);
     }
@@ -324,12 +389,15 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center mb-6">
-            <Link href="/admin/dashboard/services" className="text-gray-500 hover:text-gray-700 mr-2">
+            <Link
+              href="/admin/dashboard/services"
+              className="text-gray-500 hover:text-gray-700 mr-2"
+            >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <h1 className="text-2xl font-bold">Edit Service</h1>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow p-6 flex items-center justify-center">
             <div className="text-center">
               <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
@@ -340,13 +408,16 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
       </div>
     );
   }
-  
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header with back button */}
         <div className="flex items-center mb-6">
-          <Link href="/admin/dashboard/services" className="text-gray-500 hover:text-gray-700 mr-2">
+          <Link
+            href="/admin/dashboard/services"
+            className="text-gray-500 hover:text-gray-700 mr-2"
+          >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <h1 className="text-2xl font-bold">Edit Service</h1>
@@ -364,32 +435,39 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
           {/* Tab navigation for form sections */}
           <div className="border-b">
             <nav className="flex">
-              {(['basic', 'hero', 'potential', 'explore'] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-4 py-3 font-medium text-sm border-b-2 ${
-                    activeTab === tab
-                      ? 'border-primary text-primary'
-                      : 'border-transparent text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              ))}
+              {(["basic", "hero", "potential", "explore"] as const).map(
+                (tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-4 py-3 font-medium text-sm border-b-2 ${
+                      activeTab === tab
+                        ? "border-primary text-primary"
+                        : "border-transparent text-gray-500 hover:text-gray-700"
+                    }`}
+                  >
+                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  </button>
+                ),
+              )}
             </nav>
           </div>
 
           {/* Form sections */}
           <div className="p-6">
             {/* Basic info form */}
-            {activeTab === 'basic' && (
+            {activeTab === "basic" && (
               <div className="space-y-6">
                 <h2 className="text-lg font-semibold">Basic Information</h2>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                    <label
+                      htmlFor="title"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Title
+                    </label>
                     <input
                       type="text"
                       id="title"
@@ -400,9 +478,14 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                       required
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">Slug</label>
+                    <label
+                      htmlFor="slug"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Slug
+                    </label>
                     <input
                       type="text"
                       id="slug"
@@ -414,9 +497,14 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                     />
                   </div>
                 </div>
-                
+
                 <div>
-                  <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                  <label
+                    htmlFor="description"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Description
+                  </label>
                   <textarea
                     id="description"
                     name="description"
@@ -429,7 +517,12 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                 </div>
 
                 <div>
-                  <label htmlFor="icon_name" className="block text-sm font-medium text-gray-700 mb-1">Icon</label>
+                  <label
+                    htmlFor="icon_name"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Icon
+                  </label>
                   <select
                     id="icon_name"
                     name="icon_name"
@@ -438,15 +531,22 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                     className="w-full p-2 border border-gray-300 rounded-md"
                   >
                     <option value="">Select an icon</option>
-                    {iconOptions.map(icon => (
-                      <option key={icon} value={icon}>{icon}</option>
+                    {iconOptions.map((icon) => (
+                      <option key={icon} value={icon}>
+                        {icon}
+                      </option>
                     ))}
                   </select>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="order_index" className="block text-sm font-medium text-gray-700 mb-1">Display Order</label>
+                    <label
+                      htmlFor="order_index"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Display Order
+                    </label>
                     <input
                       type="number"
                       id="order_index"
@@ -456,9 +556,14 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                       className="w-full p-2 border border-gray-300 rounded-md"
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="is_active" className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <label
+                      htmlFor="is_active"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Status
+                    </label>
                     <select
                       id="is_active"
                       name="is_active"
@@ -471,9 +576,14 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                     </select>
                   </div>
                 </div>
-                
+
                 <div>
-                  <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                  <label
+                    htmlFor="image"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Image URL
+                  </label>
                   <input
                     type="text"
                     id="image"
@@ -485,14 +595,19 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                 </div>
               </div>
             )}
-            
+
             {/* Hero section form */}
-            {activeTab === 'hero' && (
+            {activeTab === "hero" && (
               <div className="space-y-6">
                 <h2 className="text-lg font-semibold">Hero Section</h2>
-                
+
                 <div>
-                  <label htmlFor="hero_service" className="block text-sm font-medium text-gray-700 mb-1">Service Name</label>
+                  <label
+                    htmlFor="hero_service"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Service Name
+                  </label>
                   <input
                     type="text"
                     id="hero_service"
@@ -502,9 +617,14 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                     className="w-full p-2 border border-gray-300 rounded-md"
                   />
                 </div>
-                
+
                 <div>
-                  <label htmlFor="hero_title" className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                  <label
+                    htmlFor="hero_title"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Title
+                  </label>
                   <input
                     type="text"
                     id="hero_title"
@@ -514,9 +634,14 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                     className="w-full p-2 border border-gray-300 rounded-md"
                   />
                 </div>
-                
+
                 <div>
-                  <label htmlFor="hero_description" className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                  <label
+                    htmlFor="hero_description"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Description
+                  </label>
                   <textarea
                     id="hero_description"
                     name="hero_description"
@@ -526,9 +651,11 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                     className="w-full p-2 border border-gray-300 rounded-md"
                   />
                 </div>
-                
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Bullet Points</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Bullet Points
+                  </label>
                   <div className="border border-gray-300 rounded-md p-4 bg-gray-50">
                     <div className="space-y-3 mb-4">
                       {formData.hero_bulletpoints.map((point, index) => (
@@ -544,7 +671,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                         </div>
                       ))}
                     </div>
-                    
+
                     <div className="flex">
                       <input
                         type="text"
@@ -563,9 +690,14 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                     </div>
                   </div>
                 </div>
-                
+
                 <div>
-                  <label htmlFor="hero_image" className="block text-sm font-medium text-gray-700 mb-1">Hero Image URL</label>
+                  <label
+                    htmlFor="hero_image"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Hero Image URL
+                  </label>
                   <input
                     type="text"
                     id="hero_image"
@@ -577,14 +709,19 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                 </div>
               </div>
             )}
-            
+
             {/* Potential section form */}
-            {activeTab === 'potential' && (
+            {activeTab === "potential" && (
               <div className="space-y-6">
                 <h2 className="text-lg font-semibold">Potential Section</h2>
-                
+
                 <div>
-                  <label htmlFor="potential_description" className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                  <label
+                    htmlFor="potential_description"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Description
+                  </label>
                   <textarea
                     id="potential_description"
                     name="potential_description"
@@ -594,13 +731,18 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                     className="w-full p-2 border border-gray-300 rounded-md"
                   />
                 </div>
-                
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Service Cards</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Service Cards
+                  </label>
                   <div className="space-y-4">
                     {/* Display existing cards */}
                     {formData.potential_service_cards.map((card, index) => (
-                      <div key={index} className="border border-gray-300 rounded-md p-4 relative">
+                      <div
+                        key={index}
+                        className="border border-gray-300 rounded-md p-4 relative"
+                      >
                         <button
                           type="button"
                           onClick={() => handleRemoveCard(index)}
@@ -609,52 +751,82 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                           <Trash className="w-4 h-4" />
                         </button>
                         <div className="font-medium">{card.title}</div>
-                        <div className="text-sm text-gray-600 mt-2">{card.description}</div>
-                        <div className="text-xs text-gray-500 mt-1">Icon: {card.icon}</div>
+                        <div className="text-sm text-gray-600 mt-2">
+                          {card.description}
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          Icon: {card.icon}
+                        </div>
                       </div>
                     ))}
-                    
+
                     {/* Add new card */}
                     <div className="border border-gray-300 rounded-md p-4 bg-gray-50">
                       <h4 className="font-medium mb-3">Add New Card</h4>
                       <div className="grid gap-3">
                         <div>
-                          <label htmlFor="newCardTitle" className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                          <label
+                            htmlFor="newCardTitle"
+                            className="block text-sm font-medium text-gray-700 mb-1"
+                          >
+                            Title
+                          </label>
                           <input
                             type="text"
                             id="newCardTitle"
                             value={newCard.title}
-                            onChange={(e) => setNewCard({ ...newCard, title: e.target.value })}
+                            onChange={(e) =>
+                              setNewCard({ ...newCard, title: e.target.value })
+                            }
                             className="w-full p-2 border border-gray-300 rounded-md"
                           />
                         </div>
-                        
+
                         <div>
-                          <label htmlFor="newCardDescription" className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                          <label
+                            htmlFor="newCardDescription"
+                            className="block text-sm font-medium text-gray-700 mb-1"
+                          >
+                            Description
+                          </label>
                           <textarea
                             id="newCardDescription"
                             value={newCard.description}
-                            onChange={(e) => setNewCard({ ...newCard, description: e.target.value })}
+                            onChange={(e) =>
+                              setNewCard({
+                                ...newCard,
+                                description: e.target.value,
+                              })
+                            }
                             rows={2}
                             className="w-full p-2 border border-gray-300 rounded-md"
                           />
                         </div>
-                        
+
                         <div>
-                          <label htmlFor="newCardIcon" className="block text-sm font-medium text-gray-700 mb-1">Icon</label>
+                          <label
+                            htmlFor="newCardIcon"
+                            className="block text-sm font-medium text-gray-700 mb-1"
+                          >
+                            Icon
+                          </label>
                           <select
                             id="newCardIcon"
                             value={newCard.icon}
-                            onChange={(e) => setNewCard({ ...newCard, icon: e.target.value })}
+                            onChange={(e) =>
+                              setNewCard({ ...newCard, icon: e.target.value })
+                            }
                             className="w-full p-2 border border-gray-300 rounded-md"
                           >
                             <option value="">Select an icon</option>
-                            {iconOptions.map(icon => (
-                              <option key={icon} value={icon}>{icon}</option>
+                            {iconOptions.map((icon) => (
+                              <option key={icon} value={icon}>
+                                {icon}
+                              </option>
                             ))}
                           </select>
                         </div>
-                        
+
                         <button
                           type="button"
                           onClick={handleAddCard}
@@ -669,18 +841,23 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                 </div>
               </div>
             )}
-            
+
             {/* Explore section form */}
-            {activeTab === 'explore' && (
+            {activeTab === "explore" && (
               <div className="space-y-6">
                 <h2 className="text-lg font-semibold">Explore Section</h2>
-                
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Service Features</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Service Features
+                  </label>
                   <div className="space-y-4">
                     {/* Display existing features */}
                     {formData.explore_service_features.map((feature, index) => (
-                      <div key={index} className="border border-gray-300 rounded-md p-4 relative">
+                      <div
+                        key={index}
+                        className="border border-gray-300 rounded-md p-4 relative"
+                      >
                         <button
                           type="button"
                           onClick={() => handleRemoveFeature(index)}
@@ -689,8 +866,12 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                           <Trash className="w-4 h-4" />
                         </button>
                         <div className="font-medium">{feature.title}</div>
-                        <div className="text-xs text-gray-500 mt-1">ID: {feature.id}</div>
-                        <div className="text-xs text-gray-500">Icon: {feature.icon}</div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          ID: {feature.id}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Icon: {feature.icon}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -701,38 +882,64 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                   <h4 className="font-medium mb-3">Add New Feature</h4>
                   <div className="grid gap-3">
                     <div>
-                      <label htmlFor="newFeatureId" className="block text-sm font-medium text-gray-700 mb-1">ID</label>
+                      <label
+                        htmlFor="newFeatureId"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
+                        ID
+                      </label>
                       <input
                         type="text"
                         id="newFeatureId"
                         value={newFeature.id}
-                        onChange={(e) => setNewFeature({ ...newFeature, id: e.target.value })}
+                        onChange={(e) =>
+                          setNewFeature({ ...newFeature, id: e.target.value })
+                        }
                         className="w-full p-2 border border-gray-300 rounded-md"
                       />
                     </div>
 
                     <div>
-                      <label htmlFor="newFeatureTitle" className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                      <label
+                        htmlFor="newFeatureTitle"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Title
+                      </label>
                       <input
                         type="text"
                         id="newFeatureTitle"
                         value={newFeature.title}
-                        onChange={(e) => setNewFeature({ ...newFeature, title: e.target.value })}
+                        onChange={(e) =>
+                          setNewFeature({
+                            ...newFeature,
+                            title: e.target.value,
+                          })
+                        }
                         className="w-full p-2 border border-gray-300 rounded-md"
                       />
                     </div>
 
                     <div>
-                      <label htmlFor="newFeatureIcon" className="block text-sm font-medium text-gray-700 mb-1">Icon</label>
+                      <label
+                        htmlFor="newFeatureIcon"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Icon
+                      </label>
                       <select
                         id="newFeatureIcon"
                         value={newFeature.icon}
-                        onChange={(e) => setNewFeature({ ...newFeature, icon: e.target.value })}
+                        onChange={(e) =>
+                          setNewFeature({ ...newFeature, icon: e.target.value })
+                        }
                         className="w-full p-2 border border-gray-300 rounded-md"
                       >
                         <option value="">Select an icon</option>
-                        {iconOptions.map(icon => (
-                          <option key={icon} value={icon}>{icon}</option>
+                        {iconOptions.map((icon) => (
+                          <option key={icon} value={icon}>
+                            {icon}
+                          </option>
                         ))}
                       </select>
                     </div>

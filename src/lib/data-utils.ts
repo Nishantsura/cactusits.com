@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase } from "./supabase";
 
 /**
  * Utility functions for data fetching from Supabase
@@ -11,15 +11,15 @@ import { supabase } from './supabase';
 export async function getJobs() {
   try {
     const { data, error } = await supabase
-      .from('jobs')
-      .select('*')
-      .eq('is_active', true)
-      .order('posted_date', { ascending: false });
-      
+      .from("jobs")
+      .select("*")
+      .eq("is_active", true)
+      .order("posted_date", { ascending: false });
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error fetching jobs:', error);
+    console.error("Error fetching jobs:", error);
     return { data: null, error };
   }
 }
@@ -30,11 +30,11 @@ export async function getJobs() {
 export async function getJobById(id: number) {
   try {
     const { data, error } = await supabase
-      .from('jobs')
-      .select('*')
-      .eq('id', id)
+      .from("jobs")
+      .select("*")
+      .eq("id", id)
       .single();
-      
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
@@ -49,14 +49,14 @@ export async function getJobById(id: number) {
 export async function createJob(jobData: any) {
   try {
     const { data, error } = await supabase
-      .from('jobs')
+      .from("jobs")
       .insert([jobData])
       .select();
-      
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error creating job:', error);
+    console.error("Error creating job:", error);
     return { data: null, error };
   }
 }
@@ -67,11 +67,11 @@ export async function createJob(jobData: any) {
 export async function updateJob(id: number, jobData: any) {
   try {
     const { data, error } = await supabase
-      .from('jobs')
+      .from("jobs")
       .update(jobData)
-      .eq('id', id)
+      .eq("id", id)
       .select();
-      
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
@@ -87,22 +87,19 @@ export async function updateJob(id: number, jobData: any) {
 export async function deleteJob(id: number, hardDelete = false) {
   try {
     let data, error;
-    
+
     if (hardDelete) {
       // Permanent deletion
-      ({ data, error } = await supabase
-        .from('jobs')
-        .delete()
-        .eq('id', id));
+      ({ data, error } = await supabase.from("jobs").delete().eq("id", id));
     } else {
       // Soft deletion (set as inactive)
       ({ data, error } = await supabase
-        .from('jobs')
+        .from("jobs")
         .update({ is_active: false })
-        .eq('id', id)
+        .eq("id", id)
         .select());
     }
-      
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
@@ -116,14 +113,12 @@ export async function deleteJob(id: number, hardDelete = false) {
  */
 export async function getServices() {
   try {
-    const { data, error } = await supabase
-      .from('services')
-      .select('*');
-      
+    const { data, error } = await supabase.from("services").select("*");
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error fetching services:', error);
+    console.error("Error fetching services:", error);
     return { data: null, error };
   }
 }
@@ -136,18 +131,18 @@ export async function createService(serviceData: any) {
     // Add timestamp for updated_at
     const dataWithTimestamp = {
       ...serviceData,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
-    
+
     const { data, error } = await supabase
-      .from('services')
+      .from("services")
       .insert([dataWithTimestamp])
       .select();
-      
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error creating service:', error);
+    console.error("Error creating service:", error);
     return { data: null, error };
   }
 }
@@ -160,15 +155,15 @@ export async function updateService(id: number, serviceData: any) {
     // Add timestamp for updated_at
     const dataWithTimestamp = {
       ...serviceData,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
-    
+
     const { data, error } = await supabase
-      .from('services')
+      .from("services")
       .update(dataWithTimestamp)
-      .eq('id', id)
+      .eq("id", id)
       .select();
-      
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
@@ -183,10 +178,10 @@ export async function updateService(id: number, serviceData: any) {
 export async function deleteService(id: number) {
   try {
     const { data, error } = await supabase
-      .from('services')
+      .from("services")
       .delete()
-      .eq('id', id);
-      
+      .eq("id", id);
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
@@ -201,11 +196,11 @@ export async function deleteService(id: number) {
 export async function getServiceById(id: number) {
   try {
     const { data, error } = await supabase
-      .from('services')
-      .select('*')
-      .eq('id', id)
+      .from("services")
+      .select("*")
+      .eq("id", id)
       .single();
-      
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
@@ -220,11 +215,11 @@ export async function getServiceById(id: number) {
 export async function getServiceBySlug(slug: string) {
   try {
     const { data, error } = await supabase
-      .from('services')
-      .select('*')
-      .eq('slug', slug)
+      .from("services")
+      .select("*")
+      .eq("slug", slug)
       .single();
-      
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
@@ -238,14 +233,12 @@ export async function getServiceBySlug(slug: string) {
  */
 export async function getIndustries() {
   try {
-    const { data, error } = await supabase
-      .from('industries')
-      .select('*');
-      
+    const { data, error } = await supabase.from("industries").select("*");
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error fetching industries:', error);
+    console.error("Error fetching industries:", error);
     return { data: null, error };
   }
 }
@@ -256,11 +249,11 @@ export async function getIndustries() {
 export async function getIndustryById(id: number) {
   try {
     const { data, error } = await supabase
-      .from('industries')
-      .select('*')
-      .eq('id', id)
+      .from("industries")
+      .select("*")
+      .eq("id", id)
       .single();
-      
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
@@ -275,11 +268,11 @@ export async function getIndustryById(id: number) {
 export async function getIndustryBySlug(slug: string) {
   try {
     const { data, error } = await supabase
-      .from('industries')
-      .select('*')
-      .eq('slug', slug)
+      .from("industries")
+      .select("*")
+      .eq("slug", slug)
       .single();
-      
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
@@ -296,18 +289,18 @@ export async function createIndustry(industryData: any) {
     // Add timestamp for updated_at
     const dataWithTimestamp = {
       ...industryData,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
-    
+
     const { data, error } = await supabase
-      .from('industries')
+      .from("industries")
       .insert([dataWithTimestamp])
       .select();
-      
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error creating industry:', error);
+    console.error("Error creating industry:", error);
     return { data: null, error };
   }
 }
@@ -320,15 +313,15 @@ export async function updateIndustry(id: number, industryData: any) {
     // Add timestamp for updated_at
     const dataWithTimestamp = {
       ...industryData,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
-    
+
     const { data, error } = await supabase
-      .from('industries')
+      .from("industries")
       .update(dataWithTimestamp)
-      .eq('id', id)
+      .eq("id", id)
       .select();
-      
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
@@ -343,10 +336,10 @@ export async function updateIndustry(id: number, industryData: any) {
 export async function deleteIndustry(id: number) {
   try {
     const { data, error } = await supabase
-      .from('industries')
+      .from("industries")
       .delete()
-      .eq('id', id);
-      
+      .eq("id", id);
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
@@ -358,22 +351,22 @@ export async function deleteIndustry(id: number) {
 /**
  * Get all testimonials, optionally filtered by type
  */
-export async function getTestimonials(type?: 'client' | 'employee') {
+export async function getTestimonials(type?: "client" | "employee") {
   try {
-    let query = supabase
-      .from('testimonials')
-      .select('*');
-      
+    let query = supabase.from("testimonials").select("*");
+
     if (type) {
-      query = query.eq('type', type);
+      query = query.eq("type", type);
     }
-    
-    const { data, error } = await query.order('created_at', { ascending: false });
-      
+
+    const { data, error } = await query.order("created_at", {
+      ascending: false,
+    });
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error fetching testimonials:', error);
+    console.error("Error fetching testimonials:", error);
     return { data: null, error };
   }
 }
@@ -384,14 +377,14 @@ export async function getTestimonials(type?: 'client' | 'employee') {
 export async function getContactSubmissions() {
   try {
     const { data, error } = await supabase
-      .from('contact_submissions')
-      .select('*')
-      .order('created_at', { ascending: false });
-      
+      .from("contact_submissions")
+      .select("*")
+      .order("created_at", { ascending: false });
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error fetching contact submissions:', error);
+    console.error("Error fetching contact submissions:", error);
     return { data: null, error };
   }
 }
@@ -402,11 +395,11 @@ export async function getContactSubmissions() {
 export async function getContactSubmissionById(id: number) {
   try {
     const { data, error } = await supabase
-      .from('contact_submissions')
-      .select('*')
-      .eq('id', id)
+      .from("contact_submissions")
+      .select("*")
+      .eq("id", id)
       .single();
-      
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
@@ -423,15 +416,15 @@ export async function updateContactSubmission(id: number, updateData: any) {
     // Add timestamp for updated_at
     const dataWithTimestamp = {
       ...updateData,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
-    
+
     const { data, error } = await supabase
-      .from('contact_submissions')
+      .from("contact_submissions")
       .update(dataWithTimestamp)
-      .eq('id', id)
+      .eq("id", id)
       .select();
-      
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
@@ -446,10 +439,10 @@ export async function updateContactSubmission(id: number, updateData: any) {
 export async function deleteContactSubmission(id: number) {
   try {
     const { data, error } = await supabase
-      .from('contact_submissions')
+      .from("contact_submissions")
       .delete()
-      .eq('id', id);
-      
+      .eq("id", id);
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {

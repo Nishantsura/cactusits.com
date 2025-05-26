@@ -64,7 +64,7 @@ export default function EnhancedHero({
                     </span>
                   ) : (
                     word + " "
-                  )
+                  ),
                 )
               ) : (
                 // Fallback when title is null or undefined

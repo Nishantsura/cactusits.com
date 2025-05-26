@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { ArrowLeft, Save } from 'lucide-react';
-import { createJob } from '@/lib/data-utils';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft, Save } from "lucide-react";
+import { createJob } from "@/lib/data-utils";
 
 /**
  * Form for adding a new job listing to the database
@@ -13,88 +13,98 @@ export default function NewJobPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Form state
   const [formData, setFormData] = useState({
-    title: '',
-    salary: '',
-    location: '',
-    type: 'Full-Time',
-    category: 'Development',
-    company: 'Cactus IT Solutions',
-    description: '',
-    apply_link: '',
+    title: "",
+    salary: "",
+    location: "",
+    type: "Full-Time",
+    category: "Development",
+    company: "Cactus IT Solutions",
+    description: "",
+    apply_link: "",
   });
-  
+
   // Handle form input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
-  
+
   // Submit form to create new job
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-    
+
     try {
       // Basic validation
       if (!formData.title || !formData.location || !formData.description) {
-        throw new Error('Please fill in all required fields');
+        throw new Error("Please fill in all required fields");
       }
-      
+
       // Add current date for posted_date
       const jobData = {
         ...formData,
         posted_date: new Date().toISOString(),
-        is_active: true
+        is_active: true,
       };
-      
+
       const { data, error } = await createJob(jobData);
-      
+
       if (error) {
-        throw new Error('Failed to create job listing');
+        throw new Error("Failed to create job listing");
       }
-      
+
       // Redirect to jobs admin page on success
-      router.push('/admin/dashboard/jobs');
+      router.push("/admin/dashboard/jobs");
     } catch (err: any) {
-      setError(err.message || 'An error occurred while creating the job');
-      console.error('Error creating job:', err);
+      setError(err.message || "An error occurred while creating the job");
+      console.error("Error creating job:", err);
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header with back button */}
         <div className="flex items-center mb-6">
-          <Link href="/admin/dashboard/jobs" className="text-gray-500 hover:text-gray-700 mr-2">
+          <Link
+            href="/admin/dashboard/jobs"
+            className="text-gray-500 hover:text-gray-700 mr-2"
+          >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <h1 className="text-2xl font-bold">Add New Job</h1>
         </div>
-        
+
         {/* Error message */}
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
             {error}
           </div>
         )}
-        
+
         {/* Job form */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <form onSubmit={handleSubmit} className="p-6">
             <div className="space-y-6">
               {/* Title */}
               <div>
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="title"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Job Title <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -107,12 +117,15 @@ export default function NewJobPage() {
                   required
                 />
               </div>
-              
+
               {/* Two column layout */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Salary */}
                 <div>
-                  <label htmlFor="salary" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="salary"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Salary
                   </label>
                   <input
@@ -125,10 +138,13 @@ export default function NewJobPage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
                   />
                 </div>
-                
+
                 {/* Location */}
                 <div>
-                  <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="location"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Location <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -143,12 +159,15 @@ export default function NewJobPage() {
                   />
                 </div>
               </div>
-              
+
               {/* Two column layout */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Job Type */}
                 <div>
-                  <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="type"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Job Type
                   </label>
                   <select
@@ -165,10 +184,13 @@ export default function NewJobPage() {
                     <option value="Temporary">Temporary</option>
                   </select>
                 </div>
-                
+
                 {/* Category */}
                 <div>
-                  <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="category"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Category
                   </label>
                   <select
@@ -188,10 +210,13 @@ export default function NewJobPage() {
                   </select>
                 </div>
               </div>
-              
+
               {/* Company */}
               <div>
-                <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="company"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Company
                 </label>
                 <input
@@ -206,10 +231,13 @@ export default function NewJobPage() {
                   Default is "Cactus IT Solutions"
                 </p>
               </div>
-              
+
               {/* Apply Link */}
               <div>
-                <label htmlFor="apply_link" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="apply_link"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Application Link
                 </label>
                 <input
@@ -222,13 +250,17 @@ export default function NewJobPage() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Full URL where applicants will be redirected to apply for this job
+                  Full URL where applicants will be redirected to apply for this
+                  job
                 </p>
               </div>
-              
+
               {/* Job Description */}
               <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Job Description <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -241,13 +273,14 @@ export default function NewJobPage() {
                   required
                 ></textarea>
                 <p className="text-xs text-gray-500 mt-1">
-                  Provide a detailed description including responsibilities, requirements, benefits, etc.
+                  Provide a detailed description including responsibilities,
+                  requirements, benefits, etc.
                 </p>
               </div>
-              
+
               {/* Form actions */}
               <div className="flex items-center justify-end space-x-3 pt-4">
-                <Link 
+                <Link
                   href="/admin/dashboard/jobs"
                   className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                 >

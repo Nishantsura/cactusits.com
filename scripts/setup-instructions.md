@@ -13,6 +13,7 @@ NEXT_PUBLIC_ADMIN_PASSWORD=your-admin-password
 ```
 
 You can get these values from your Supabase dashboard:
+
 1. Go to https://supabase.com/dashboard
 2. Select your project
 3. Navigate to Project Settings > API

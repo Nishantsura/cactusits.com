@@ -18,11 +18,11 @@ export default async function Page({
 }) {
   const { industry } = params;
   const industryData = await getIndustryBySlug(industry);
-  
+
   if (!industryData) {
     return <div>Industry not found</div>;
   }
-  
+
   const { Hero, Approach } = industryData;
   return (
     <div className="w-full flex flex-col items-center">
@@ -47,7 +47,7 @@ export default async function Page({
                   </span>
                 ) : (
                   word + " "
-                )
+                ),
               )
             ) : (
               // Fallback when title is null or undefined
