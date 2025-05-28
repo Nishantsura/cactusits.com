@@ -1,9 +1,11 @@
 "use client";
 
 import type React from "react";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { MoveUpRight } from "lucide-react";
+import Link from "next/link";
+import { getIndustries } from "@/lib/data-utils";
 
 interface IndustryCardProps {
   title: string;
@@ -29,66 +31,50 @@ const IndustryCard: React.FC<IndustryCardProps> = ({
 
 export default function IndustriesSection() {
   const carouselRef = useRef<HTMLDivElement>(null);
+  const [industries, setIndustries] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const industries = [
-    {
-      title: "Information Technology",
-      description: "Top-tier talent and tech to power IT innovation",
-      icon: (
-        <Image
-          src="/careers/industry-1.svg"
-          alt="IT"
-          width={1000}
-          height={1000}
-          className="w-44 h-auto"
-        />
-      ),
-      bgColor: "bg-blue-100",
-    },
-    {
-      title: "Financial Services",
-      description: "Secure, scalable IT solutions for finance and fintech",
-      icon: (
-        <Image
-          src="/careers/industry-2.svg"
-          alt="IT"
-          width={1000}
-          height={1000}
-          className="w-20 h-auto"
-        />
-      ),
-      bgColor: "bg-blue-100",
-    },
-    {
-      title: "Healthcare",
-      description: "IT systems that improve patient care and compliance",
-      icon: (
-        <Image
-          src="/careers/industry-1.svg"
-          alt="IT"
-          width={1000}
-          height={1000}
-          className="w-44 h-auto"
-        />
-      ),
+  // Fetch industries from the database when component mounts
+  useEffect(() => {
+    async function fetchIndustries() {
+      try {
+        const { data, error } = await getIndustries();
 
-      bgColor: "bg-blue-100",
-    },
-    {
-      title: "Public Sector & Defence",
-      description: "Technology that modernises and secures government services",
-      icon: (
-        <Image
-          src="/careers/industry-2.svg"
-          alt="IT"
-          width={1000}
-          height={1000}
-          className="w-20 h-auto"
-        />
-      ),
+        if (error) {
+          throw error;
+        }
 
-      bgColor: "bg-blue-100",
-    },
+        setIndustries(data || []);
+      } catch (err) {
+        console.error("Error fetching industries:", err);
+        setError("Failed to load industries");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchIndustries();
+  }, []);
+
+  // Default industry images for fallback
+  const defaultIcons = [
+    <Image
+      key="icon1"
+      src="/careers/industry-1.svg"
+      alt="Industry"
+      width={1000}
+      height={1000}
+      className="w-44 h-auto"
+    />,
+    <Image
+      key="icon2"
+      src="/careers/industry-2.svg"
+      alt="Industry"
+      width={1000}
+      height={1000}
+      className="w-20 h-auto"
+    />,
   ];
 
   return (
@@ -117,9 +103,11 @@ export default function IndustriesSection() {
             height={1000}
             className="h-auto max-w-44 sm:max-w-64 w-full lg:w-auto"
           />
-          <button className="flex w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-foreground items-center justify-center text-white border-8 absolute bottom-0 -right-10 lg:left-44 text-xs sm:text-sm">
-            VIEW ALL <MoveUpRight className="h-4 w-auto" />
-          </button>
+          <Link href="/industries">
+            <button className="flex w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-foreground items-center justify-center text-white border-8 absolute bottom-0 -right-10 lg:left-44 text-xs sm:text-sm">
+              VIEW ALL <MoveUpRight className="h-4 w-auto" />
+            </button>
+          </Link>
         </div>
 
         {/* Right column with description and scrollable carousel */}
@@ -142,15 +130,51 @@ export default function IndustriesSection() {
               ref={carouselRef}
               className="flex gap-5 snap-x snap-mandatory overflow-x-scroll scroll-smooth pb-4 scrollbar-hide"
             >
-              {industries.map((industry, index) => (
-                <div key={index} className="snap-start">
-                  <IndustryCard
-                    title={industry.title}
-                    description={industry.description}
-                    icon={industry.icon}
-                  />
+              {isLoading ? (
+                // Loading placeholders
+                Array(3)
+                  .fill(0)
+                  .map((_, index) => (
+                    <div key={`loading-${index}`} className="snap-start">
+                      <div className="relative overflow-hidden min-w-[300px] sm:min-w-[350px] h-[250px] bg-warm-white rounded-lg p-6 flex flex-col justify-between border border-gray-100 shadow-sm animate-pulse">
+                        <div className="h-16 w-16 bg-gray-200 rounded-full absolute top-2 right-2"></div>
+                        <div className="mt-16">
+                          <div className="h-6 bg-gray-200 w-3/4 rounded mb-2"></div>
+                          <div className="h-4 bg-gray-200 w-full rounded"></div>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+              ) : error ? (
+                // Error state
+                <div className="snap-start">
+                  <div className="relative overflow-hidden min-w-[300px] sm:min-w-[350px] h-[250px] bg-warm-white rounded-lg p-6 flex flex-col justify-center items-center border border-gray-100 shadow-sm">
+                    <p className="text-gray-500">Failed to load industries</p>
+                  </div>
                 </div>
-              ))}
+              ) : industries.length > 0 ? (
+                // Map through the fetched industries
+                industries.map((industry, index) => (
+                  <div key={industry.id || index} className="snap-start">
+                    <IndustryCard
+                      title={industry.name || industry.hero_industry || ""}
+                      description={
+                        industry.short_description ||
+                        industry.hero_description ||
+                        ""
+                      }
+                      icon={defaultIcons[index % defaultIcons.length]}
+                    />
+                  </div>
+                ))
+              ) : (
+                // Fallback for no industries
+                <div className="snap-start">
+                  <div className="relative overflow-hidden min-w-[300px] sm:min-w-[350px] h-[250px] bg-warm-white rounded-lg p-6 flex flex-col justify-center items-center border border-gray-100 shadow-sm">
+                    <p className="text-gray-500">No industries found</p>
+                  </div>
+                </div>
+              )}
             </div>
             <button
               onClick={() =>

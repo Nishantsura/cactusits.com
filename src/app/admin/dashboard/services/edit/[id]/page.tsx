@@ -7,6 +7,8 @@ import Image from "next/image";
 import { ArrowLeft, Save, Plus, Trash, Edit2, Upload } from "lucide-react";
 import { getServiceById, updateService } from "@/lib/data-utils";
 import { uploadImage } from "@/lib/upload-utils";
+import React from "react";
+import ImageUpload from "@/components/admin/ImageUpload";
 
 // Type definitions for service data
 interface ServiceCardType {
@@ -52,8 +54,12 @@ interface ServiceFormData {
 export default function EditServicePage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  // Unwrap params with React.use
+  const unwrappedParams = React.use(params) as { id: string };
+  const { id } = unwrappedParams;
+
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
@@ -61,7 +67,7 @@ export default function EditServicePage({
   const [activeTab, setActiveTab] = useState<"basic" | "hero" | "potential">(
     "basic",
   );
-  const serviceId = parseInt(params.id);
+  const serviceId = parseInt(id);
 
   // States for adding new items
   const [newBulletpoint, setNewBulletpoint] = useState("");
@@ -104,11 +110,7 @@ export default function EditServicePage({
   });
 
   // Image upload states
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const heroFileInputRef = useRef<HTMLInputElement>(null);
 
   // Available icon options
   const iconOptions = [
@@ -353,89 +355,20 @@ export default function EditServicePage({
   };
 
   // Handle image upload
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setIsUploading(true);
-    setUploadProgress(10);
-    setUploadError(null);
-
-    try {
-      // Simulate progress for better UX
-      const progressInterval = setInterval(() => {
-        setUploadProgress((prev) => Math.min(prev + 10, 90));
-      }, 200);
-
-      // Upload image to Supabase Storage
-      const { data, error } = await uploadImage(file, "images", "services");
-
-      clearInterval(progressInterval);
-
-      if (error) throw error;
-
-      if (data) {
-        setFormData((prev) => ({
-          ...prev,
-          image_path: data.url,
-        }));
-        setUploadProgress(100);
-
-        // Reset progress after a delay
-        setTimeout(() => {
-          setIsUploading(false);
-          setUploadProgress(0);
-        }, 1000);
-      }
-    } catch (err: any) {
-      console.error("Error uploading image:", err);
-      setUploadError(err.message || "Failed to upload image");
-      setIsUploading(false);
-    }
+  const handleImageUpload = (url: string, path?: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      image: url,
+      image_path: path || "",
+    }));
   };
 
   // Handle hero image upload
-  const handleHeroImageUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setIsUploading(true);
-    setUploadProgress(10);
-    setUploadError(null);
-
-    try {
-      // Simulate progress for better UX
-      const progressInterval = setInterval(() => {
-        setUploadProgress((prev) => Math.min(prev + 10, 90));
-      }, 200);
-
-      // Upload image to Supabase Storage
-      const { data, error } = await uploadImage(file, "images", "heroes");
-
-      clearInterval(progressInterval);
-
-      if (error) throw error;
-
-      if (data) {
-        setFormData((prev) => ({
-          ...prev,
-          hero_image: data.url,
-        }));
-        setUploadProgress(100);
-
-        // Reset progress after a delay
-        setTimeout(() => {
-          setIsUploading(false);
-          setUploadProgress(0);
-        }, 1000);
-      }
-    } catch (err: any) {
-      console.error("Error uploading hero image:", err);
-      setUploadError(err.message || "Failed to upload hero image");
-      setIsUploading(false);
-    }
+  const handleHeroImageUpload = (url: string, path?: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      hero_image: url,
+    }));
   };
 
   // Submit form to update service
@@ -596,59 +529,14 @@ export default function EditServicePage({
                 </div>
 
                 {/* Hero Image Upload */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Hero Image
-                  </label>
-
-                  {/* Preview current hero image if exists */}
-                  {formData.hero_image && (
-                    <div className="relative w-full h-48 bg-gray-100 rounded-md overflow-hidden mb-2">
-                      <Image
-                        src={
-                          formData.hero_image.startsWith("http")
-                            ? formData.hero_image
-                            : `/images/${formData.hero_image}`
-                        }
-                        alt="Hero image"
-                        fill
-                        style={{ objectFit: "contain" }}
-                      />
-                    </div>
-                  )}
-
-                  {/* Hero image path input */}
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="text"
-                      id="hero_image"
-                      name="hero_image"
-                      value={formData.hero_image}
-                      onChange={handleChange}
-                      placeholder="e.g., /images/hero.png or https://example.com/hero.jpg"
-                      className="w-full p-2 border border-gray-300 rounded-md"
-                    />
-
-                    {/* Hidden file input for hero image */}
-                    <input
-                      type="file"
-                      ref={heroFileInputRef}
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleHeroImageUpload}
-                    />
-
-                    {/* Upload button for hero image */}
-                    <button
-                      type="button"
-                      onClick={() => heroFileInputRef.current?.click()}
-                      className="flex items-center px-3 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-                      disabled={isUploading}
-                    >
-                      <Upload className="w-4 h-4 mr-1" />
-                      {isUploading ? "Uploading..." : "Upload"}
-                    </button>
-                  </div>
+                <div>
+                  <ImageUpload
+                    onImageUploaded={handleHeroImageUpload}
+                    currentImageUrl={formData.hero_image}
+                    label="Hero Image"
+                    folder="services"
+                    subfolder="hero"
+                  />
                 </div>
 
                 {/* Hero Bullet Points */}
@@ -865,73 +753,15 @@ export default function EditServicePage({
                 </div>
 
                 {/* Image Upload */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Image
-                  </label>
-
-                  {/* Preview current image if exists */}
-                  {formData.image_path && (
-                    <div className="relative w-full h-48 bg-gray-100 rounded-md overflow-hidden mb-2">
-                      <Image
-                        src={
-                          formData.image_path.startsWith("http")
-                            ? formData.image_path
-                            : `/images/${formData.image_path}`
-                        }
-                        alt={formData.image_alt || "Service image"}
-                        fill
-                        style={{ objectFit: "contain" }}
-                      />
-                    </div>
-                  )}
-
-                  {/* Image path input */}
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="text"
-                      id="image_path"
-                      name="image_path"
-                      value={formData.image_path}
-                      onChange={handleChange}
-                      placeholder="e.g., /images/service.png or https://example.com/image.jpg"
-                      className="w-full p-2 border border-gray-300 rounded-md"
-                    />
-
-                    {/* Hidden file input */}
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleImageUpload}
-                    />
-
-                    {/* Upload button */}
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="flex items-center px-3 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-                      disabled={isUploading}
-                    >
-                      <Upload className="w-4 h-4 mr-1" />
-                      {isUploading ? "Uploading..." : "Upload"}
-                    </button>
-                  </div>
-
-                  {/* Upload progress */}
-                  {isUploading && (
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-                      <div
-                        className="bg-blue-600 h-2.5 rounded-full"
-                        style={{ width: `${uploadProgress}%` }}
-                      ></div>
-                    </div>
-                  )}
-
-                  {/* Upload error */}
+                <div className="mb-4">
+                  <ImageUpload
+                    onImageUploaded={handleImageUpload}
+                    currentImageUrl={formData.image}
+                    label="Service Image"
+                    folder="services"
+                  />
                   {uploadError && (
-                    <p className="text-red-500 text-sm mt-1">{uploadError}</p>
+                    <p className="text-red-500 text-xs mt-1">{uploadError}</p>
                   )}
                 </div>
 

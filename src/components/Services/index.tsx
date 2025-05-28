@@ -14,6 +14,7 @@ interface ServiceCardProps {
   imageWidth?: number;
   imageHeight?: number;
   imageAlt?: string;
+  slug?: string;
 }
 
 const ServiceCard: React.FC<ServiceCardProps> = ({
@@ -25,30 +26,37 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   imageWidth,
   imageHeight,
   imageAlt,
+  slug,
 }) => {
   return (
-    <div
-      className={`relative ${
-        image ? "bg-[#22242F]" : "bg-[#111218]"
-      } rounded-lg p-6 overflow-hidden min-h-64 md:h-72`}
+    <Link
+      href={`/services/${slug || title.toLowerCase().replace(/\s+/g, "-")}`}
     >
-      <div className="z-10">
-        <div className="bg-[#2a2d3a] rounded-full p-3 w-16 h-16 flex items-center justify-center mb-4">
-          {icon}
+      <div
+        className={`relative ${
+          image ? "bg-[#22242F]" : "bg-[#111218]"
+        } rounded-lg p-6 overflow-hidden min-h-64 md:h-72 cursor-pointer hover:shadow-lg transition-shadow duration-300`}
+      >
+        <div className="z-10">
+          <div className="bg-[#2a2d3a] rounded-full p-3 w-16 h-16 flex items-center justify-center mb-4">
+            {icon}
+          </div>
+          <h3 className="text-white text-lg font-semibold mb-2 mt-10">
+            {title}
+          </h3>
+          <p className="text-gray-400 text-sm">{description}</p>
+          {image && (
+            <Image
+              src={image || "/landing/quality-arrow.svg"}
+              alt={imageAlt || "service image"}
+              width={imageWidth || 500}
+              height={imageHeight || 500}
+              className={`absolute w-24 ${imagePosition} h-auto`}
+            />
+          )}
         </div>
-        <h3 className="text-white text-lg font-semibold mb-2 mt-10">{title}</h3>
-        <p className="text-gray-400 text-sm">{description}</p>
-        {image && (
-          <Image
-            src={image || "/landing/quality-arrow.svg"}
-            alt={imageAlt || "service image"}
-            width={imageWidth || 500}
-            height={imageHeight || 500}
-            className={`absolute w-24 ${imagePosition} h-auto`}
-          />
-        )}
       </div>
-    </div>
+    </Link>
   );
 };
 
@@ -59,6 +67,7 @@ export default function Services() {
       description:
         "Expert advice to guide your technology decisions and develop strategic IT plans.",
       icon: <Globe className="w-5 h-5 text-white" />,
+      slug: "it-consulting",
     },
     {
       title: "Digital Transformation",
@@ -72,12 +81,14 @@ export default function Services() {
       imageWidth: 500,
       imageHeight: 500,
       imageAlt: "arrow pointing the feature",
+      slug: "digital-transformation",
     },
     {
       title: "Cloud Services",
       description:
         "Secure and flexible cloud solutions to support your business needs.",
       icon: <Cloud className="w-5 h-5 text-white" />,
+      slug: "cloud-services",
     },
     {
       title: "Data and AI",
@@ -91,11 +102,13 @@ export default function Services() {
       imageWidth: 500,
       imageHeight: 500,
       imageAlt: "arrow pointing the feature",
+      slug: "data-and-ai",
     },
     {
       title: "Cybersecurity & IT Infrastructure Management",
       description: "Protect and optimise your IT foundation.",
       icon: <Shield className="w-5 h-5 text-white" />,
+      slug: "cybersecurity",
     },
     {
       title: "Agile Delivery",
@@ -109,6 +122,7 @@ export default function Services() {
       imageWidth: 500,
       imageHeight: 500,
       imageAlt: "arrow pointing the feature",
+      slug: "agile-delivery",
     },
   ];
   return (

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
+import React from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -39,9 +40,14 @@ function isSupabaseError(error: any): error is SupabaseError {
  */
 export default function ContactDetail() {
   const router = useRouter();
+  // Use React.use to properly unwrap params from useParams()
   const pageParams = useParams();
-  // Ensure id is a string. useParams might return string | string[] or undefined during initial render.
-  const idFromParams = pageParams.id;
+  // Since useParams() returns a ReadonlyURLSearchParams object and not a Promise,
+  // we need to handle it differently than page props params
+  const unwrappedParams = React.use(Promise.resolve(pageParams)) as {
+    id: string | string[];
+  };
+  const idFromParams = unwrappedParams.id;
   const id = Array.isArray(idFromParams)
     ? idFromParams[0]
     : (idFromParams as string);

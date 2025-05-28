@@ -5,9 +5,18 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Plus, X, Save } from "lucide-react";
 import { getIndustryById, updateIndustry } from "@/lib/data-utils";
+import React from "react";
+import ImageUpload from "@/components/admin/ImageUpload";
 
 // Component for editing an existing industry
-export default function EditIndustry({ params }: { params: { id: string } }) {
+export default function EditIndustry({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  // Unwrap params with React.use
+  const unwrappedParams = React.use(params) as { id: string };
+  const { id } = unwrappedParams;
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("basic");
   const [isLoading, setIsLoading] = useState(true);
@@ -39,6 +48,22 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
     { title: string; description: string }[]
   >([]);
 
+  // Handle image upload
+  const handleImageUpload = (url: string, path?: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      image: url,
+    }));
+  };
+
+  // Handle hero image upload
+  const handleHeroImageUpload = (url: string, path?: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      hero_image: url,
+    }));
+  };
+
   // Fetch industry data on load
   useEffect(() => {
     const checkAuthAndFetchData = async () => {
@@ -66,7 +91,7 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
     };
 
     checkAuthAndFetchData();
-  }, [params.id, router]);
+  }, [id, router]);
 
   // Fetch industry from the database
   const fetchIndustry = async () => {
@@ -74,7 +99,7 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
     setError(null);
 
     try {
-      const industryId = parseInt(params.id);
+      const industryId = parseInt(id);
       const { data, error } = await getIndustryById(industryId);
 
       if (error) {
@@ -187,7 +212,7 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
         throw new Error("Please fill in all required fields");
       }
 
-      const industryId = parseInt(params.id);
+      const industryId = parseInt(id);
 
       // Prepare final data with JSON fields
       const finalData = {
@@ -277,14 +302,13 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Image URL
+            Industry Image
           </label>
-          <input
-            type="text"
-            name="image"
-            value={formData.image}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+          <ImageUpload
+            onImageUploaded={handleImageUpload}
+            currentImageUrl={formData.image}
+            label="Industry Image"
+            folder="industries"
           />
           <p className="mt-1 text-sm text-gray-500">
             Optional image path for listing
@@ -348,14 +372,14 @@ export default function EditIndustry({ params }: { params: { id: string } }) {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Hero Image URL
+            Hero Image
           </label>
-          <input
-            type="text"
-            name="hero_image"
-            value={formData.hero_image}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+          <ImageUpload
+            onImageUploaded={handleHeroImageUpload}
+            currentImageUrl={formData.hero_image}
+            label="Hero Image"
+            folder="industries"
+            subfolder="hero"
           />
           <p className="mt-1 text-sm text-gray-500">
             Path to hero section image

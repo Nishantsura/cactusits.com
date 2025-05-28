@@ -10,10 +10,11 @@ import Testimonials from "@/components/careers/testimonials";
 import Link from "next/link";
 import { Section } from "@/components/ui/section";
 import React from "react";
+import { BackgroundImages } from "@/components/ui/background-images";
 
 export function LandingContent() {
   return (
-    <div className="relative w-full min-h-screen flex flex-col items-center">
+    <BackgroundImages className="w-full min-h-screen flex flex-col items-center">
       {/* hero section */}
       <Section
         id="hero"
@@ -23,16 +24,16 @@ export function LandingContent() {
         className="w-full max-w-[85vw] mx-auto flex flex-col items-center pt-[90px]"
       >
         <div className="w-full h-[88%] flex flex-col-reverse md:flex-row">
-          <div className="w-full md:w-[70%] h-full p-4 md:p-16 pt-6 md:pt-12 flex flex-col gap-4 md:gap-8 text-center">
-            <h1 className="text-3xl md:text-6xl">
-              Empowering Businesses Through Innovation and Technology
+          <div className="w-full md:w-[70%] h-full p-4 md:p-16 pt-6 md:pt-12 flex flex-col gap-4 md:gap-8 text-left">
+            <h1 className="text-3xl md:text-6xl font-bold">
+              Enabling Businesses Through Simplicity & Clarity
             </h1>
-            <h3 className="md:text-xl text-gray-muted">
-              At Cactus, we combine strategy, technology, and expertise to{" "}
+            <h3 className="md:text-xl text-gray-muted mt-4">
+              We combine strategy, technology, and expertise to{" "}
               <br className="hidden md:block" />
               transform your business for the digital age.
             </h3>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center item text-nowrap">
+            <div className="flex flex-col sm:flex-row gap-4 mt-6">
               <Link href="/#contactus">
                 <button className="w-36 md:w-44 border-2 bg-foreground  text-white px-2 py-2 cursor-pointer">
                   Get in touch
@@ -68,15 +69,9 @@ export function LandingContent() {
         <div className="w-full md:w-[40%] flex flex-col justify-between px-4 md:px-0">
           <div>
             <h1 className="text-3xl md:text-5xl">
-              We prefer—
-              <br />
-              <span className="text-primary">Quality</span> over{" "}
-              <span className="text-primary">Quantity</span>.
+              Our Mission is your Success
             </h1>
             <div className="flex flex-col sm:flex-row gap-4 justify-start mt-8">
-              <button className="w-full sm:w-44 border-2 border-slate-200 px-2 py-3">
-                Frequent Queries
-              </button>
               <Link href={"/#contactus"}>
                 <button className="w-full sm:w-44 bg-foreground text-background px-2 py-3">
                   Get in Touch
@@ -199,6 +194,6 @@ export function LandingContent() {
       >
         <ContactForm />
       </Section>
-    </div>
+    </BackgroundImages>
   );
 }

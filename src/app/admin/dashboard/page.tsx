@@ -34,71 +34,130 @@ export default function AdminDashboard() {
   // Fetch counts from the database
   const fetchCounts = async () => {
     try {
-      // Fetch job count
-      const { count: jobCount } = await supabase
-        .from("jobs")
-        .select("*", { count: "exact", head: true })
-        .eq("is_active", true);
+      // Check if Supabase client is properly initialized
+      if (!supabase || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
+        console.warn("Supabase client not properly initialized");
+        setIsLoading(false);
+        return;
+      }
 
-      // Fetch services count
-      const { count: servicesCount } = await supabase
-        .from("services")
-        .select("*", { count: "exact", head: true });
+      // Use try/catch for each query to prevent one failure from blocking others
+      let jobCount = 0,
+        servicesCount = 0,
+        industriesCount = 0,
+        testimonialsCount = 0,
+        contactsCount = 0;
 
-      // Fetch industries count
-      const { count: industriesCount } = await supabase
-        .from("industries")
-        .select("*", { count: "exact", head: true });
+      try {
+        // Fetch job count
+        const { count, error } = await supabase
+          .from("jobs")
+          .select("*", { count: "exact", head: true })
+          .eq("is_active", true);
 
-      // Fetch testimonials count
-      const { count: testimonialsCount } = await supabase
-        .from("testimonials")
-        .select("*", { count: "exact", head: true });
+        if (!error) jobCount = count || 0;
+      } catch (e) {
+        console.error("Error fetching jobs count:", e);
+      }
 
-      // Fetch contact submissions count
-      const { count: contactsCount } = await supabase
-        .from("contact_submissions")
-        .select("*", { count: "exact", head: true });
+      try {
+        // Fetch services count
+        const { count, error } = await supabase
+          .from("services")
+          .select("*", { count: "exact", head: true });
+
+        if (!error) servicesCount = count || 0;
+      } catch (e) {
+        console.error("Error fetching services count:", e);
+      }
+
+      try {
+        // Fetch industries count
+        const { count, error } = await supabase
+          .from("industries")
+          .select("*", { count: "exact", head: true });
+
+        if (!error) industriesCount = count || 0;
+      } catch (e) {
+        console.error("Error fetching industries count:", e);
+      }
+
+      try {
+        // Fetch testimonials count
+        const { count, error } = await supabase
+          .from("testimonials")
+          .select("*", { count: "exact", head: true });
+
+        if (!error) testimonialsCount = count || 0;
+      } catch (e) {
+        console.error("Error fetching testimonials count:", e);
+      }
+
+      try {
+        // Fetch contact submissions count
+        const { count, error } = await supabase
+          .from("contact_submissions")
+          .select("*", { count: "exact", head: true });
+
+        if (!error) contactsCount = count || 0;
+      } catch (e) {
+        console.error("Error fetching contacts count:", e);
+      }
 
       setStats({
-        jobs: jobCount || 0,
-        services: servicesCount || 0,
-        industries: industriesCount || 0,
-        testimonials: testimonialsCount || 0,
-        contacts: contactsCount || 0,
+        jobs: jobCount,
+        services: servicesCount,
+        industries: industriesCount,
+        testimonials: testimonialsCount,
+        contacts: contactsCount,
       });
     } catch (error) {
       console.error("Error fetching counts:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     const checkAuth = () => {
-      const authData = localStorage.getItem("adminAuth");
-
-      if (!authData) {
-        router.push("/admin");
-        return;
-      }
-
       try {
-        const { authenticated, expires } = JSON.parse(authData);
+        // Make sure we're in a browser environment
+        if (typeof window === "undefined") {
+          setIsLoading(false);
+          return;
+        }
 
-        if (!authenticated || new Date(expires) < new Date()) {
-          // Session expired
-          localStorage.removeItem("adminAuth");
+        const authData = localStorage.getItem("adminAuth");
+
+        if (!authData) {
           router.push("/admin");
           return;
         }
 
-        setIsAuthenticated(true);
-        // Fetch counts after authentication
-        fetchCounts();
-      } catch (error) {
-        localStorage.removeItem("adminAuth");
-        router.push("/admin");
-      } finally {
+        try {
+          const { authenticated, expires } = JSON.parse(authData);
+
+          if (!authenticated || new Date(expires) < new Date()) {
+            // Session expired
+            localStorage.removeItem("adminAuth");
+            router.push("/admin");
+            return;
+          }
+
+          setIsAuthenticated(true);
+          // Fetch counts after authentication
+          fetchCounts();
+        } catch (error) {
+          console.error("Error parsing auth data:", error);
+          localStorage.removeItem("adminAuth");
+          router.push("/admin");
+          setIsLoading(false);
+        }
+      } catch (e) {
+        // Handle any unexpected errors
+        console.error("Unexpected error in auth check:", e);
         setIsLoading(false);
+        router.push("/admin");
       }
     };
 

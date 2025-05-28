@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { getServices, getIndustries } from "@/lib/data-utils";
 
 type SubMenuItem = {
   title: string;
@@ -98,62 +99,53 @@ export default function Header() {
     };
   }, []);
 
-  // Sample data for services submenu
-  const servicesItems: SubMenuItem[] = [
-    {
-      title: "IT Consulting, Strategy & Services",
-      url: "/services/it-consulting",
-      description: "Tailored strategies to align tech with business goals",
-    },
-    {
-      title: "Digital Transformation",
-      url: "/services/digital-transformation",
-      description: "Reimagine operations with innovative digital solutions",
-    },
-    {
-      title: "Cloud Services",
-      url: "/services/cloud-services",
-      description: "Secure, scalable cloud solutions built for agility",
-    },
-    {
-      title: "Data and AI",
-      url: "/services/data-ai",
-      description: "Turn data into decisions with AI-powered insights",
-    },
-    {
-      title: "Cybersecurity & IT Infrastructure Management",
-      url: "/services/cybersecurity",
-      description: "Protect and optimise your IT foundation",
-    },
-    {
-      title: "Agile Delivery",
-      url: "/services/agile-delivery",
-      description: "Efficient, adaptive delivery using agile frameworks",
-    },
-  ];
+  // State for services and industries from the database
+  const [servicesItems, setServicesItems] = useState<SubMenuItem[]>([]);
+  const [industriesItems, setIndustriesItems] = useState<SubMenuItem[]>([]);
 
-  const industriesItems: SubMenuItem[] = [
-    {
-      title: "Information Technology",
-      url: "/industries/information-technology",
-      description: "Top-tier talent and tech to power IT innovation",
-    },
-    {
-      title: "Banking & Financial Services",
-      url: "/industries/banking-financial",
-      description: "Secure, scalable IT solutions for finance and fintech",
-    },
-    {
-      title: "Retail & E-Commerce",
-      url: "/industries/retail-ecommerce",
-      description: "Transforming retail operations with agile technologies",
-    },
-    {
-      title: "Public Sector & Defence",
-      url: "/industries/public-sector-defence",
-      description: "Technology that modernises and secures government services",
-    },
-  ];
+  // Fetch services and industries from Supabase
+  useEffect(() => {
+    const fetchServicesAndIndustries = async () => {
+      try {
+        // Fetch services
+        const { data: servicesData } = await getServices();
+        if (servicesData) {
+          const formattedServices = servicesData
+            .filter((service) => service.is_active !== false) // Only show active services
+            .sort((a, b) => (a.order_index || 999) - (b.order_index || 999)) // Sort by order_index
+            .map((service) => ({
+              title: service.title,
+              url: `/services/${service.slug}`,
+              description: service.description || "",
+            }));
+          setServicesItems(formattedServices);
+        }
+
+        // Fetch industries
+        const { data: industriesData } = await getIndustries();
+        if (industriesData) {
+          const formattedIndustries = industriesData
+            .filter((industry) => industry.is_active !== false) // Only show active industries
+            .sort((a, b) => (a.order_index || 999) - (b.order_index || 999)) // Sort by order_index
+            .map((industry) => ({
+              title:
+                industry.name ||
+                industry.hero_industry ||
+                industry.title ||
+                "Industry", // Try all possible title fields
+              url: `/industries/${industry.slug}`,
+              description:
+                industry.description || industry.hero_description || "",
+            }));
+          setIndustriesItems(formattedIndustries);
+        }
+      } catch (error) {
+        console.error("Error fetching navigation data:", error);
+      }
+    };
+
+    fetchServicesAndIndustries();
+  }, []);
 
   // Sample data for platform section (Quick Links)
   const platformItems: PlatformItem[] = [
@@ -195,13 +187,27 @@ export default function Header() {
     },
   ];
 
-  // Main navigation items
-  const navItems: MenuItem[] = [
-    { title: "Services", url: "/services", submenu: servicesItems },
-    { title: "Industries", url: "/industries", submenu: industriesItems },
+  // Main navigation items - define static items
+  const staticNavItems: MenuItem[] = [
     { title: "About Us", url: "/aboutus" },
     { title: "Careers", url: "/careers" },
   ];
+
+  // Create dynamic navItems by combining static items with dynamic services and industries
+  const [navItems, setNavItems] = useState<MenuItem[]>([
+    { title: "Services", url: "/services", submenu: [] },
+    { title: "Industries", url: "/industries", submenu: [] },
+    ...staticNavItems,
+  ]);
+
+  // Update navItems when services or industries change
+  useEffect(() => {
+    setNavItems([
+      { title: "Services", url: "/services", submenu: servicesItems },
+      { title: "Industries", url: "/industries", submenu: industriesItems },
+      ...staticNavItems,
+    ]);
+  }, [servicesItems, industriesItems]);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
