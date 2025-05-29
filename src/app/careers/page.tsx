@@ -2,9 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import ChooseUs from "@/components/ChooseUs";
 import JobListings from "@/components/careers/job-listings";
-import Testimonials from "@/components/careers/testimonials";
 import ContactForm from "@/components/landing/ContactUs";
 import Link from "next/link";
 import Container from "@/components/ui/container";
@@ -48,59 +46,10 @@ export default function Careers() {
               />
             </div>
           </div>
-
-          {/* Trusted By Section */}
-          <div className="mt-8 lg:mt-16 flex flex-col items-center w-full">
-            <p className="text-gray-muted">
-              Trusted by <span className="text-foreground">1,000+</span>{" "}
-              jobseekers and customers
-            </p>
-            <div className="flex flex-wrap gap-8 justify-center items-center mt-8 w-full">
-              <Image
-                src="/landing/Logo-1.svg"
-                alt="logo"
-                width={100}
-                height={40}
-                className="h-8 w-auto"
-              />
-              <Image
-                src="/landing/Logo-2.svg"
-                alt="logo"
-                width={100}
-                height={40}
-                className="h-8 w-auto"
-              />
-              <Image
-                src="/landing/Logo-3.svg"
-                alt="logo"
-                width={100}
-                height={40}
-                className="h-8 w-auto"
-              />
-              <Image
-                src="/landing/Logo-4.svg"
-                alt="logo"
-                width={100}
-                height={40}
-                className="h-8 w-auto"
-              />
-              <Image
-                src="/landing/Logo-5.svg"
-                alt="logo"
-                width={100}
-                height={40}
-                className="h-8 w-auto"
-              />
-            </div>
-          </div>
         </Container>
       </section>
 
-      <ChooseUs />
-
       <JobListings />
-
-      <Testimonials />
 
       <ContactForm />
     </div>

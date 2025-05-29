@@ -10,7 +10,12 @@ interface JobCardProps {
   onApply: (job: Job) => void;
 }
 
-export default function JobCard({ job, isExpanded, onJobClick }: JobCardProps) {
+export default function JobCard({
+  job,
+  isExpanded,
+  onJobClick,
+  onApply,
+}: JobCardProps) {
   return (
     <div className="bg-warm-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
       <div className="p-4 cursor-pointer" onClick={() => onJobClick(job.id)}>
@@ -50,17 +55,15 @@ export default function JobCard({ job, isExpanded, onJobClick }: JobCardProps) {
                 View details
               </button>
             )}
-            <Link href={job?.applyLink || ""} target="_blank">
-              <button
-                className="bg-foreground text-white px-4 py-1 rounded-full text-sm cursor-pointer"
-                // onClick={(e) => {
-                //   e.stopPropagation();
-                //   onApply(job);
-                // }}
-              >
-                Apply
-              </button>
-            </Link>
+            <button
+              className="bg-foreground text-white px-4 py-1 rounded-full text-sm cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                onApply(job);
+              }}
+            >
+              Apply
+            </button>
           </div>
         </div>
       </div>

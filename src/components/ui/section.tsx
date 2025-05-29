@@ -29,13 +29,13 @@ const Section = forwardRef<HTMLElement, SectionProps>(
         className={cn(
           "relative w-full",
           // Optional full height
-          fullHeight ? "min-h-screen" : "py-8 md:py-12",
+          fullHeight ? "min-h-screen" : "py-6 md:py-8",
 
           // Spacing between sections (reduced)
           spacing === "none" && "py-0",
-          spacing === "minimal" && "py-4",
-          spacing === "compact" && "py-6 md:py-8",
-          spacing === "normal" && "py-8 md:py-12",
+          spacing === "minimal" && "py-2 md:py-3",
+          spacing === "compact" && "py-4 md:py-6",
+          spacing === "normal" && "py-6 md:py-8",
 
           // Flexible layout with alignment options
           "flex flex-col items-center",

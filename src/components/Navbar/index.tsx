@@ -24,7 +24,7 @@ type PlatformItem = {
   icon: React.ReactNode;
 };
 
-export default function Header() {
+export default function Navbar() {
   const pathname = usePathname();
   const [scrollingDown, setScrollingDown] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);

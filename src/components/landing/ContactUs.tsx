@@ -61,26 +61,26 @@ export default function ContactUs() {
 
   return (
     <div
-      className="relative w-full py-6 md:py-8 lg:py-10 flex flex-col items-center justify-center bg-gray-50"
+      className="relative w-full py-4 md:py-5 lg:py-6 flex flex-col items-center justify-center bg-gray-50"
       id="contactus"
     >
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-[30vw] -right-[10vw] w-[70vw] h-[70vw] bg-primary/5 rounded-full"></div>
         <div className="absolute -bottom-[20vw] -left-[10vw] w-[50vw] h-[50vw] bg-primary/5 rounded-full"></div>
       </div>
-      <div className="z-10 w-full max-w-3xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
-        <div className="mb-6">
+      <div className="z-10 w-full max-w-3xl mx-auto px-4 sm:px-6 md:px-6 lg:px-8">
+        <div className="mb-4 text-center">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-gray-800 to-gray-600">
             Get in touch
           </h1>
-          <p className="text-gray-600 text-sm sm:text-base">
+          <p className="text-gray-600 text-sm sm:text-base max-w-xl mx-auto">
             At Cactus, we're eager to understand how we can support your career
             growth, whether you're looking to join our team or seeking our
             services.
           </p>
         </div>
         <div className="bg-warm-white shadow-xl rounded-2xl overflow-hidden">
-          <form onSubmit={handleSubmit} className="p-6 sm:p-8">
+          <form onSubmit={handleSubmit} className="p-4 sm:p-6">
             {/* User type toggle */}
             <div className="mb-6">
               <p className="text-sm font-medium text-gray-700 mb-2">I am a:</p>

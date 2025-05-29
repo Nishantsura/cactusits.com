@@ -10,7 +10,10 @@ interface ApplicationModalProps {
   onClose: () => void;
 }
 
-export default function ApplicationModal({ onClose }: ApplicationModalProps) {
+export default function ApplicationModal({
+  job,
+  onClose,
+}: ApplicationModalProps) {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -78,7 +81,7 @@ export default function ApplicationModal({ onClose }: ApplicationModalProps) {
       >
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">Your Application</h2>
+            <h2 className="text-xl font-bold">Apply for: {job.title}</h2>
             <button
               onClick={onClose}
               className="text-gray-500 hover:text-gray-700 cursor-pointer"
@@ -87,9 +90,25 @@ export default function ApplicationModal({ onClose }: ApplicationModalProps) {
             </button>
           </div>
 
-          <p className="text-gray-600 mb-6">
-            Complete the forms below to apply to our company.
-          </p>
+          <div className="mb-6">
+            <div className="bg-gray-50 p-3 rounded-md mb-4">
+              <p className="text-sm">
+                <span className="font-medium">Company:</span> {job.company}
+              </p>
+              <p className="text-sm">
+                <span className="font-medium">Location:</span> {job.location}
+              </p>
+              <p className="text-sm">
+                <span className="font-medium">Type:</span> {job.type}
+              </p>
+              <p className="text-sm">
+                <span className="font-medium">Salary:</span> {job.salary}
+              </p>
+            </div>
+            <p className="text-gray-600">
+              Complete the form below to apply for this position.
+            </p>
+          </div>
 
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">

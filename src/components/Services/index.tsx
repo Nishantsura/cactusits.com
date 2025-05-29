@@ -126,11 +126,11 @@ export default function Services() {
     },
   ];
   return (
-    <section className="bg-[#18181B] py-8 px-4 md:px-8 w-full overflow-hidden">
+    <section className="bg-[#18181B] py-5 w-full overflow-hidden">
       <div className="max-w-[85vw] mx-auto w-full">
-        <div className="mb-6 relative text-center md:text-left">
-          <p className="text-white text-lg mb-2 ">Our Services</p>
-          <div className="flex justify-between flex-col md:flex-row mb-6">
+        <div className="mb-4 relative text-center md:text-left">
+          <p className="text-white text-lg mb-1">Our Services</p>
+          <div className="flex justify-between flex-col md:flex-row mb-4">
             <div>
               <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
                 Empowering Your <span className="text-primary">Business</span>{" "}

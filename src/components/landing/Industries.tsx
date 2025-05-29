@@ -78,14 +78,14 @@ export default function IndustriesSection() {
   ];
 
   return (
-    <div className="w-full max-w-[85vw] mx-auto px-4 py-6">
+    <div className="w-full max-w-[85vw] mx-auto px-4 pt-10 pb-3 md:pt-12">
       {/* Header */}
-      <div className="mb-3 border-t-2 pt-2">
-        <div className="flex items-center mb-2">
+      <div className="mb-2 border-t-2 pt-1">
+        <div className="flex items-center mb-1">
           <div className="w-2 h-2 rounded-full bg-primary"></div>
           <span className="ml-2 text-sm font-medium">Our Industries</span>
         </div>
-        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#2d2d40] leading-tight mb-4">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#2d2d40] leading-tight mb-2">
           We cater to a diverse range of industries,
           <br /> providing specialised{" "}
           <span className="text-primary">IT solutions</span>
@@ -93,7 +93,7 @@ export default function IndustriesSection() {
       </div>
 
       {/* Main content */}
-      <div className="flex flex-col lg:flex-row gap-4 mt-4 justify-between overflow-hidden">
+      <div className="flex flex-col lg:flex-row gap-3 mt-2 justify-between overflow-hidden">
         {/* Left column with heading and image */}
         <div className="w-fit lg:w-3/12 relative inline-block">
           <Image
@@ -113,13 +113,13 @@ export default function IndustriesSection() {
         {/* Right column with description and scrollable carousel */}
         <div className="w-full lg:w-9/12 relative">
           <p className="text-gray-muted my-4 sm:my-6 text-sm sm:text-base">
-            At Cactus IT Solutions, we deliver specialised IT services across a
-            wide range of industries. From powering innovation in tech driven
-            enterprises to enhancing compliance and efficiency in healthcare,
-            finance, and the public sector, our tailored solutions are designed
-            to meet the unique challenges of each domain. Whether it&apos;s
-            cloud transformation, cybersecurity, or AI adoption, we help
-            organisations stay agile, secure, and future ready.
+            We deliver specialised IT services across a wide range of
+            industries. From powering innovation in tech driven enterprises to
+            enhancing compliance and efficiency in healthcare, finance, and the
+            public sector, our tailored solutions are designed to meet the
+            unique challenges of each domain. Whether it&apos;s cloud
+            transformation, cybersecurity, or AI adoption, we help organisations
+            stay agile, secure, and future ready.
           </p>
 
           {/* Scrollable carousel */}

@@ -15,12 +15,12 @@ function ChooseUsLi({
   percentage,
 }: chooseUsLiProps) {
   return (
-    <li className="flex flex-col sm:flex-row gap-4 mb-8">
-      <div className="mb-2 sm:mb-0">{icon}</div>
+    <li className="flex flex-col sm:flex-row gap-3 mb-5">
+      <div className="mb-1 sm:mb-0">{icon}</div>
       <div className="flex-1">
         <h3 className="text-lg sm:text-xl font-medium">{heading}</h3>
-        <p className="text-gray-500 my-2 text-sm sm:text-base">{description}</p>
-        <div className="w-full bg-slate-200 h-1 rounded-full mt-4">
+        <p className="text-gray-500 my-1 text-sm sm:text-base">{description}</p>
+        <div className="w-full bg-slate-200 h-1 rounded-full mt-2">
           <div
             className="bg-foreground h-full rounded-full transition-all duration-500 ease-in-out"
             style={{ width: `${percentage}%` }}

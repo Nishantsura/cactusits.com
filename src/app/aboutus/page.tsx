@@ -26,9 +26,6 @@ export default function AboutUs() {
             </div>
             <Globe className="top-16 hidden lg:block" />
             <div className="flex gap-4 justify-start mt-8">
-              <button className="w-44 border-2 border-slate-200 px-2 py-3">
-                Frequent Queries
-              </button>
               <Link href={"/#contactus"}>
                 <button className="w-44 bg-foreground text-background px-2 py-3">
                   Get in Touch
