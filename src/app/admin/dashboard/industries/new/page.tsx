@@ -19,7 +19,6 @@ export default function NewIndustry() {
     name: "",
     slug: "",
     description: "",
-    image: "",
     order_index: 0,
     is_active: true,
 
@@ -27,7 +26,6 @@ export default function NewIndustry() {
     hero_industry: "",
     hero_title: "",
     hero_description: "",
-    hero_image: "",
 
     // Approach section (JSON)
     approach_items: [],
@@ -232,22 +230,6 @@ export default function NewIndustry() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Image URL
-          </label>
-          <input
-            type="text"
-            name="image"
-            value={formData.image}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
-          />
-          <p className="mt-1 text-sm text-gray-500">
-            Optional image path for listing
-          </p>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
             Order Index
           </label>
           <input
@@ -298,22 +280,6 @@ export default function NewIndustry() {
           />
           <p className="mt-1 text-sm text-gray-500">
             Display name for hero section (e.g., "Information Technology")
-          </p>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Hero Image URL
-          </label>
-          <input
-            type="text"
-            name="hero_image"
-            value={formData.hero_image}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
-          />
-          <p className="mt-1 text-sm text-gray-500">
-            Path to hero section image
           </p>
         </div>
       </div>

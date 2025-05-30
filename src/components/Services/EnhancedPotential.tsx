@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 import {
   Activity,
   Briefcase,
@@ -20,7 +20,7 @@ interface ServiceCardProps {
 interface PotentialProps {
   description: string;
   serviceCards: {
-    icon: React.ReactNode;
+    icon?: React.ReactNode;
     title: string;
     description: string;
   }[];
@@ -32,22 +32,25 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   description,
   index,
 }) => {
+  // Make sure we have a valid icon
+  const iconToRender = icon || defaultIcons[index % defaultIcons.length];
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      viewport={{ once: true }}
-      className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg border border-gray-100 flex flex-col h-full transform transition-all duration-300 hover:-translate-y-1"
-    >
-      <div className="mb-4 text-primary bg-primary bg-opacity-10 p-3 rounded-full w-14 h-14 flex items-center justify-center">
-        {icon}
+    <div className={cn("flex flex-col py-10 relative group/feature")}>
+      <div className="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-gradient-to-t from-neutral-100 to-transparent pointer-events-none" />
+      <div className="mb-4 relative z-10 px-10">
+        <div className="text-primary w-10 h-10">{iconToRender}</div>
       </div>
-      <h3 className="text-xl font-semibold mb-3 text-gray-900">{title}</h3>
-      <p className="text-gray-600 text-base leading-relaxed flex-grow">
+      <div className="text-lg font-bold mb-2 relative z-10 px-10">
+        <div className="absolute left-0 inset-y-0 h-6 group-hover/feature:h-8 w-1 rounded-tr-full rounded-br-full bg-neutral-300 group-hover/feature:bg-primary transition-all duration-200 origin-center" />
+        <span className="group-hover/feature:translate-x-2 transition duration-200 inline-block text-neutral-800">
+          {title}
+        </span>
+      </div>
+      <p className="text-sm text-gray-muted max-w-xs relative z-10 px-10">
         {description}
       </p>
-    </motion.div>
+    </div>
   );
 };
 
@@ -66,39 +69,27 @@ export default function EnhancedPotential({
 }: PotentialProps) {
   return (
     <div className="w-full bg-gray-50 py-16 md:py-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12 md:mb-16">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-3xl lg:text-4xl font-bold mb-4"
-          >
+      <div className="w-full max-w-[85vw] mx-auto">
+        <div className="mb-10 text-center">
+          <h1 className="text-3xl lg:text-5xl tracking-tighter font-regular">
             Unlock Potential with <span className="text-primary">Cactus</span>
-          </motion.h2>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-            className="max-w-3xl mx-auto"
-          >
+          </h1>
+          <div className="max-w-3xl mx-auto mt-4">
             <p className="text-gray-600 text-lg">{description}</p>
-          </motion.div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {serviceCards.map((card, index) => (
-            <ServiceCard
-              key={index}
-              icon={card.icon || defaultIcons[index % defaultIcons.length]}
-              title={card.title}
-              description={card.description}
-              index={index}
-            />
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 relative z-10 py-10 justify-items-center">
+          {serviceCards &&
+            serviceCards.map((card, index) => (
+              <ServiceCard
+                key={index}
+                icon={card.icon || defaultIcons[index % defaultIcons.length]}
+                title={card.title || ""}
+                description={card.description || ""}
+                index={index}
+              />
+            ))}
         </div>
       </div>
     </div>

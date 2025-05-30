@@ -2,12 +2,7 @@ import { PagePropsSer } from "./data";
 import { getServiceBySlug, getAllServiceSlugs } from "./data-provider";
 import EnhancedHero from "@/components/Services/EnhancedHero";
 import EnhancedPotential from "@/components/Services/EnhancedPotential";
-import Explore from "@/components/Services/Explore";
-import {
-  ServicePageSection,
-  FadeInSection,
-} from "@/components/Services/ServicePageLayout";
-import ServiceContactForm from "@/components/Services/ServiceContactForm";
+import SubscriptionForm from "@/components/landing/NewsLetter";
 
 export async function generateMetadata({
   params,
@@ -78,41 +73,8 @@ export default async function Page({
         serviceCards={Potential.serviceCards}
       />
 
-      {/* Explore Section - Key Features & Capabilities */}
-      <ServicePageSection
-        id="features"
-        title="Key Features & Capabilities"
-        subtitle="Discover the comprehensive suite of features and capabilities that our service offers."
-        background="light"
-      >
-        <div className="w-full">
-          {/* Explore component temporarily commented out */}
-          <div className="p-4 text-center">
-            <p>
-              Features and capabilities for {Hero.service} will be displayed
-              here.
-            </p>
-          </div>
-        </div>
-      </ServicePageSection>
-
-      {/* Contact Form Section */}
-      <ServicePageSection
-        id="contact"
-        title="Ready to Transform Your Business?"
-        subtitle={`Get in touch to learn how our ${Hero.service ? Hero.service.toLowerCase() : "selected"} services can help you achieve your business goals.`}
-        background="white"
-      >
-        <FadeInSection>
-          <div className="max-w-3xl mx-auto">
-            <ServiceContactForm
-              serviceTitle={
-                Hero.service ? Hero.service.toLowerCase() : "selected service"
-              }
-            />
-          </div>
-        </FadeInSection>
-      </ServicePageSection>
+      {/* Subscription Form */}
+      <SubscriptionForm />
     </div>
   );
 }

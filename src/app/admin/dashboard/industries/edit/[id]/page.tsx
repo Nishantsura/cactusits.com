@@ -6,7 +6,6 @@ import Link from "next/link";
 import { ArrowLeft, Plus, X, Save } from "lucide-react";
 import { getIndustryById, updateIndustry } from "@/lib/data-utils";
 import React from "react";
-import ImageUpload from "@/components/admin/ImageUpload";
 
 // Component for editing an existing industry
 export default function EditIndustry({
@@ -29,7 +28,6 @@ export default function EditIndustry({
     name: "",
     slug: "",
     description: "",
-    image: "",
     order_index: 0,
     is_active: true,
 
@@ -37,7 +35,6 @@ export default function EditIndustry({
     hero_industry: "",
     hero_title: "",
     hero_description: "",
-    hero_image: "",
 
     // Approach section (JSON)
     approach_items: null as any,
@@ -47,22 +44,6 @@ export default function EditIndustry({
   const [approachItems, setApproachItems] = useState<
     { title: string; description: string }[]
   >([]);
-
-  // Handle image upload
-  const handleImageUpload = (url: string, path?: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      image: url,
-    }));
-  };
-
-  // Handle hero image upload
-  const handleHeroImageUpload = (url: string, path?: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      hero_image: url,
-    }));
-  };
 
   // Fetch industry data on load
   useEffect(() => {
@@ -115,14 +96,12 @@ export default function EditIndustry({
         name: data.name || "",
         slug: data.slug || "",
         description: data.description || "",
-        image: data.image || "",
         order_index: data.order_index || 0,
         is_active: data.is_active !== false, // default to true if not explicitly false
 
         hero_industry: data.hero_industry || "",
         hero_title: data.hero_title || "",
         hero_description: data.hero_description || "",
-        hero_image: data.hero_image || "",
 
         approach_items: data.approach_items,
       });
@@ -302,21 +281,6 @@ export default function EditIndustry({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Industry Image
-          </label>
-          <ImageUpload
-            onImageUploaded={handleImageUpload}
-            currentImageUrl={formData.image}
-            label="Industry Image"
-            folder="industries"
-          />
-          <p className="mt-1 text-sm text-gray-500">
-            Optional image path for listing
-          </p>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
             Order Index
           </label>
           <input
@@ -346,45 +310,6 @@ export default function EditIndustry({
             Active (visible on site)
           </span>
         </label>
-      </div>
-    </div>
-  );
-
-  const heroSectionTab = (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Industry Display Name <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            name="hero_industry"
-            value={formData.hero_industry}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
-            required
-          />
-          <p className="mt-1 text-sm text-gray-500">
-            Display name for hero section (e.g., "Information Technology")
-          </p>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Hero Image
-          </label>
-          <ImageUpload
-            onImageUploaded={handleHeroImageUpload}
-            currentImageUrl={formData.hero_image}
-            label="Hero Image"
-            folder="industries"
-            subfolder="hero"
-          />
-          <p className="mt-1 text-sm text-gray-500">
-            Path to hero section image
-          </p>
-        </div>
       </div>
 
       <div>
@@ -505,6 +430,30 @@ export default function EditIndustry({
             </div>
           ))
         )}
+      </div>
+    </div>
+  );
+
+  // Hero section tab content
+  const heroSectionTab = (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Industry Display Name <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            name="hero_industry"
+            value={formData.hero_industry}
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+            required
+          />
+          <p className="mt-1 text-sm text-gray-500">
+            Display name for hero section (e.g., "Information Technology")
+          </p>
+        </div>
       </div>
     </div>
   );

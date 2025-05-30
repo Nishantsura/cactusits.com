@@ -115,9 +115,6 @@ export default function IndustriesPage() {
                         <path d="M7 7h10v10" />
                       </svg>
                     </Link>
-                    <button className="px-4 py-2 bg-warm-white text-[#2d2d40] border border-gray-200 rounded-none text-sm font-medium hover:bg-gray-50 transition-all">
-                      Get Started
-                    </button>
                   </div>
                 </div>
               </div>

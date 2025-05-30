@@ -1,9 +1,33 @@
 "use client";
 
 import { Globe, Shield, Target, Cloud, Cpu, DatabaseZap } from "lucide-react";
-import Link from "next/link";
 import React from "react";
 import Image from "next/image";
+
+// Function to map service titles to specific image paths - same as in EnhancedHero
+function getServiceImageForCard(serviceName: string): string {
+  // Convert the service name to lowercase for case-insensitive matching
+  const serviceNameLower = serviceName.toLowerCase();
+
+  // Map of service names (in lowercase) to image paths
+  const serviceImageMap: Record<string, string> = {
+    "digital transformation": "/landing/pexels-tima-miroshnichenko-5685937.jpg",
+    "data & ai": "/landing/pexels-yankrukov-7792745.jpg",
+    "cloud services": "/landing/pexels-tima-miroshnichenko-5685961.jpg",
+    cybersecurity:
+      "/young-man-woman-working-laptop-open-space-co-working-office-room.jpg",
+    infrastructure: "/person-working-office.jpg",
+    "it infrastructure and lifecycle management": "/person-working-office.jpg",
+    "agile & project management":
+      "/manager-woman-sitting-couch-holding-laptop-talking-video-call-virtual-conference-working-business-modern-office.jpg",
+  };
+
+  // Return the mapped image or a default if the service is not found
+  return (
+    serviceImageMap[serviceNameLower] ||
+    "/landing/pexels-tima-miroshnichenko-5686086.jpg"
+  );
+}
 
 interface ServiceCardProps {
   title: string;
@@ -38,49 +62,49 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   const shouldShowIllustration = index === 0 || index === 2 || index === 4;
 
   return (
-    <Link
-      href={`/services/${slug || title.toLowerCase().replace(/\s+/g, "-")}`}
+    <div
+      className={`relative ${
+        shouldShowIllustration ? "bg-[#22242F]" : "bg-[#111218]"
+      } rounded-lg p-6 overflow-hidden min-h-64 md:h-72 hover:shadow-lg transition-shadow duration-300 group/service`}
     >
-      <div
-        className={`relative ${
-          shouldShowIllustration ? "bg-[#22242F]" : "bg-[#111218]"
-        } rounded-lg p-6 overflow-hidden min-h-64 md:h-72 cursor-pointer hover:shadow-lg transition-shadow duration-300 group/service`}
-      >
-        {/* Hover animation overlay similar to Feature component */}
-        <div className="opacity-0 group-hover/service:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-gradient-to-t from-[#2a2d3a]/20 to-transparent pointer-events-none" />
+      {/* Hover animation overlay similar to Feature component */}
+      <div className="opacity-0 group-hover/service:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-gradient-to-t from-[#2a2d3a]/20 to-transparent pointer-events-none" />
 
-        <div className="z-10 relative">
-          <div className="bg-[#2a2d3a] rounded-full p-3 w-16 h-16 flex items-center justify-center mb-4 transition-transform duration-300 group-hover/service:scale-110">
-            {icon}
-          </div>
-          <h3 className="text-white text-lg font-semibold mb-2 mt-10 group-hover/service:translate-x-2 transition-transform duration-300">
-            {title}
-          </h3>
-          <p className="text-gray-400 text-sm">{description}</p>
+      <div className="z-10 relative">
+        <div className="bg-[#2a2d3a] rounded-full p-3 w-16 h-16 flex items-center justify-center mb-4 transition-transform duration-300 group-hover/service:scale-110">
+          {icon}
         </div>
-
-        {/* Add illustrations only on cards 1, 3, 5 */}
-        {shouldShowIllustration && (
-          <Image
-            src={
-              image ||
-              `/landing/services-${Math.floor(Math.random() * 3) + 1}.png`
-            }
-            alt={imageAlt || "service image"}
-            width={imageWidth || 500}
-            height={imageHeight || 500}
-            className="absolute top-2 right-2 h-auto w-32 transition-transform duration-300 group-hover/service:scale-110"
-          />
-        )}
-
-        {/* Add accent color if provided */}
-        {accentColor && (
-          <div
-            className={`absolute ${accentPosition || "bottom-0 right-0"} h-24 w-24 rounded-full opacity-30 transition-transform duration-300 group-hover/service:scale-150 ${accentColor || "bg-primary"}`}
-          />
-        )}
+        <div className="text-white text-lg font-semibold mb-2 mt-10 group-hover/service:translate-x-2 transition-transform duration-300">
+          {title}
+        </div>
+        <p className="text-gray-400 text-sm">{description}</p>
       </div>
-    </Link>
+
+      {/* Add specific illustrations only on cards 1, 3, 5 with the specified illustrations */}
+      {shouldShowIllustration && (
+        <Image
+          src={
+            index === 0
+              ? "/landing/services-1.png"
+              : index === 2
+                ? "/landing/services-3.png"
+                : "/landing/two-circle.png"
+          }
+          alt={imageAlt || "service illustration"}
+          width={imageWidth || 500}
+          height={imageHeight || 500}
+          className="absolute top-2 right-2 h-auto w-32 transition-transform duration-300 group-hover/service:scale-110"
+          unoptimized
+        />
+      )}
+
+      {/* Add accent color if provided */}
+      {accentColor && (
+        <div
+          className={`absolute ${accentPosition || "bottom-0 right-0"} h-24 w-24 rounded-full opacity-30 transition-transform duration-300 group-hover/service:scale-150 ${accentColor || "bg-primary"}`}
+        />
+      )}
+    </div>
   );
 };
 

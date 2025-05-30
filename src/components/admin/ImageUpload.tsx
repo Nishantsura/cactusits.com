@@ -1,79 +1,50 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import { uploadImage } from "@/lib/upload-utils";
-import { X, AlertTriangle, Loader2 } from "lucide-react";
+import { X, ExternalLink } from "lucide-react";
 
-interface ImageUploadProps {
-  onImageUploaded: (url: string, path?: string) => void;
+interface ImageUrlInputProps {
+  onImageUrlChanged: (url: string, path?: string) => void;
   currentImageUrl?: string;
   label?: string;
-  folder?: string;
-  subfolder?: string;
 }
 
 export default function ImageUpload({
-  onImageUploaded,
+  onImageUrlChanged,
   currentImageUrl = "",
-  label = "Upload Image",
-  folder = "general",
-  subfolder,
-}: ImageUploadProps) {
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
+  label = "Image URL",
+}: ImageUrlInputProps) {
+  const [imageUrl, setImageUrl] = useState(currentImageUrl);
   const [previewUrl, setPreviewUrl] = useState(currentImageUrl);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const url = e.target.value;
+    setImageUrl(url);
+    setError(null);
+  };
 
-    // Reset any previous errors
-    setUploadError(null);
-    setIsUploading(true);
+  const handleApplyUrl = () => {
+    if (!imageUrl) {
+      setError("Please enter an image URL");
+      return;
+    }
 
+    // Basic URL validation
     try {
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        throw new Error(
-          "File size exceeds 5MB limit. Please choose a smaller image.",
-        );
-      }
-
-      // Validate file type
-      if (!file.type.startsWith("image/")) {
-        throw new Error("Only image files are allowed.");
-      }
-
-      // Upload to Supabase Storage
-      const { data, error } = await uploadImage(file, folder, subfolder);
-
-      if (error) throw error;
-
-      if (data?.url) {
-        // Set preview and notify parent component
-        setPreviewUrl(data.url);
-        onImageUploaded(data.url, data.path);
-      } else {
-        throw new Error("Failed to get image URL after upload.");
-      }
+      new URL(imageUrl);
+      setPreviewUrl(imageUrl);
+      onImageUrlChanged(imageUrl, "");
+      setError(null);
     } catch (err) {
-      console.error("Upload failed:", err);
-      setUploadError(
-        err instanceof Error
-          ? err.message
-          : "Failed to upload image. Please try again.",
-      );
-    } finally {
-      setIsUploading(false);
-      // Clear the file input so the same file can be selected again
-      e.target.value = "";
+      setError("Please enter a valid URL");
     }
   };
 
   const handleRemoveImage = () => {
     setPreviewUrl("");
-    onImageUploaded("", "");
+    setImageUrl("");
+    onImageUrlChanged("", "");
   };
 
   return (
@@ -103,40 +74,41 @@ export default function ImageUpload({
         </div>
       ) : (
         <div className="mb-4 border-2 border-dashed border-gray-300 rounded-md p-6 text-center">
-          <p className="text-sm text-gray-500">
-            Upload an image or drag and drop
+          <p className="text-sm text-gray-500">Enter an image URL below</p>
+          <p className="text-xs text-gray-400 mt-1">
+            URL should point directly to an image file
           </p>
-          <p className="text-xs text-gray-400 mt-1">PNG, JPG, GIF up to 5MB</p>
         </div>
       )}
 
-      {uploadError && (
-        <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded-md flex items-start">
-          <AlertTriangle className="text-red-500 w-5 h-5 mr-2 flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-red-600">{uploadError}</p>
+      {error && (
+        <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-sm text-red-600">{error}</p>
         </div>
       )}
 
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handleFileChange}
-        className="block w-full text-sm text-gray-500
-          file:mr-4 file:py-2 file:px-4
-          file:rounded-md file:border-0
-          file:text-sm file:font-semibold
-          file:bg-primary file:text-white
-          hover:file:bg-primary/90
-          disabled:opacity-50 disabled:cursor-not-allowed"
-        disabled={isUploading}
-      />
+      <div className="flex items-center space-x-2">
+        <input
+          type="text"
+          value={imageUrl}
+          onChange={handleUrlChange}
+          placeholder="https://example.com/image.jpg"
+          className="flex-1 p-2 border border-gray-300 rounded-md text-sm"
+        />
+        <button
+          type="button"
+          onClick={handleApplyUrl}
+          className="px-3 py-2 bg-primary text-white rounded-md text-sm flex items-center"
+        >
+          <ExternalLink className="w-4 h-4 mr-1" />
+          Apply
+        </button>
+      </div>
 
-      {isUploading && (
-        <div className="mt-2 flex items-center text-sm text-gray-500">
-          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-          <span>Uploading...</span>
-        </div>
-      )}
+      <p className="text-xs text-gray-500 mt-1">
+        Enter a direct URL to an image. You can use services like Unsplash,
+        Imgur, or your own hosting.
+      </p>
     </div>
   );
 }

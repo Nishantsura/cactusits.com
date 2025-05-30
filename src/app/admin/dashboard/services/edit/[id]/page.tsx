@@ -1,14 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Save, Plus, Trash, Edit2, Upload } from "lucide-react";
+import { ArrowLeft, Save, Plus, Trash } from "lucide-react";
 import { getServiceById, updateService } from "@/lib/data-utils";
-import { uploadImage } from "@/lib/upload-utils";
+import { uploadServiceImage } from "@/lib/storage-utils";
 import React from "react";
-import ImageUpload from "@/components/admin/ImageUpload";
 
 // Type definitions for service data
 interface ServiceCardType {
@@ -28,12 +27,6 @@ interface ServiceFormData {
   icon_name: string;
   accent_color: string;
   accent_position: string;
-  image: string;
-  image_path: string;
-  image_position: string;
-  image_width: number;
-  image_height: number;
-  image_alt: string;
   order_index: number;
   is_active: boolean;
   created_at?: string;
@@ -88,12 +81,6 @@ export default function EditServicePage({
     icon_name: "",
     accent_color: "",
     accent_position: "",
-    image: "",
-    image_path: "",
-    image_position: "",
-    image_width: 500,
-    image_height: 500,
-    image_alt: "",
     order_index: 0,
     is_active: true,
 
@@ -108,9 +95,6 @@ export default function EditServicePage({
     potential_description: "",
     potential_service_cards: [],
   });
-
-  // Image upload states
-  const [uploadError, setUploadError] = useState<string | null>(null);
 
   // Available icon options
   const iconOptions = [
@@ -219,12 +203,7 @@ export default function EditServicePage({
           icon_name: data.icon_name || "",
           accent_color: data.accent_color || "",
           accent_position: data.accent_position || "",
-          image: data.image || "",
-          image_path: data.image_path || "",
-          image_position: data.image_position || "",
-          image_width: data.image_width || 500,
-          image_height: data.image_height || 500,
-          image_alt: data.image_alt || "",
+
           order_index: data.order_index || 0,
           is_active: data.is_active !== false, // default to true if undefined
           created_at: data.created_at,
@@ -265,11 +244,7 @@ export default function EditServicePage({
     const { name, value } = e.target;
 
     // Convert to number if it's a numeric field
-    if (
-      name === "order_index" ||
-      name === "image_width" ||
-      name === "image_height"
-    ) {
+    if (name === "order_index") {
       setFormData((prev) => ({
         ...prev,
         [name]: parseInt(value) || 0,
@@ -354,21 +329,29 @@ export default function EditServicePage({
     }));
   };
 
-  // Handle image upload
-  const handleImageUpload = (url: string, path?: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      image: url,
-      image_path: path || "",
-    }));
-  };
-
   // Handle hero image upload
-  const handleHeroImageUpload = (url: string, path?: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      hero_image: url,
-    }));
+  const handleHeroImageUpload = async (file: File) => {
+    if (!file) return;
+
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      // Use the service slug or generate a temporary one if needed
+      const slugToUse = formData.slug || `service-${serviceId}`;
+
+      const publicUrl = await uploadServiceImage(file, slugToUse);
+
+      setFormData((prev) => ({
+        ...prev,
+        hero_image: publicUrl,
+      }));
+    } catch (err: any) {
+      console.error("Error uploading image:", err);
+      setError(err.message || "Failed to upload image. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Submit form to update service
@@ -424,14 +407,31 @@ export default function EditServicePage({
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header with back button */}
-        <div className="flex items-center mb-6">
-          <Link
-            href="/admin/dashboard/services"
-            className="text-gray-500 hover:text-gray-700 mr-2"
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center">
+            <Link
+              href="/admin/dashboard/services"
+              className="text-gray-500 hover:text-gray-700 mr-2"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
+            <h1 className="text-2xl font-bold">
+              Edit Service: {formData.title}
+            </h1>
+          </div>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={isLoading}
+            className="flex items-center px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark transition-colors disabled:opacity-50"
           >
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <h1 className="text-2xl font-bold">Edit Service: {formData.title}</h1>
+            {isLoading ? (
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+            ) : (
+              <Save className="w-5 h-5 mr-2" />
+            )}
+            Save Changes
+          </button>
         </div>
 
         {/* Error message */}
@@ -443,196 +443,83 @@ export default function EditServicePage({
 
         {/* Service form */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
-          {/* Tab Navigation */}
-          <div className="border-b border-gray-200">
-            <nav className="flex -mb-px">
-              <button
-                type="button"
-                onClick={() => setActiveTab("basic")}
-                className={`px-4 py-3 font-medium text-sm ${activeTab === "basic" ? "border-b-2 border-primary text-primary" : "text-gray-500 hover:text-gray-700"}`}
-              >
-                Basic Info
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("hero")}
-                className={`px-4 py-3 font-medium text-sm ${activeTab === "hero" ? "border-b-2 border-primary text-primary" : "text-gray-500 hover:text-gray-700"}`}
-              >
-                Hero Section
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("potential")}
-                className={`px-4 py-3 font-medium text-sm ${activeTab === "potential" ? "border-b-2 border-primary text-primary" : "text-gray-500 hover:text-gray-700"}`}
-              >
-                Potential Section
-              </button>
-            </nav>
-          </div>
-
-          <form onSubmit={handleSubmit}>
-            {/* Hero section fields - Placeholder */}
-            {activeTab === "hero" && (
-              <div className="p-6 space-y-6">
-                {/* Hero Service Name */}
-                <div>
-                  <label
-                    htmlFor="hero_service"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Hero Service Name
-                  </label>
-                  <input
-                    type="text"
-                    id="hero_service"
-                    name="hero_service"
-                    value={formData.hero_service}
-                    onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-
-                {/* Hero Title */}
-                <div>
-                  <label
-                    htmlFor="hero_title"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Hero Title
-                  </label>
-                  <input
-                    type="text"
-                    id="hero_title"
-                    name="hero_title"
-                    value={formData.hero_title}
-                    onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-
-                {/* Hero Description */}
-                <div>
-                  <label
-                    htmlFor="hero_description"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Hero Description
-                  </label>
-                  <textarea
-                    id="hero_description"
-                    name="hero_description"
-                    value={formData.hero_description}
-                    onChange={handleChange}
-                    rows={3}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-
-                {/* Hero Image Upload */}
-                <div>
-                  <ImageUpload
-                    onImageUploaded={handleHeroImageUpload}
-                    currentImageUrl={formData.hero_image}
-                    label="Hero Image"
-                    folder="services"
-                    subfolder="hero"
-                  />
-                </div>
-
-                {/* Hero Bullet Points */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Hero Bullet Points
-                  </label>
-                  {formData.hero_bulletpoints.map((point, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center space-x-2 mb-2"
-                    >
-                      <input
-                        type="text"
-                        value={point}
-                        onChange={(e) => {
-                          const newPoints = [...formData.hero_bulletpoints];
-                          newPoints[index] = e.target.value;
-                          setFormData((prev) => ({
-                            ...prev,
-                            hero_bulletpoints: newPoints,
-                          }));
-                        }}
-                        className="w-full p-2 border border-gray-300 rounded-md"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveBulletpoint(index)} // Assuming handleRemoveBulletpoint exists
-                        className="p-2 text-red-500 hover:text-red-700"
-                      >
-                        <Trash className="w-5 h-5" />
-                      </button>
-                    </div>
-                  ))}
-                  <div className="flex items-center space-x-2 mt-2">
-                    <input
-                      type="text"
-                      value={newBulletpoint} // Assuming newBulletpoint state exists
-                      onChange={(e) => setNewBulletpoint(e.target.value)} // Assuming setNewBulletpoint exists
-                      placeholder="Add a new bullet point"
-                      className="w-full p-2 border border-gray-300 rounded-md"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleAddBulletpoint} // Assuming handleAddBulletpoint exists
-                      className="px-3 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 flex items-center"
-                    >
-                      <Plus className="w-4 h-4 mr-1" /> Add
-                    </button>
-                  </div>
-                </div>
+          <form onSubmit={handleSubmit} className="p-6">
+            {/* Form tabs */}
+            <div className="mb-6 border-b border-gray-200">
+              <div className="flex space-x-4">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("basic")}
+                  className={`px-4 py-2 text-sm font-medium ${activeTab === "basic" ? "text-primary border-b-2 border-primary" : "text-gray-500 hover:text-gray-700 border-b-2 border-transparent hover:border-gray-300"}`}
+                >
+                  Basic Info
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("hero")}
+                  className={`px-4 py-2 text-sm font-medium ${activeTab === "hero" ? "text-primary border-b-2 border-primary" : "text-gray-500 hover:text-gray-700 border-b-2 border-transparent hover:border-gray-300"}`}
+                >
+                  Hero Section
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("potential")}
+                  className={`px-4 py-2 text-sm font-medium ${activeTab === "potential" ? "text-primary border-b-2 border-primary" : "text-gray-500 hover:text-gray-700 border-b-2 border-transparent hover:border-gray-300"}`}
+                >
+                  Potential Section
+                </button>
               </div>
-            )}
+            </div>
 
-            {/* Basic Info Tab - Placeholder */}
-            {activeTab === "basic" && (
-              <div className="p-6 space-y-6">
-                {/* Title */}
-                <div>
-                  <label
-                    htmlFor="title"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Service Name*
-                  </label>
-                  <input
-                    type="text"
-                    id="title"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleTitleChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                    required
-                  />
-                </div>
+            {/* Basic Info Tab */}
+            <div
+              className="space-y-6"
+              style={{ display: activeTab === "basic" ? "block" : "none" }}
+            >
+              {/* Title */}
+              <div>
+                <label
+                  htmlFor="title"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Service Title <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="title"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleTitleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                  required
+                />
+              </div>
 
-                {/* Slug */}
-                <div>
-                  <label
-                    htmlFor="slug"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Slug*
-                  </label>
-                  <input
-                    type="text"
-                    id="slug"
-                    name="slug"
-                    value={formData.slug}
-                    onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                    required
-                  />
-                </div>
+              {/* Slug */}
+              <div>
+                <label
+                  htmlFor="slug"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Slug <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="slug"
+                  name="slug"
+                  value={formData.slug}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors font-mono"
+                  required
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  URL-friendly identifier for this service.
+                </p>
+              </div>
 
-                {/* Icon */}
+              {/* Two column layout for icon and order */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Icon Name */}
                 <div>
                   <label
                     htmlFor="icon_name"
@@ -645,142 +532,15 @@ export default function EditServicePage({
                     name="icon_name"
                     value={formData.icon_name}
                     onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
                   >
-                    <option value="">Select an icon</option>
+                    <option value="">-- Select an icon --</option>
                     {iconOptions.map((icon) => (
                       <option key={icon} value={icon}>
-                        {icon}
+                        {icon || "None"}
                       </option>
                     ))}
                   </select>
-                </div>
-
-                {/* Accent Color */}
-                <div>
-                  <label
-                    htmlFor="accent_color"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Accent Color
-                  </label>
-                  <input
-                    type="text"
-                    id="accent_color"
-                    name="accent_color"
-                    value={formData.accent_color}
-                    onChange={handleChange}
-                    placeholder="e.g. #3B82F6 or blue-500"
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-
-                {/* Accent Position */}
-                <div>
-                  <label
-                    htmlFor="accent_position"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Accent Position
-                  </label>
-                  <select
-                    id="accent_position"
-                    name="accent_position"
-                    value={formData.accent_position}
-                    onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                  >
-                    <option value="">Select a position</option>
-                    <option value="left">Left</option>
-                    <option value="right">Right</option>
-                    <option value="top">Top</option>
-                    <option value="bottom">Bottom</option>
-                  </select>
-                </div>
-
-                {/* Description */}
-                <div>
-                  <label
-                    htmlFor="description"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Description
-                  </label>
-                  <textarea
-                    id="description"
-                    name="description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    rows={3}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-
-                {/* Short Description */}
-                <div>
-                  <label
-                    htmlFor="short_description"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Short Description
-                  </label>
-                  <textarea
-                    id="short_description"
-                    name="short_description"
-                    value={formData.short_description}
-                    onChange={handleChange}
-                    rows={2}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-
-                {/* Long Description */}
-                <div>
-                  <label
-                    htmlFor="long_description"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Long Description
-                  </label>
-                  <textarea
-                    id="long_description"
-                    name="long_description"
-                    value={formData.long_description}
-                    onChange={handleChange}
-                    rows={5}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-
-                {/* Image Upload */}
-                <div className="mb-4">
-                  <ImageUpload
-                    onImageUploaded={handleImageUpload}
-                    currentImageUrl={formData.image}
-                    label="Service Image"
-                    folder="services"
-                  />
-                  {uploadError && (
-                    <p className="text-red-500 text-xs mt-1">{uploadError}</p>
-                  )}
-                </div>
-
-                {/* Image Alt Text */}
-                <div>
-                  <label
-                    htmlFor="image_alt"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Image Alt Text
-                  </label>
-                  <input
-                    type="text"
-                    id="image_alt"
-                    name="image_alt"
-                    value={formData.image_alt}
-                    onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                  />
                 </div>
 
                 {/* Order Index */}
@@ -789,7 +549,7 @@ export default function EditServicePage({
                     htmlFor="order_index"
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
-                    Order Index
+                    Display Order
                   </label>
                   <input
                     type="number"
@@ -797,251 +557,390 @@ export default function EditServicePage({
                     name="order_index"
                     value={formData.order_index}
                     onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
+                    min="0"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
                   />
-                </div>
-
-                {/* Is Active */}
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="is_active"
-                    name="is_active"
-                    checked={formData.is_active}
-                    onChange={handleChange}
-                    className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
-                  />
-                  <label
-                    htmlFor="is_active"
-                    className="ml-2 block text-sm text-gray-900"
-                  >
-                    Is Active
-                  </label>
                 </div>
               </div>
-            )}
 
-            {/* Potential section fields - Placeholder */}
-            {activeTab === "potential" && (
-              <div className="p-6 space-y-6">
-                <div>
-                  <label
-                    htmlFor="potential_description"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Potential Section Description
-                  </label>
-                  <textarea
-                    id="potential_description"
-                    name="potential_description"
-                    value={formData.potential_description}
-                    onChange={handleChange}
-                    rows={4}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                  ></textarea>
-                </div>
+              {/* Description */}
+              <div>
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Description <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                  required
+                ></textarea>
+              </div>
 
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Potential Service Cards
-                  </h3>
-                  {formData.potential_service_cards.map((card, index) => (
-                    <div
-                      key={index}
-                      className="p-4 border border-gray-200 rounded-md mb-4 space-y-3"
-                    >
-                      <div className="flex justify-between items-center">
-                        <h4 className="text-md font-semibold">
-                          Card {index + 1}
-                        </h4>
+              {/* Short Description */}
+              <div>
+                <label
+                  htmlFor="short_description"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Short Description
+                </label>
+                <textarea
+                  id="short_description"
+                  name="short_description"
+                  value={formData.short_description}
+                  onChange={handleChange}
+                  rows={2}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                ></textarea>
+              </div>
+
+              {/* Long Description */}
+              <div>
+                <label
+                  htmlFor="long_description"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Long Description
+                </label>
+                <textarea
+                  id="long_description"
+                  name="long_description"
+                  value={formData.long_description}
+                  onChange={handleChange}
+                  rows={4}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                ></textarea>
+              </div>
+
+              {/* Accent Color */}
+              <div>
+                <label
+                  htmlFor="accent_color"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Accent Color
+                </label>
+                <input
+                  type="text"
+                  id="accent_color"
+                  name="accent_color"
+                  value={formData.accent_color}
+                  onChange={handleChange}
+                  placeholder="bg-purple-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                />
+              </div>
+
+              {/* Accent Position */}
+              <div>
+                <label
+                  htmlFor="accent_position"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Accent Position
+                </label>
+                <select
+                  id="accent_position"
+                  name="accent_position"
+                  value={formData.accent_position}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                >
+                  <option value="">-- Select a position --</option>
+                  <option value="top-right">Top Right</option>
+                  <option value="top-left">Top Left</option>
+                  <option value="bottom-right">Bottom Right</option>
+                  <option value="bottom-left">Bottom Left</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Hero Section Tab */}
+            <div
+              className="space-y-6"
+              style={{ display: activeTab === "hero" ? "block" : "none" }}
+            >
+              {/* Hero Service (Main title) */}
+              <div>
+                <label
+                  htmlFor="hero_service"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Service Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="hero_service"
+                  name="hero_service"
+                  value={formData.hero_service}
+                  onChange={handleChange}
+                  placeholder="IT CONSULTING, STRATEGY & SERVICES"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                  required
+                />
+              </div>
+
+              {/* Hero Title */}
+              <div>
+                <label
+                  htmlFor="hero_title"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Hero Title <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="hero_title"
+                  name="hero_title"
+                  value={formData.hero_title}
+                  onChange={handleChange}
+                  placeholder="Redefine Your Business Strategy"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                  required
+                />
+              </div>
+
+              {/* Hero Description */}
+              <div>
+                <label
+                  htmlFor="hero_description"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Hero Description <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  id="hero_description"
+                  name="hero_description"
+                  value={formData.hero_description}
+                  onChange={handleChange}
+                  placeholder="Empower your business with actionable insights and innovative strategies."
+                  rows={2}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                  required
+                />
+              </div>
+
+              {/* Hero Bulletpoints */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Bulletpoints
+                </label>
+
+                {/* Current bulletpoints */}
+                {formData.hero_bulletpoints.length > 0 && (
+                  <div className="mb-4 space-y-2">
+                    {formData.hero_bulletpoints.map((point, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center bg-gray-50 p-2 rounded"
+                      >
+                        <span className="flex-1 mr-2">{point}</span>
                         <button
                           type="button"
-                          onClick={() => handleRemoveCard(index)} // Assuming handleRemoveCard exists
-                          className="p-2 text-red-500 hover:text-red-700"
+                          onClick={() => handleRemoveBulletpoint(index)}
+                          className="text-red-500 hover:text-red-700"
                         >
-                          <Trash className="w-5 h-5" />
+                          <Trash size={16} />
                         </button>
                       </div>
-                      <div>
-                        <label
-                          htmlFor={`card_title_${index}`}
-                          className="block text-xs font-medium text-gray-600 mb-1"
-                        >
-                          Card Title
-                        </label>
-                        <input
-                          type="text"
-                          id={`card_title_${index}`}
-                          value={card.title}
-                          onChange={(e) => {
-                            const newCards = [
-                              ...formData.potential_service_cards,
-                            ];
-                            newCards[index].title = e.target.value;
-                            setFormData((prev) => ({
-                              ...prev,
-                              potential_service_cards: newCards,
-                            }));
-                          }}
-                          className="w-full p-2 border border-gray-300 rounded-md text-sm"
-                        ></input>
-                      </div>
-                      <div>
-                        <label
-                          htmlFor={`card_description_${index}`}
-                          className="block text-xs font-medium text-gray-600 mb-1"
-                        >
-                          Card Description
-                        </label>
-                        <textarea
-                          id={`card_description_${index}`}
-                          value={card.description}
-                          onChange={(e) => {
-                            const newCards = [
-                              ...formData.potential_service_cards,
-                            ];
-                            newCards[index].description = e.target.value;
-                            setFormData((prev) => ({
-                              ...prev,
-                              potential_service_cards: newCards,
-                            }));
-                          }}
-                          rows={2}
-                          className="w-full p-2 border border-gray-300 rounded-md text-sm"
-                        ></textarea>
-                      </div>
-                      <div>
-                        <label
-                          htmlFor={`card_icon_${index}`}
-                          className="block text-xs font-medium text-gray-600 mb-1"
-                        >
-                          Card Icon
-                        </label>
-                        <select
-                          id={`card_icon_${index}`}
-                          value={card.icon}
-                          onChange={(e) => {
-                            const newCards = [
-                              ...formData.potential_service_cards,
-                            ];
-                            newCards[index].icon = e.target.value;
-                            setFormData((prev) => ({
-                              ...prev,
-                              potential_service_cards: newCards,
-                            }));
-                          }}
-                          className="w-full p-2 border border-gray-300 rounded-md text-sm"
-                        >
-                          <option value="">Select an icon</option>
-                          {iconOptions.map((icon) => (
-                            <option key={icon} value={icon}>
-                              {icon}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                  ))}
-
-                  <div className="mt-6 p-4 border border-dashed border-gray-300 rounded-md space-y-3">
-                    <h4 className="text-md font-semibold">Add New Card</h4>
-                    <div>
-                      <label
-                        htmlFor="new_card_title"
-                        className="block text-xs font-medium text-gray-600 mb-1"
-                      >
-                        New Card Title
-                      </label>
-                      <input
-                        type="text"
-                        id="new_card_title"
-                        value={newCard.title} // Assuming newCard state exists
-                        onChange={(e) =>
-                          setNewCard((prev) => ({
-                            ...prev,
-                            title: e.target.value,
-                          }))
-                        } // Assuming setNewCard exists
-                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="new_card_description"
-                        className="block text-xs font-medium text-gray-600 mb-1"
-                      >
-                        New Card Description
-                      </label>
-                      <textarea
-                        id="new_card_description"
-                        value={newCard.description} // Assuming newCard state exists
-                        onChange={(e) =>
-                          setNewCard((prev) => ({
-                            ...prev,
-                            description: e.target.value,
-                          }))
-                        } // Assuming setNewCard exists
-                        rows={2}
-                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="new_card_icon"
-                        className="block text-xs font-medium text-gray-600 mb-1"
-                      >
-                        New Card Icon
-                      </label>
-                      <select
-                        id="new_card_icon"
-                        value={newCard.icon} // Assuming newCard state exists
-                        onChange={(e) =>
-                          setNewCard((prev) => ({
-                            ...prev,
-                            icon: e.target.value,
-                          }))
-                        } // Assuming setNewCard exists
-                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
-                      >
-                        <option value="">Select an icon</option>
-                        {iconOptions.map((icon) => (
-                          <option key={icon} value={icon}>
-                            {icon}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleAddCard} // Assuming handleAddCard exists
-                      className="mt-2 px-3 py-1.5 bg-green-500 text-white text-sm rounded-md hover:bg-green-600 flex items-center"
-                    >
-                      <Plus className="w-4 h-4 mr-1" /> Add Card
-                    </button>
+                    ))}
                   </div>
+                )}
+
+                {/* Add new bulletpoint */}
+                <div className="flex items-end gap-2">
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={newBulletpoint}
+                      onChange={(e) => setNewBulletpoint(e.target.value)}
+                      placeholder="Add a bulletpoint"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAddBulletpoint}
+                    className="flex items-center px-3 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none"
+                  >
+                    <Plus size={16} className="mr-1" />
+                    Add
+                  </button>
                 </div>
               </div>
-            )}
 
-            {/* Submit button - always visible */}
-            <div className="bg-gray-50 px-6 py-3 flex justify-end">
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors disabled:opacity-50"
-              >
-                {isLoading ? (
-                  <>
-                    <span className="animate-spin mr-2">⏳</span>
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-4 h-4 mr-2" />
-                    Save Changes
-                  </>
+              {/* Hero Image Upload */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Hero Image
+                </label>
+
+                {/* Preview current image if exists */}
+                {formData.hero_image && (
+                  <div className="mb-3">
+                    <Image
+                      src={formData.hero_image}
+                      alt="Hero image preview"
+                      width={300}
+                      height={200}
+                      className="rounded-md object-cover h-[200px] w-[300px]"
+                    />
+                  </div>
                 )}
-              </button>
+
+                {/* File upload input */}
+                <div className="flex items-end gap-2">
+                  <input
+                    type="file"
+                    id="hero_image_upload"
+                    accept="image/jpeg,image/jpg"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        handleHeroImageUpload(e.target.files[0]);
+                      }
+                    }}
+                    className="w-full text-sm text-gray-500 
+                              file:mr-4 file:py-2 file:px-4
+                              file:rounded-md file:border-0
+                              file:text-sm file:font-medium
+                              file:bg-gray-100 file:text-gray-700
+                              hover:file:bg-gray-200"
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Upload a JPG image to display in the hero section. Recommended
+                  size: 1000x800px.
+                </p>
+              </div>
+            </div>
+
+            {/* Potential Section Tab */}
+            <div
+              className="space-y-6"
+              style={{ display: activeTab === "potential" ? "block" : "none" }}
+            >
+              {/* Potential Description */}
+              <div>
+                <label
+                  htmlFor="potential_description"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Potential Description
+                </label>
+                <textarea
+                  id="potential_description"
+                  name="potential_description"
+                  value={formData.potential_description}
+                  onChange={handleChange}
+                  placeholder="At Cactus, we help organisations unlock their full potential through tailored consulting services..."
+                  rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+                />
+              </div>
+
+              {/* Service Cards */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Service Cards
+                </label>
+
+                {/* Current service cards */}
+                {formData.potential_service_cards.length > 0 && (
+                  <div className="mb-4 space-y-3">
+                    {formData.potential_service_cards.map((card, index) => (
+                      <div key={index} className="bg-gray-50 p-3 rounded">
+                        <div className="flex justify-between mb-1">
+                          <span className="font-medium">{card.title}</span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveCard(index)}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <Trash size={16} />
+                          </button>
+                        </div>
+                        <div className="text-sm text-gray-600 mb-1">
+                          Icon: {card.icon}
+                        </div>
+                        <div className="text-sm">{card.description}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Add new service card */}
+                <div className="border border-gray-200 rounded-md p-3 space-y-3">
+                  <h4 className="text-sm font-medium">Add Service Card</h4>
+
+                  {/* Card Title */}
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">
+                      Title
+                    </label>
+                    <input
+                      type="text"
+                      value={newCard.title}
+                      onChange={(e) =>
+                        setNewCard({ ...newCard, title: e.target.value })
+                      }
+                      placeholder="Business Strategy"
+                      className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                    />
+                  </div>
+
+                  {/* Card Icon */}
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">
+                      Icon
+                    </label>
+                    <select
+                      value={newCard.icon}
+                      onChange={(e) =>
+                        setNewCard({ ...newCard, icon: e.target.value })
+                      }
+                      className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                    >
+                      <option value="">Select an icon</option>
+                      {iconOptions.map((icon) => (
+                        <option key={icon} value={icon}>
+                          {icon || "None"}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Card Description */}
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">
+                      Description
+                    </label>
+                    <textarea
+                      value={newCard.description}
+                      onChange={(e) =>
+                        setNewCard({ ...newCard, description: e.target.value })
+                      }
+                      placeholder="Align your business goals with technology for sustainable growth."
+                      rows={2}
+                      className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleAddCard}
+                    className="flex items-center px-3 py-1.5 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300 focus:outline-none"
+                  >
+                    <Plus size={14} className="mr-1" />
+                    Add Card
+                  </button>
+                </div>
+              </div>
             </div>
           </form>
         </div>

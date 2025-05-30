@@ -83,9 +83,6 @@ export default async function Home() {
                 {service.hero_bulletpoints &&
                   service.hero_bulletpoints.length > 0 && (
                     <>
-                      <h3 className="text-xs sm:text-sm uppercase tracking-wider font-bold mb-4">
-                        BENEFITS
-                      </h3>
                       <ul className="space-y-2 my-4 sm:my-6 mb-6 sm:mb-8 text-sm sm:text-base">
                         {(typeof service.hero_bulletpoints === "string"
                           ? JSON.parse(service.hero_bulletpoints)
@@ -105,12 +102,6 @@ export default async function Home() {
                   )}
 
                 <div className="flex flex-wrap gap-3 sm:gap-4">
-                  <Link
-                    href="/get-started"
-                    className="px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base bg-foreground text-white font-medium transition-colors"
-                  >
-                    Get Started
-                  </Link>
                   <Link
                     href={`/services/${service.slug}`}
                     className="px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base text-gray-muted font-medium hover:text-gray-900 transition-colors border-2 border-slate-100"

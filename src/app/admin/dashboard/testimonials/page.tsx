@@ -6,13 +6,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Plus, Trash, Edit, Save } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import ImageUpload from "@/components/admin/ImageUpload";
 
 // Define the testimonial type
 type Testimonial = {
   id: number;
   text: string;
-  image: string;
   name: string;
   role: string;
   company?: string;
@@ -36,12 +34,6 @@ export default function TestimonialsAdmin() {
   const [company, setCompany] = useState("");
   const [service, setService] = useState("");
   const [text, setText] = useState("");
-  const [image, setImage] = useState("");
-
-  // Handle image upload from ImageUpload component
-  const handleImageUpload = (url: string) => {
-    setImage(url);
-  };
 
   // Authentication check
   useEffect(() => {
@@ -122,9 +114,9 @@ export default function TestimonialsAdmin() {
     setFormError("");
 
     // Basic validation
-    if (!name || !role || !text || !image) {
+    if (!name || !role || !text) {
       setFormError(
-        "Please fill in all required fields (name, role, testimonial text, and image URL)",
+        "Please fill in all required fields (name, role, and testimonial text)",
       );
       return;
     }
@@ -138,7 +130,6 @@ export default function TestimonialsAdmin() {
         company: company || null,
         service: service || null,
         text,
-        image,
       };
 
       // Add new testimonial to Supabase
@@ -174,9 +165,9 @@ export default function TestimonialsAdmin() {
     }
 
     // Basic validation
-    if (!name || !role || !text || !image) {
+    if (!name || !role || !text) {
       setFormError(
-        "Please fill in all required fields (name, role, testimonial text, and image URL)",
+        "Please fill in all required fields (name, role, and testimonial text)",
       );
       return;
     }
@@ -190,7 +181,6 @@ export default function TestimonialsAdmin() {
         company: company || null,
         service: service || null,
         text,
-        image,
       };
 
       // Update testimonial in Supabase
@@ -258,7 +248,6 @@ export default function TestimonialsAdmin() {
     setCompany(testimonial.company || "");
     setService(testimonial.service || "");
     setText(testimonial.text);
-    setImage(testimonial.image);
     setIsEditing(true);
   };
 
@@ -269,7 +258,6 @@ export default function TestimonialsAdmin() {
     setCompany("");
     setService("");
     setText("");
-    setImage("");
     setCurrentTestimonial(null);
     setFormError("");
   };
@@ -387,18 +375,6 @@ export default function TestimonialsAdmin() {
                 </div>
               </div>
 
-              <div className="mb-4">
-                <ImageUpload
-                  onImageUploaded={handleImageUpload}
-                  currentImageUrl={image}
-                  label="Profile Image"
-                  folder="testimonials"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Profile image of the person giving the testimonial
-                </p>
-              </div>
-
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Testimonial Text *
@@ -463,15 +439,6 @@ export default function TestimonialsAdmin() {
                 <div key={testimonial.id} className="p-6 hover:bg-gray-50">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start space-x-4">
-                      <div className="h-12 w-12 rounded-full overflow-hidden relative flex-shrink-0">
-                        <Image
-                          src={testimonial.image}
-                          alt={testimonial.name}
-                          width={48}
-                          height={48}
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
                       <div>
                         <h3 className="font-medium text-gray-900">
                           {testimonial.name}

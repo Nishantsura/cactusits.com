@@ -25,7 +25,9 @@ export async function getServiceBySlug(
       title: data.hero_title,
       description: data.hero_description,
       bulletpoints: data.hero_bulletpoints || [],
-      image: data.hero_image || "",
+      // Use the full URL from Supabase storage or fall back to default image
+      image:
+        data.hero_image || "/landing/pexels-tima-miroshnichenko-5686086.jpg",
     },
     Potential: {
       description: data.potential_description || "",

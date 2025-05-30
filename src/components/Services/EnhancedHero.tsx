@@ -1,7 +1,34 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
+
+// Function to map service names to specific image paths
+function getServiceImage(serviceName: string): string {
+  // Convert the service name to lowercase for case-insensitive matching
+  const serviceNameLower = serviceName.toLowerCase();
+
+  // Map of service names (in lowercase) to image paths
+  const serviceImageMap: Record<string, string> = {
+    "digital transformation": "/landing/pexels-tima-miroshnichenko-5685937.jpg",
+    "data & ai": "/landing/pexels-yankrukov-7792745.jpg",
+    "cloud services": "/landing/pexels-tima-miroshnichenko-5685961.jpg",
+    cybersecurity:
+      "/young-man-woman-working-laptop-open-space-co-working-office-room.jpg",
+    infrastructure: "/person-working-office.jpg",
+    "it infrastructure and lifecycle management": "/person-working-office.jpg",
+    "agile & project management":
+      "/manager-woman-sitting-couch-holding-laptop-talking-video-call-virtual-conference-working-business-modern-office.jpg",
+  };
+
+  // Return the mapped image or a default if the service is not found
+  return (
+    serviceImageMap[serviceNameLower] ||
+    "/landing/pexels-tima-miroshnichenko-5686086.jpg"
+  );
+}
 
 interface HeroProps {
   service: string;
@@ -105,12 +132,12 @@ export default function EnhancedHero({
             </motion.div>
 
             <motion.div variants={itemVariants} className="mt-10">
-              <a
-                href="#contact"
-                className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-500 md:py-4 md:text-lg shadow-md transition-all transform hover:translate-y-[-2px]"
-              >
-                Get Started
-              </a>
+              <Link href="/contact" passHref>
+                <InteractiveHoverButton
+                  text="Get in touch"
+                  className="h-12 px-8 text-base font-medium bg-white text-black w-auto min-w-[160px] hover:bg-green-500 hover:text-white"
+                />
+              </Link>
             </motion.div>
           </motion.div>
 
@@ -123,12 +150,13 @@ export default function EnhancedHero({
           >
             <div className="relative rounded-xl overflow-hidden shadow-xl">
               <Image
-                src={image || "/landing/pexels-tima-miroshnichenko-5686086.jpg"}
+                src={getServiceImage(service)}
                 alt="Service Illustration"
                 width={1000}
                 height={800}
                 className="w-full h-auto object-cover"
                 priority
+                unoptimized
               />
               {/* Accent shape */}
               <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-primary opacity-20 rounded-full"></div>

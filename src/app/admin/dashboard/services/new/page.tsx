@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Save, Plus, Trash, Edit2 } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft, Save, Plus, Trash, Edit2, Upload } from "lucide-react";
 import { createService } from "@/lib/data-utils";
+import { uploadServiceImage } from "@/lib/storage-utils";
 
 // Type definitions for service data
 interface ServiceCardType {
@@ -34,11 +36,6 @@ interface ServiceFormData {
   icon_name: string;
   accent_color: string;
   accent_position: string;
-  image: string;
-  image_position: string;
-  image_width: number;
-  image_height: number;
-  image_alt: string;
   order_index: number;
   is_active: boolean;
 
@@ -78,11 +75,6 @@ export default function NewServicePage() {
     icon_name: "",
     accent_color: "",
     accent_position: "",
-    image: "",
-    image_position: "",
-    image_width: 500,
-    image_height: 500,
-    image_alt: "",
     order_index: 0,
     is_active: true,
 
@@ -546,114 +538,6 @@ export default function NewServicePage() {
                   Position for the accent color
                 </p>
               </div>
-
-              {/* Image fields section */}
-              <div className="border-t border-gray-200 pt-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">
-                  Image Details
-                </h3>
-
-                {/* Image Path */}
-                <div className="mb-4">
-                  <label
-                    htmlFor="image"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Image Path
-                  </label>
-                  <input
-                    type="text"
-                    id="image"
-                    name="image"
-                    value={formData.image}
-                    onChange={handleChange}
-                    placeholder="/landing/services-1.png"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Path to the image file (e.g., /landing/services-1.png).
-                  </p>
-                </div>
-
-                {/* Image Position */}
-                <div className="mb-4">
-                  <label
-                    htmlFor="image_position"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Image Position
-                  </label>
-                  <input
-                    type="text"
-                    id="image_position"
-                    name="image_position"
-                    value={formData.image_position}
-                    onChange={handleChange}
-                    placeholder="top-0 right-0"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    CSS positioning classes (e.g., top-0 right-0)
-                  </p>
-                </div>
-
-                {/* Two column layout for dimensions and alt text */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {/* Image Width */}
-                  <div>
-                    <label
-                      htmlFor="image_width"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Width
-                    </label>
-                    <input
-                      type="number"
-                      id="image_width"
-                      name="image_width"
-                      value={formData.image_width}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
-                    />
-                  </div>
-
-                  {/* Image Height */}
-                  <div>
-                    <label
-                      htmlFor="image_height"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Height
-                    </label>
-                    <input
-                      type="number"
-                      id="image_height"
-                      name="image_height"
-                      value={formData.image_height}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
-                    />
-                  </div>
-
-                  {/* Image Alt */}
-                  <div>
-                    <label
-                      htmlFor="image_alt"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Alt Text
-                    </label>
-                    <input
-                      type="text"
-                      id="image_alt"
-                      name="image_alt"
-                      value={formData.image_alt}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
-                    />
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* Hero Section */}
@@ -785,25 +669,72 @@ export default function NewServicePage() {
                 </p>
               </div>
 
-              {/* Hero Image */}
+              {/* Hero Image Upload */}
               <div>
-                <label
-                  htmlFor="hero_image"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Hero Image
                 </label>
-                <input
-                  type="text"
-                  id="hero_image"
-                  name="hero_image"
-                  value={formData.hero_image}
-                  onChange={handleChange}
-                  placeholder="/services/it-cons.jpg"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
-                />
+
+                {/* Preview current image if exists */}
+                {formData.hero_image && (
+                  <div className="mb-3">
+                    <Image
+                      src={formData.hero_image}
+                      alt="Hero image preview"
+                      width={300}
+                      height={200}
+                      className="rounded-md object-cover h-[200px] w-[300px]"
+                    />
+                  </div>
+                )}
+
+                {/* File upload input */}
+                <div className="flex items-end gap-2">
+                  <input
+                    type="file"
+                    id="hero_image_upload"
+                    accept="image/jpeg,image/jpg"
+                    onChange={async (e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        try {
+                          setIsLoading(true);
+                          setError(null);
+
+                          // Use a temporary slug if none exists yet
+                          const slugToUse =
+                            formData.slug || `temp-${Date.now()}`;
+
+                          const publicUrl = await uploadServiceImage(
+                            e.target.files[0],
+                            slugToUse,
+                          );
+
+                          setFormData((prev) => ({
+                            ...prev,
+                            hero_image: publicUrl,
+                          }));
+                        } catch (err: any) {
+                          console.error("Error uploading image:", err);
+                          setError(
+                            err.message ||
+                              "Failed to upload image. Please try again.",
+                          );
+                        } finally {
+                          setIsLoading(false);
+                        }
+                      }
+                    }}
+                    className="w-full text-sm text-gray-500 
+                              file:mr-4 file:py-2 file:px-4
+                              file:rounded-md file:border-0
+                              file:text-sm file:font-medium
+                              file:bg-gray-100 file:text-gray-700
+                              hover:file:bg-gray-200"
+                  />
+                </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Path to the hero section image (e.g., "/services/it-cons.jpg")
+                  Upload a JPG image to display in the hero section. Recommended
+                  size: 1000x800px.
                 </p>
               </div>
             </div>
