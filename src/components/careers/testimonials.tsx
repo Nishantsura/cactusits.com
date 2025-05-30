@@ -25,7 +25,7 @@ const TestimonialsColumn = (props: {
           translateY: "-50%",
         }}
         transition={{
-          duration: props.duration || 10,
+          duration: props.duration || 30,
           repeat: Infinity,
           ease: "linear",
           repeatType: "loop",
@@ -146,7 +146,7 @@ const thirdColumn = testimonials.slice(6, 9);
 
 export default function Testimonials() {
   return (
-    <section className="bg-background my-20 relative">
+    <section className="bg-background my-10 relative">
       <div className="container z-10 mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -156,7 +156,7 @@ export default function Testimonials() {
           className="flex flex-col items-center justify-center max-w-[540px] mx-auto"
         >
           <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tighter">
-            What our clients say
+            Testimonials
           </h2>
           <p className="text-center mt-5 opacity-75">
             Hear directly from professionals who have found success with our
@@ -165,16 +165,16 @@ export default function Testimonials() {
         </motion.div>
 
         <div className="flex justify-center gap-6 mt-10 [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] max-h-[740px] overflow-hidden">
-          <TestimonialsColumn testimonials={firstColumn} duration={15} />
+          <TestimonialsColumn testimonials={firstColumn} duration={40} />
           <TestimonialsColumn
             testimonials={secondColumn}
             className="hidden md:block"
-            duration={19}
+            duration={45}
           />
           <TestimonialsColumn
             testimonials={thirdColumn}
             className="hidden lg:block"
-            duration={17}
+            duration={42}
           />
         </div>
       </div>

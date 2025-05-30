@@ -43,10 +43,6 @@ export default async function IndustriesServerSection() {
     <div className="w-full max-w-[85vw] mx-auto px-4 py-6">
       {/* Header */}
       <div className="mb-3 border-t-2 pt-2">
-        <div className="flex items-center mb-2">
-          <div className="w-2 h-2 rounded-full bg-primary"></div>
-          <span className="ml-2 text-sm font-medium">Our Industries</span>
-        </div>
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#2d2d40] leading-tight mb-4">
           We cater to a diverse range of industries,
           <br /> providing specialised{" "}

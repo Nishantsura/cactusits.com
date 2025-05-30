@@ -106,11 +106,7 @@ export default function JobListings() {
       id="job-listings"
     >
       <div className="mb-8">
-        <p className="text-primary font-medium flex items-center mb-4">
-          <span className="mr-2">•</span>
-          Explore open positions
-        </p>
-        <h1 className="text-2xl md:text-3xl font-medium text-center max-w-md mx-auto mb-8">
+        <h1 className="text-2xl md:text-3xl font-medium text-center max-w-2xl mx-auto mb-8">
           We&apos;re hiring! Join us as we&apos;re passionate about finding you
           the right role.
         </h1>

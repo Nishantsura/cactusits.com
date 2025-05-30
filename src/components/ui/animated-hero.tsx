@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { InteractiveHoverButton } from "./interactive-hover-button";
 
 function Hero() {
   const [titleNumber, setTitleNumber] = useState(0);
@@ -28,24 +29,23 @@ function Hero() {
   }, [titleNumber, titles]);
 
   return (
-    <div className="w-full">
-      <div className="container mx-auto">
+    <div className="w-full relative h-screen overflow-hidden">
+      {/* Background image */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/shapelined-_JBKdviweXI-unsplash.jpg"
+          alt="Background"
+          fill
+          className="object-cover object-center"
+          priority
+        />
+        {/* Light overlay for subtle background effect */}
+        <div className="absolute inset-0 bg-white/80"></div>
+      </div>
+
+      <div className="container mx-auto relative z-10">
         <div className="flex gap-8 py-20 lg:py-40 items-center justify-center flex-col">
-          <div>
-            <div className="flex items-center gap-4">
-              <Image
-                src="/aboutus/3ppl.png"
-                alt="images of trusted people"
-                width={1000}
-                height={1000}
-                className="h-6 w-auto"
-              />
-              <h3 className="uppercase text-gray-txt text-sm tracking-wide  flex items-center gap-4">
-                {" "}
-                Trusted by 1000+ Jobseekers over 5 years
-              </h3>
-            </div>
-          </div>
+          {/* Removed 'Trusted by 1000+ Jobseekers' div as requested */}
           <div className="flex gap-4 flex-col">
             <h1 className="text-5xl md:text-7xl max-w-2xl tracking-tighter text-center font-regular">
               <span className="text-spektr-cyan-50">
@@ -85,13 +85,11 @@ function Hero() {
             </p>
           </div>
           <div className="flex flex-row gap-3">
-            <button className="w-44 border-2 border-slate-200 px-2 py-3">
-              Frequent Queries
-            </button>
-            <Link href={"/#contactus"}>
-              <button className="w-44 bg-foreground text-background px-2 py-3">
-                Get in Touch
-              </button>
+            <Link href={"/contact"}>
+              <InteractiveHoverButton
+                text="Get in touch"
+                className="h-12 px-8 text-base font-medium bg-white text-black w-auto min-w-[160px] hover:bg-green-500 hover:text-white group-hover:text-white"
+              />
             </Link>
           </div>
         </div>

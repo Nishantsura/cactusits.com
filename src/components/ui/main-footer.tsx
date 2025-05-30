@@ -51,20 +51,11 @@ const navigation = {
           items: [
             { name: "About Us", href: "/aboutus" },
             { name: "Careers", href: "/careers" },
-            { name: "Contact", href: "/#contactus" },
+            { name: "Contact", href: "/contact" },
             { name: "Blog", href: "/blog" },
           ],
         },
-        {
-          id: "resources",
-          name: "Resources",
-          items: [
-            { name: "Case Studies", href: "/case-studies" },
-            { name: "Insights", href: "/insights" },
-            { name: "Events", href: "/events" },
-            { name: "FAQs", href: "/faqs" },
-          ],
-        },
+        // Resources section removed
       ],
     },
   ],
@@ -76,155 +67,100 @@ const socialIconStyle = `p-1 rounded-full transition-all text-black hover:text-w
 export function MainFooter() {
   return (
     <footer className="border-primary/20 w-full border-t bg-background">
-      <Container className="relative pt-8 pb-0">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
-          <Link href="/">
-            <div className="flex items-center justify-center">
-              <Image
-                src="/logo.svg"
-                alt="Cactus AI Logo"
-                width={40}
-                height={40}
-                className="mr-2"
-              />
-              <span className="text-xl font-semibold">Cactus</span>
-            </div>
-          </Link>
-          <p className="bg-transparent text-center text-xs leading-4 text-primary/60 md:text-left max-w-3xl">
-            At Cactus AI, we&apos;re committed to delivering exceptional IT
-            services across diverse industries. Our expertise and innovative
-            approach enable us to meet the unique requirements of each business
-            we serve. Through quality solutions and dedicated support, we help
-            organizations harness the power of technology to drive growth and
-            achieve their strategic objectives.
-          </p>
-        </div>
-      </Container>
+      {/* Top logo section removed as requested */}
 
       <Container className="py-8">
         <div className="border-b border-dotted"></div>
         <div className="py-6 md:py-8 lg:py-10">
-          {navigation.categories.map((category) => (
-            <div
-              key={category.name}
-              className="grid grid-cols-2 md:grid-cols-4 flex-row justify-between gap-4 sm:gap-6 leading-6"
-            >
-              {category.sections.map((section) => (
-                <div key={section.name} className="mb-6 md:mb-8">
-                  <h3 className="font-medium text-base mb-3 md:mb-4">
-                    {section.name}
-                  </h3>
-                  <ul
-                    role="list"
-                    aria-labelledby={`${category.id}-${section.id}-heading-mobile`}
-                    className="flex flex-col space-y-2"
-                  >
-                    {section.items.map((item) => (
-                      <li
-                        key={item.name}
-                        className="flow-root"
-                        data-component-name="MainFooter"
-                      >
-                        <Link
-                          href={item.href}
-                          className="text-sm !text-black hover:text-purple-600 dark:text-gray-300 hover:dark:text-purple-400 transition-colors"
-                        >
-                          {item.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+          <div className="grid grid-cols-1 md:grid-cols-4 flex-row justify-between gap-4 sm:gap-6 leading-6">
+            {/* Logo and company name in first column */}
+            <div className="mb-6 md:mb-8">
+              <div className="flex items-center mb-4">
+                <Image
+                  src="/logo.svg"
+                  alt="Cactus AI Logo"
+                  width={40}
+                  height={40}
+                  className="mr-2"
+                />
+                <span className="text-xl font-semibold">Cactus</span>
+              </div>
             </div>
-          ))}
+
+            {/* Services column */}
+            <div className="mb-6 md:mb-8">
+              <h3 className="font-medium text-base mb-3 md:mb-4">Services</h3>
+              <ul
+                role="list"
+                aria-labelledby="main-services-heading-mobile"
+                className="flex flex-col space-y-2"
+              >
+                {navigation.categories[0].sections[0].items.map((item) => (
+                  <li key={item.name} className="flow-root">
+                    <Link
+                      href={item.href}
+                      className="text-sm !text-black hover:text-purple-600 dark:text-gray-300 hover:dark:text-purple-400 transition-colors"
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Industries column */}
+            <div className="mb-6 md:mb-8">
+              <h3 className="font-medium text-base mb-3 md:mb-4">Industries</h3>
+              <ul
+                role="list"
+                aria-labelledby="main-industries-heading-mobile"
+                className="flex flex-col space-y-2"
+              >
+                {navigation.categories[0].sections[1].items.map((item) => (
+                  <li key={item.name} className="flow-root">
+                    <Link
+                      href={item.href}
+                      className="text-sm !text-black hover:text-purple-600 dark:text-gray-300 hover:dark:text-purple-400 transition-colors"
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Company column */}
+            <div className="mb-6 md:mb-8">
+              <h3 className="font-medium text-base mb-3 md:mb-4">Company</h3>
+              <ul
+                role="list"
+                aria-labelledby="main-company-heading-mobile"
+                className="flex flex-col space-y-2"
+              >
+                {navigation.categories[0].sections[2].items.map((item) => (
+                  <li key={item.name} className="flow-root">
+                    <Link
+                      href={item.href}
+                      className="text-sm !text-black hover:text-purple-600 dark:text-gray-300 hover:dark:text-purple-400 transition-colors"
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
         <div className="border-b border-dotted"></div>
       </Container>
 
-      <Container className="py-4">
-        <div
-          className="flex flex-wrap items-center justify-center gap-2"
-          data-component-name="MainFooter"
-        >
-          <Link
-            aria-label="Email"
-            href="mailto:contact@cactusai.com"
-            rel="noreferrer"
-            target="_blank"
-            className={socialIconStyle}
-          >
-            <Mail strokeWidth={1} className="h-4 w-4" />
-          </Link>
-          <Link
-            aria-label="X"
-            href="https://twitter.com/cactusai"
-            rel="noreferrer"
-            target="_blank"
-            className={socialIconStyle}
-          >
-            <X strokeWidth={1} className="h-4 w-4" />
-          </Link>
-          <Link
-            aria-label="Instagram"
-            href="https://www.instagram.com/cactusai/"
-            rel="noreferrer"
-            target="_blank"
-            className={socialIconStyle}
-          >
-            <Instagram strokeWidth={1} className="h-4 w-4" />
-          </Link>
-          <Link
-            aria-label="Facebook"
-            href="https://www.facebook.com/cactusai"
-            rel="noreferrer"
-            target="_blank"
-            className={socialIconStyle}
-          >
-            <Facebook strokeWidth={1} className="h-4 w-4" />
-          </Link>
-          <Link
-            aria-label="LinkedIn"
-            href="https://www.linkedin.com/company/cactusai"
-            rel="noreferrer"
-            target="_blank"
-            className={socialIconStyle}
-          >
-            <Linkedin strokeWidth={1} className="h-4 w-4" />
-          </Link>
-          <Link
-            aria-label="YouTube"
-            href="https://www.youtube.com/cactusai"
-            rel="noreferrer"
-            target="_blank"
-            className={socialIconStyle}
-          >
-            <Youtube strokeWidth={1} className="h-4 w-4" />
-          </Link>
-        </div>
-      </Container>
+      {/* Social media icons removed as requested */}
 
       <Container className="mt-4 mb-6 md:mt-6 md:mb-8">
         <div className="flex flex-col justify-between text-center text-xs">
-          <div className="flex flex-row items-center justify-center gap-1 text-black dark:text-gray-300">
-            <span>
-              © {new Date().getFullYear()} Cactus AI. All rights reserved.
-            </span>
-            <span className="mx-2">|</span>
-            <span>Made with</span>
-            <span className="text-blue-500 mx-1">💙</span>
-            <span>by</span>
-            <Link
-              href="https://nishantsura.com"
-              target="_blank"
-              rel="noreferrer"
-              className="font-medium text-purple-600 hover:underline mx-1 dark:text-purple-400"
-            >
-              Nishant Sura
-            </Link>
-          </div>
+          {/* Policy links moved above copyright text */}
           <div
-            className="mt-2 flex justify-center gap-4 text-xs text-slate-500"
+            className="mb-4 flex justify-center gap-4 text-xs text-slate-500"
             data-component-name="MainFooter"
           >
             <Link
@@ -250,6 +186,24 @@ export function MainFooter() {
               className="text-black hover:text-purple-600 dark:text-gray-300 hover:dark:text-purple-400 transition-colors"
             >
               Cookies Policy
+            </Link>
+          </div>
+
+          <div className="flex flex-row items-center justify-center gap-1 text-black dark:text-gray-300">
+            <span>
+              © {new Date().getFullYear()} Cactus AI. All rights reserved.
+            </span>
+            <span className="mx-2">|</span>
+            <span>Made with</span>
+            <span className="text-blue-500 mx-1">💙</span>
+            <span>by</span>
+            <Link
+              href="https://nishantsura.com"
+              target="_blank"
+              rel="noreferrer"
+              className="font-medium text-purple-600 hover:underline mx-1 dark:text-purple-400"
+            >
+              Nishant Sura
             </Link>
           </div>
         </div>

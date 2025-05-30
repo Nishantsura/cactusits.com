@@ -163,7 +163,7 @@ export default function Navbar() {
     },
     {
       title: "Talk to our agent",
-      url: "/#contactus",
+      url: "/contact",
       icon: (
         <Image
           src="/landing/nav-quick-2.svg"
@@ -274,9 +274,11 @@ export default function Navbar() {
                     alt="cactus it logo"
                     width={1000}
                     height={1000}
-                    className="w-8 h-auto"
+                    className="w-7 h-7 object-contain"
                   />
-                  <span className="ml-2 text-xl font-bold">CACTUS</span>
+                  <span className="ml-2 text-xl font-bold flex items-center">
+                    CACTUS
+                  </span>
                 </div>
               </Link>
             </div>
@@ -392,7 +394,7 @@ export default function Navbar() {
               </div>
               <div className="flex gap-4">
                 <Link
-                  href="/#contactus"
+                  href="/contact"
                   className="bg-foreground hover:bg-primary text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                   Get in Touch
@@ -510,7 +512,7 @@ export default function Navbar() {
               ))}
               <div className="pt-4 pb-4">
                 <Link
-                  href="/#contactus"
+                  href="/contact"
                   onClick={closeMobileMenu}
                   className="block w-full text-center bg-foreground hover:bg-primary text-white px-4 py-2 rounded-md text-base font-medium transition-colors"
                 >

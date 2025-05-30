@@ -53,9 +53,6 @@ export const ServicePageSection: React.FC<ServicePageSectionProps> = ({
                 className="text-3xl lg:text-4xl font-bold mb-4 relative inline-block"
               >
                 {title}
-                <div
-                  className={`absolute -bottom-2 left-1/4 right-1/4 h-1 bg-${accentColor} rounded-full`}
-                ></div>
               </motion.h2>
             )}
             {subtitle && (

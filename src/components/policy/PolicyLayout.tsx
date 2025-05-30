@@ -85,7 +85,7 @@ export default function PolicyLayout({
             If you have any questions about our policies, please contact us.
           </p>
           <Link
-            href="/#contactus"
+            href="/contact"
             className="inline-block bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors"
           >
             Contact Us

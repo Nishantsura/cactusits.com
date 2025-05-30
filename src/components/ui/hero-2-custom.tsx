@@ -1,8 +1,8 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 
 const HeroCustom = () => {
   return (
@@ -10,47 +10,53 @@ const HeroCustom = () => {
       {/* Background image */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="/pexels-taryn-elliott-8052681.jpg"
+          src="/shapelined-_JBKdviweXI-unsplash.jpg"
           alt="Background"
           fill
           className="object-cover object-center"
           priority
         />
-        {/* Gradient overlay for better text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/50"></div>
+        {/* Light overlay for subtle background effect */}
+        <div className="absolute inset-0 bg-white/80"></div>
       </div>
 
-      {/* Content container */}
-      <div className="relative z-10 w-full max-w-[100vw]">
-        {/* Badge */}
-        <div className="mx-auto mb-8 flex max-w-fit items-center justify-center space-x-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm">
-          <span className="text-sm font-medium text-white">
-            IT Consultancy Services
-          </span>
-          <ArrowRight className="h-4 w-4 text-white" />
+      {/* Content container: now a flex container for left text and right image */}
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center">
+        {/* Left Content Area */}
+        <div className="w-full md:w-1/2 text-left py-8 md:pr-8">
+          {/* Hero text content */}
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold leading-tight text-black md:text-4xl lg:text-5xl whitespace-normal">
+              Enabling Businesses Through <br />
+              <span className="text-primary">Simplicity & Clarity</span>
+            </h1>
+
+            <div className="mt-10 flex flex-col items-start justify-start space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
+              <Link href="/contact">
+                <InteractiveHoverButton
+                  text="Get in touch"
+                  className="h-12 px-8 text-base font-medium bg-white text-black w-auto min-w-[160px] hover:bg-green-500 hover:text-white group-hover:text-white"
+                />
+              </Link>
+              <Link href="/services">
+                <InteractiveHoverButton
+                  text="Explore Services"
+                  className="h-12 px-8 text-base font-medium bg-transparent text-black w-auto min-w-[180px]"
+                />
+              </Link>
+            </div>
+          </div>
         </div>
 
-        {/* Hero section */}
-        <div className="w-full px-4 text-center">
-          <h1 className="mx-auto max-w-4xl text-5xl font-bold leading-tight text-white md:text-6xl lg:text-7xl whitespace-normal">
-            Enabling Businesses Through <br />
-            <span className="text-white">Simplicity & Clarity</span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-gray-300">
-            We combine strategy, technology, and expertise to transform your
-            business for the digital age.
-          </p>
-          <div className="mt-10 flex flex-col items-center justify-center space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
-            <Link href="/#contactus">
-              <button className="h-12 rounded-full bg-white px-8 text-base font-medium text-black hover:bg-white/90">
-                Get in touch
-              </button>
-            </Link>
-            <Link href="/services">
-              <button className="h-12 rounded-full border border-gray-600 px-8 text-base font-medium text-white hover:bg-white/10">
-                Explore Services
-              </button>
-            </Link>
+        {/* Right Image Area */}
+        <div className="w-full md:w-1/2 flex justify-center items-center mt-8 md:mt-0 md:pl-8">
+          <div className="relative w-full aspect-video sm:aspect-[4/3] max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl">
+            <Image
+              src="/landing/pexels-tima-miroshnichenko-5685931.jpg"
+              alt="Innovative IT Solutions"
+              fill
+              className="object-cover rounded-lg shadow-2xl"
+            />
           </div>
         </div>
       </div>

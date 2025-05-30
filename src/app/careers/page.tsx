@@ -1,57 +1,70 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import JobListings from "@/components/careers/job-listings";
-import ContactForm from "@/components/landing/ContactUs";
+import SubscriptionForm from "@/components/landing/NewsLetter";
 import Link from "next/link";
 import Container from "@/components/ui/container";
+import { CactusDisplayCards } from "@/components/ui/cactus-display-cards";
+import { Section } from "@/components/ui/section";
+import { ChevronDown } from "lucide-react";
 
 export default function Careers() {
+  const scrollToJobs = () => {
+    const jobsSection = document.getElementById("job-listings");
+    if (jobsSection) {
+      jobsSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <div className="w-full flex flex-col items-center">
       {/* Hero Section */}
-      <section className="w-full flex flex-col items-center mt-[115px]">
-        <Container className="pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8 md:gap-4 lg:gap-8">
-            <div className="flex flex-col gap-6 lg:gap-10 text-center md:text-left w-full md:w-1/2">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold">
-                Find roles that match your{" "}
-                <span className="text-primary">skills</span> and{" "}
-                <span className="text-primary">personality</span>
+      <section className="w-full flex flex-col items-center mt-[80px] sm:mt-[100px] md:mt-[115px]">
+        <Container className="pt-4 sm:pt-6 md:pt-8 px-4 sm:px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 sm:gap-8 md:gap-10 lg:gap-12">
+            <div className="flex flex-col gap-5 sm:gap-6 lg:gap-8 text-center md:text-left w-full md:w-1/2">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight tracking-tight">
+                Empower Your Career{" "}
+                <span className="text-primary bg-clip-text">with Cactus</span>
               </h1>
-              <h3 className="text-base sm:text-lg lg:text-xl text-gray-muted max-w-2xl mx-auto md:mx-0">
-                Explore exciting career opportunities at Cactus and be a part of
-                our innovative and dynamic team.
-              </h3>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                <Link href="/#contactus" className="w-full sm:w-auto">
-                  <button className="w-full sm:w-44 bg-foreground text-background px-4 py-3 rounded-md hover:bg-foreground/90 transition-colors">
-                    Get in Touch
-                  </button>
-                </Link>
-                <button className="w-full sm:w-44 border-2 border-slate-200 px-4 py-3 rounded-md hover:bg-slate-50 transition-colors">
-                  Explore Services
+
+              <p className="text-gray-600 text-sm sm:text-base max-w-xl mx-auto md:mx-0">
+                Join a team of innovators, problem-solvers, and tech enthusiasts
+                dedicated to creating impactful solutions. We're looking for
+                exceptional talent to grow with us.
+              </p>
+
+              <div className="flex justify-center md:justify-start pt-2">
+                <button
+                  onClick={scrollToJobs}
+                  className="flex items-center gap-2 px-6 py-3 bg-foreground text-background rounded-md hover:bg-foreground/90 transition-all duration-300 shadow-sm hover:shadow font-medium"
+                >
+                  <span>Explore Open Positions</span>
+                  <ChevronDown className="h-4 w-4" />
                 </button>
               </div>
             </div>
-            <div className="w-full md:w-1/2 flex justify-center md:justify-end">
-              <Image
-                src="/careers/hero.svg"
-                alt="hero image"
-                width={600}
-                height={600}
-                className="w-[80%] md:w-[90%] lg:w-auto max-w-full h-auto object-contain"
-                priority
-              />
+            <div className="w-full md:w-1/2 mt-6 md:mt-0">
+              <CactusDisplayCards />
             </div>
           </div>
         </Container>
       </section>
 
-      <JobListings />
+      <div className="w-full max-w-full overflow-hidden mt-12 sm:mt-16 md:mt-20">
+        <JobListings />
+      </div>
 
-      <ContactForm />
+      {/* Newsletter section instead of ContactForm */}
+      <Section
+        id="newsletter"
+        spacing="normal"
+        verticalAlign="center"
+        className="mt-12 sm:mt-16 md:mt-20"
+      >
+        <SubscriptionForm heading="Join Our Talented Team" />
+      </Section>
     </div>
   );
 }

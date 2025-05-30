@@ -60,7 +60,7 @@ export default async function Page({
           </p>
 
           <div className="flex gap-4 justify-start mt-4">
-            <Link href="/#contactus">
+            <Link href="/contact">
               <button className="w-44 bg-foreground text-background px-2 py-3">
                 Get in Touch
               </button>

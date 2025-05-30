@@ -1,6 +1,14 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
+import {
+  Activity,
+  Briefcase,
+  Cloud,
+  Database,
+  ShieldCheck,
+  TrendingUp,
+} from "lucide-react";
 
 interface ServiceCardProps {
   icon: React.ReactNode;
@@ -43,6 +51,15 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   );
 };
 
+const defaultIcons = [
+  <Activity key="activity" className="w-6 h-6" />,
+  <Briefcase key="briefcase" className="w-6 h-6" />,
+  <Cloud key="cloud" className="w-6 h-6" />,
+  <Database key="database" className="w-6 h-6" />,
+  <ShieldCheck key="shield" className="w-6 h-6" />,
+  <TrendingUp key="trending" className="w-6 h-6" />,
+];
+
 export default function EnhancedPotential({
   description,
   serviceCards,
@@ -76,7 +93,7 @@ export default function EnhancedPotential({
           {serviceCards.map((card, index) => (
             <ServiceCard
               key={index}
-              icon={card.icon}
+              icon={card.icon || defaultIcons[index % defaultIcons.length]}
               title={card.title}
               description={card.description}
               index={index}

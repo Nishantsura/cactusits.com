@@ -80,12 +80,8 @@ export default function IndustriesSection() {
   return (
     <div className="w-full max-w-[85vw] mx-auto px-4 pt-10 pb-3 md:pt-12">
       {/* Header */}
-      <div className="mb-2 border-t-2 pt-1">
-        <div className="flex items-center mb-1">
-          <div className="w-2 h-2 rounded-full bg-primary"></div>
-          <span className="ml-2 text-sm font-medium">Our Industries</span>
-        </div>
-        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#2d2d40] leading-tight mb-2">
+      <div className="mb-2 pt-1">
+        <h1 className="text-3xl lg:text-5xl tracking-tighter text-[#2d2d40] leading-tight mb-2 font-regular">
           We cater to a diverse range of industries,
           <br /> providing specialised{" "}
           <span className="text-primary">IT solutions</span>
@@ -112,7 +108,7 @@ export default function IndustriesSection() {
 
         {/* Right column with description and scrollable carousel */}
         <div className="w-full lg:w-9/12 relative">
-          <p className="text-gray-muted my-4 sm:my-6 text-sm sm:text-base">
+          <p className="text-gray-muted my-4 sm:my-6 text-base sm:text-lg">
             We deliver specialised IT services across a wide range of
             industries. From powering innovation in tech driven enterprises to
             enhancing compliance and efficiency in healthcare, finance, and the

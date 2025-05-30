@@ -123,7 +123,7 @@ export default function EnhancedHero({
           >
             <div className="relative rounded-xl overflow-hidden shadow-xl">
               <Image
-                src={image}
+                src={image || "/landing/pexels-tima-miroshnichenko-5686086.jpg"}
                 alt="Service Illustration"
                 width={1000}
                 height={800}
