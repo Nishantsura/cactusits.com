@@ -71,12 +71,11 @@ export default function ContactUs() {
       <div className="z-10 w-full max-w-3xl mx-auto px-4 sm:px-6 md:px-6 lg:px-8">
         <div className="mb-4 text-center">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-gray-800 to-gray-600">
-            Get in touch
+            Get in Touch with US
           </h1>
           <p className="text-gray-600 text-sm sm:text-base max-w-xl mx-auto">
-            At Cactus, we're eager to understand how we can support your career
-            growth, whether you're looking to join our team or seeking our
-            services.
+            Whether you're looking for top talent or your next opportunity,
+            we're here to make the right connections.
           </p>
         </div>
         <div className="bg-warm-white shadow-xl rounded-2xl overflow-hidden">

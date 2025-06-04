@@ -5,6 +5,7 @@ import { ArrowUpRight, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getServices, getIndustries } from "@/lib/data-utils";
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 
 type SubMenuItem = {
   title: string;
@@ -276,7 +277,7 @@ export default function Navbar() {
                     height={1000}
                     className="w-7 h-7 object-contain"
                   />
-                  <span className="ml-2 text-xl font-bold flex items-center">
+                  <span className="ml-2 text-2xl font-bold flex items-center">
                     CACTUS
                   </span>
                 </div>
@@ -332,7 +333,7 @@ export default function Navbar() {
                         onMouseEnter={handleDropdownMouseEnter}
                         onMouseLeave={handleDropdownMouseLeave}
                       >
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
+                        <div className="grid grid-cols-1 gap-4 p-6">
                           <div className="col-span-1 md:col-span-2 grid grid-cols-1 gap-4">
                             <div className="mb-2">
                               <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">
@@ -362,30 +363,7 @@ export default function Navbar() {
                               ))}
                             </div>
                           </div>
-                          <div className="col-span-1">
-                            <div className="mb-2">
-                              <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">
-                                QUICK LINKS
-                              </h3>
-                            </div>
-                            <div className="grid grid-cols-1 gap-0">
-                              {platformItems.map((platformItem) => (
-                                <Link
-                                  key={platformItem.title}
-                                  href={platformItem.url}
-                                  className="group flex items-center justify-between p-2 hover:bg-gray-50 rounded-md"
-                                >
-                                  <div className="flex gap-2 items-center">
-                                    {platformItem.icon}
-                                    <p className="text-sm font-medium text-gray-900 group-hover:text-primary">
-                                      {platformItem.title}
-                                    </p>
-                                  </div>
-                                  <ArrowUpRight className="h-4 w-4 text-gray-600 group-hover:text-primary" />
-                                </Link>
-                              ))}
-                            </div>
-                          </div>
+
                         </div>
                       </div>
                     )}
@@ -484,28 +462,7 @@ export default function Navbar() {
                           {subItem.title}
                         </Link>
                       ))}
-                      <div className="border-t border-gray-200 my-4"></div>
-                      <div className="px-3 py-2">
-                        <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          QUICK LINKS
-                        </h3>
-                        <div className="mt-2 space-y-2">
-                          {platformItems.map((platformItem) => (
-                            <Link
-                              key={platformItem.title}
-                              href={platformItem.url}
-                              onClick={closeMobileMenu}
-                              className="flex items-center justify-between py-2 text-sm text-gray-700 hover:text-primary"
-                            >
-                              <div className="flex items-center gap-2">
-                                {platformItem.icon}
-                                <span>{platformItem.title}</span>
-                              </div>
-                              <ArrowUpRight className="h-4 w-4" />
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
+
                     </div>
                   )}
                 </div>

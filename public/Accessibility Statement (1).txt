@@ -1,0 +1,24 @@
+Accessibility guidelines
+Cactus is fully committed to ensuring its website is accessible and inclusive for all its users, whether you use a text browser, screen reader or other assistive technologies. To that end, Cactus has built this site in compliance with the guidelines provided by the W3C Accessibility Initiative.
+Maintaining an accessible website is an ongoing process and we are continually working to improve the site for all users. If you have any comments or questions about the accessibility of this site, please contact us at mirna@cactusits.com
+Features to enhance this site's accessibility
+	•	All text is resizable using your browsers text-resize option (this is usually found under the View -> Text Size menu)
+	•	HTML heading elements have been used for page structure, supporting assistive technologies that allow page navigation from heading to heading
+	•	Many links have title attributes which describe the linked page in greater detail
+	•	All images have appropriate text alternatives
+	•	Javascript is not required to access any part of the key functionalities of the site
+	•	This site has been tested to ensure it is accessible in a wide range of browsers
+	•	Colour is not used to convey information - all pages on this website should be readable regardless of your colour-vision
+Keyboard access
+It should be possible to access any part of the site (including forms) using just the keyboard. However, if you have any problems with this, do contact us and let us know. Please provide information about the web browser and operating system you are using - it will be a big help in fixing the problem.
+Additionally, most browsers support jumping to specific links by typing keys defined on the web site. These are known as "access keys". They are activated in various ways depending on your browser and operating system. Here are the shortcuts for some common browsers:
+	•	Internet Explorer 6 and above (Windows): ALT + key
+	•	Mozilla Firefox 1.5 (Windows): ALT + key
+	•	Mozilla Firefox 2.0 (Windows): ALT + SHIFT + key
+	•	Safari (Apple Mac): CTRL + key
+Visual design
+All parts of the site use Cascading Style Sheets for visual layout and design. If your browser does not support stylesheets all pages should still be readable. Text is sized relatively, so it's possible to adjust the text size to your needs. To adjust the text size in Internet Explorer or Mozilla Firefox go to the 'View' menu and select 'Text Size'.
+Standards compliance
+	•	All HTML should validate as XHTML 1.0 Transitional with the W3C Markup Validator
+	•	All CSS should validate with the W3C CSS validator
+	•	All pages should comply with priority 1 and 2 of the Web Content Accessibility Guidelines (version 1.0)

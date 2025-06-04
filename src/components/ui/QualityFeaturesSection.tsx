@@ -16,13 +16,13 @@ export function QualityFeaturesSection() {
       title: "Tailored Solutions",
       description:
         "Our deep expertise in AI, cloud, and digital drives business innovation.",
-      imageSrc: "/landing/quality-2.png",
+      imageSrc: "/landing/quality-3.png",
     },
     {
       title: "Expertise and Innovation",
       description:
         "Every solution we deliver is tailored to your unique business challenges.",
-      imageSrc: "/landing/quality-3.png",
+      imageSrc: "/landing/quality-2.png",
     },
   ];
 

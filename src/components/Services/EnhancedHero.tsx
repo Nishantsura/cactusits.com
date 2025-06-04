@@ -4,31 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
+import { getServiceLocalImage } from "@/lib/service-image-mapping";
 
-// Function to map service names to specific image paths
-function getServiceImage(serviceName: string): string {
-  // Convert the service name to lowercase for case-insensitive matching
-  const serviceNameLower = serviceName.toLowerCase();
-
-  // Map of service names (in lowercase) to image paths
-  const serviceImageMap: Record<string, string> = {
-    "digital transformation": "/landing/pexels-tima-miroshnichenko-5685937.jpg",
-    "data & ai": "/landing/pexels-yankrukov-7792745.jpg",
-    "cloud services": "/landing/pexels-tima-miroshnichenko-5685961.jpg",
-    cybersecurity:
-      "/young-man-woman-working-laptop-open-space-co-working-office-room.jpg",
-    infrastructure: "/person-working-office.jpg",
-    "it infrastructure and lifecycle management": "/person-working-office.jpg",
-    "agile & project management":
-      "/manager-woman-sitting-couch-holding-laptop-talking-video-call-virtual-conference-working-business-modern-office.jpg",
-  };
-
-  // Return the mapped image or a default if the service is not found
-  return (
-    serviceImageMap[serviceNameLower] ||
-    "/landing/pexels-tima-miroshnichenko-5686086.jpg"
-  );
-}
+// This function has been moved to /src/lib/service-image-mapping.ts
+// and is now imported as getServiceLocalImage
 
 interface HeroProps {
   service: string;
@@ -106,12 +85,48 @@ export default function EnhancedHero({
               {description}
             </motion.p>
 
-            <motion.div variants={containerVariants} className="space-y-6">
+            {/* Add a style tag for the hover effect */}
+            <style jsx global>{`
+              /* Base styling for all items */
+              .bulletpoint-container .bulletpoint-item {
+                position: relative;
+                z-index: 1;
+                margin-bottom: 1.5rem;
+              }
+
+              /* When an item is hovered */
+              .bulletpoint-container .bulletpoint-item:hover {
+                transform: translateY(-8px);
+                z-index: 10;
+              }
+
+              /* For items after the hovered item */
+              .bulletpoint-container
+                .bulletpoint-item:hover
+                ~ .bulletpoint-item {
+                transform: translateY(24px);
+                opacity: 0.2;
+              }
+
+              /* Keep text visible even when card is faded */
+              .bulletpoint-container
+                .bulletpoint-item:hover
+                ~ .bulletpoint-item
+                .bulletpoint-text {
+                opacity: 1;
+              }
+            `}</style>
+
+            <motion.div
+              variants={containerVariants}
+              className="relative bulletpoint-container"
+              style={{ marginTop: "2rem" }}
+            >
               {bulletpoints.map((point, index) => (
                 <motion.div
                   key={index}
                   variants={itemVariants}
-                  className="flex items-start gap-4"
+                  className="bulletpoint-item flex items-start gap-4 transition-all duration-300 ease-in-out cursor-pointer relative"
                 >
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary bg-opacity-10 flex-shrink-0">
                     <Image
@@ -123,7 +138,7 @@ export default function EnhancedHero({
                     />
                   </div>
                   <div>
-                    <p className="text-base md:text-lg leading-relaxed text-gray-700">
+                    <p className="text-base md:text-lg leading-relaxed text-gray-700 bulletpoint-text">
                       {point}
                     </p>
                   </div>
@@ -150,13 +165,12 @@ export default function EnhancedHero({
           >
             <div className="relative rounded-xl overflow-hidden shadow-xl">
               <Image
-                src={getServiceImage(service)}
+                src={getServiceLocalImage(service, service)}
                 alt="Service Illustration"
                 width={1000}
                 height={800}
                 className="w-full h-auto object-cover"
                 priority
-                unoptimized
               />
               {/* Accent shape */}
               <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-primary opacity-20 rounded-full"></div>

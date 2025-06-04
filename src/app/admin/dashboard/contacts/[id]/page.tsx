@@ -40,17 +40,13 @@ function isSupabaseError(error: any): error is SupabaseError {
  */
 export default function ContactDetail() {
   const router = useRouter();
-  // Use React.use to properly unwrap params from useParams()
-  const pageParams = useParams();
-  // Since useParams() returns a ReadonlyURLSearchParams object and not a Promise,
-  // we need to handle it differently than page props params
-  const unwrappedParams = React.use(Promise.resolve(pageParams)) as {
-    id: string | string[];
-  };
-  const idFromParams = unwrappedParams.id;
-  const id = Array.isArray(idFromParams)
-    ? idFromParams[0]
-    : (idFromParams as string);
+  const params = useParams();
+  const id =
+    typeof params.id === "string"
+      ? params.id
+      : Array.isArray(params.id)
+        ? params.id[0]
+        : "";
 
   const [submission, setSubmission] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -450,7 +446,7 @@ export default function ContactDetail() {
                           : "Job Seeker Details"}
                       </h2>
 
-                      {submission.user_type === "hiringManager" ? (
+                      {submission.user_type === "hiring-manager" ? (
                         <div className="space-y-3">
                           {submission.organization && (
                             <div>
@@ -596,7 +592,7 @@ export default function ContactDetail() {
                             </div>
                           )}
 
-                          {submission.file_name && (
+                          {submission.resume_file_name && (
                             <div>
                               <div className="text-sm font-medium text-gray-500">
                                 Resume
@@ -604,7 +600,7 @@ export default function ContactDetail() {
                               <div className="mt-1 flex items-center bg-gray-100 p-2 rounded">
                                 <FileText className="h-5 w-5 text-gray-400 mr-2" />
                                 <div className="text-sm text-gray-700">
-                                  {submission.file_name}
+                                  {submission.resume_file_name}
                                 </div>
                               </div>
                             </div>

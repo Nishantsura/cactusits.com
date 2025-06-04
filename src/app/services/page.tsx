@@ -3,6 +3,8 @@ import { CircleCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { getAllServices } from "./data-provider";
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
+import { getServiceLocalImage } from "@/lib/service-image-mapping";
 
 export const metadata = {
   title: "Comprehensive IT Services for Business Success | Cactus",
@@ -54,10 +56,7 @@ export default async function Home() {
               {imageOnLeft && (
                 <div className="order-2 md:order-1 relative h-[200px] sm:h-[250px] md:h-[300px] lg:h-[400px]">
                   <Image
-                    src={
-                      service.hero_image ||
-                      `/services/img${(index % 7) + 1}.png`
-                    }
+                    src={getServiceLocalImage(service.slug, service.title, index)}
                     alt={service.image_alt || `${service.title} image`}
                     fill
                     className="object-cover"
@@ -102,11 +101,11 @@ export default async function Home() {
                   )}
 
                 <div className="flex flex-wrap gap-3 sm:gap-4">
-                  <Link
-                    href={`/services/${service.slug}`}
-                    className="px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base text-gray-muted font-medium hover:text-gray-900 transition-colors border-2 border-slate-100"
-                  >
-                    Learn More
+                  <Link href={`/services/${service.slug}`} passHref>
+                    <InteractiveHoverButton
+                      text="Learn More"
+                      className="h-12 px-8 text-base font-medium bg-transparent text-black w-auto min-w-[180px]"
+                    />
                   </Link>
                 </div>
               </div>
@@ -115,10 +114,7 @@ export default async function Home() {
               {!imageOnLeft && (
                 <div className="relative h-[200px] sm:h-[250px] md:h-[300px] lg:h-[400px]">
                   <Image
-                    src={
-                      service.hero_image ||
-                      `/services/img${(index % 7) + 1}.png`
-                    }
+                    src={getServiceLocalImage(service.slug, service.title, index)}
                     alt={service.image_alt || `${service.title} image`}
                     fill
                     className="object-cover"

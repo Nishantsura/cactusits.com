@@ -3,6 +3,7 @@
 import { Globe, Shield, Target, Cloud, Cpu, DatabaseZap } from "lucide-react";
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 // Function to map service titles to specific image paths - same as in EnhancedHero
 function getServiceImageForCard(serviceName: string): string {
@@ -61,11 +62,11 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   // Only show illustrations on cards 1, 3, and 5 (index 0, 2, 4)
   const shouldShowIllustration = index === 0 || index === 2 || index === 4;
 
-  return (
+  const cardContent = (
     <div
       className={`relative ${
         shouldShowIllustration ? "bg-[#22242F]" : "bg-[#111218]"
-      } rounded-lg p-6 overflow-hidden min-h-64 md:h-72 hover:shadow-lg transition-shadow duration-300 group/service`}
+      } rounded-lg p-6 overflow-hidden min-h-64 md:h-72 hover:shadow-lg transition-shadow duration-300 group/service w-full h-full`}
     >
       {/* Hover animation overlay similar to Feature component */}
       <div className="opacity-0 group-hover/service:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-gradient-to-t from-[#2a2d3a]/20 to-transparent pointer-events-none" />
@@ -105,6 +106,18 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
         />
       )}
     </div>
+  );
+
+  // If slug is provided, wrap the card in a Link component for navigation
+  return slug ? (
+    <Link
+      href={`/services/${slug}`}
+      className="block w-full h-full cursor-pointer"
+    >
+      {cardContent}
+    </Link>
+  ) : (
+    cardContent
   );
 };
 

@@ -21,12 +21,12 @@ export default function ContactPage() {
           {/* Left Column - Contact Information */}
           <div className="flex flex-col justify-center max-w-xl mx-auto lg:mx-0 w-full">
             <div className="mb-8 sm:mb-10">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">
-                We&apos;d Love to Help
+              <h2 className="text-3xl lg:text-5xl tracking-tighter font-normal mb-4 sm:mb-6">
+                We&apos;d Love to Hear from You
               </h2>
               <p className="text-gray-600 mb-6 sm:mb-8 text-sm sm:text-base">
-                Connect with our experts today. We&apos;re here to support your
-                business needs.
+                We&apos;re here to help. Reach out to us for any inquiries,
+                support, or feedback.
               </p>
 
               <div className="space-y-4 sm:space-y-6">
@@ -37,7 +37,7 @@ export default function ContactPage() {
                   <div>
                     <p className="font-medium">Call Us:</p>
                     <p className="text-gray-600 text-sm sm:text-base">
-                      202-555-0188
+                      +44 118 466 1766
                     </p>
                   </div>
                 </div>
@@ -49,7 +49,7 @@ export default function ContactPage() {
                   <div>
                     <p className="font-medium">Email:</p>
                     <p className="text-gray-600 text-sm sm:text-base break-words">
-                      contact@example.com
+                      sales@cactusits.com
                     </p>
                   </div>
                 </div>
@@ -61,7 +61,7 @@ export default function ContactPage() {
                   <div>
                     <p className="font-medium">Address:</p>
                     <p className="text-gray-600 text-sm sm:text-base">
-                      2360 Hood Avenue, San Diego, CA, 92123
+                      200 Brook Drive, Green Park, Reading, Berkshire RG2 6UB
                     </p>
                   </div>
                 </div>
@@ -75,39 +75,11 @@ export default function ContactPage() {
               </h3>
               <div className="flex gap-4">
                 <Link
-                  href="https://facebook.com"
-                  target="_blank"
-                  className="hover:text-primary transition-colors"
-                >
-                  <Facebook className="h-5 w-5" />
-                </Link>
-                <Link
-                  href="https://twitter.com"
-                  target="_blank"
-                  className="hover:text-primary transition-colors"
-                >
-                  <Twitter className="h-5 w-5" />
-                </Link>
-                <Link
-                  href="https://instagram.com"
-                  target="_blank"
-                  className="hover:text-primary transition-colors"
-                >
-                  <Instagram className="h-5 w-5" />
-                </Link>
-                <Link
-                  href="https://linkedin.com"
+                  href="https://www.linkedin.com/company/cactus-it-solutions/posts/?feedView=all"
                   target="_blank"
                   className="hover:text-primary transition-colors"
                 >
                   <Linkedin className="h-5 w-5" />
-                </Link>
-                <Link
-                  href="https://youtube.com"
-                  target="_blank"
-                  className="hover:text-primary transition-colors"
-                >
-                  <Youtube className="h-5 w-5" />
                 </Link>
               </div>
             </div>

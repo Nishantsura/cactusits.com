@@ -17,6 +17,7 @@ import {
   X,
   Calendar,
   CheckCircle,
+  FileText,
 } from "lucide-react";
 import {
   getContactSubmissions,
@@ -546,10 +547,16 @@ export default function ContactsAdmin() {
                   {filteredSubmissions.map((submission) => (
                     <tr key={submission.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-start">
-                          <div className="ml-2">
+                        <div className="flex items-center">
+                          <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">
                               {submission.name}
+                              {submission.resume_file_name && (
+                                <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                  <FileText className="h-3 w-3 mr-1" />
+                                  Resume
+                                </span>
+                              )}
                             </div>
                             <div className="text-sm text-gray-500 flex items-center">
                               <Mail className="h-4 w-4 mr-1 text-gray-400" />

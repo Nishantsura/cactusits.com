@@ -1,5 +1,6 @@
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { PagePropsSer } from "./data";
+import { getServiceLocalImage } from "@/lib/service-image-mapping";
 
 export async function getServiceBySlug(
   slug: string,
@@ -25,9 +26,9 @@ export async function getServiceBySlug(
       title: data.hero_title,
       description: data.hero_description,
       bulletpoints: data.hero_bulletpoints || [],
-      // Use the full URL from Supabase storage or fall back to default image
-      image:
-        data.hero_image || "/landing/pexels-tima-miroshnichenko-5686086.jpg",
+      // Use local images from public/services directory
+      // If service slug contains a number, we can use that for consistent image selection
+      image: getServiceLocalImage(slug, data.title),
     },
     Potential: {
       description: data.potential_description || "",

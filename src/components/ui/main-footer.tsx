@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, X, Instagram, Facebook, Linkedin, Youtube } from "lucide-react";
+import { Mail, ArrowUp, Linkedin, Twitter as X } from "lucide-react";
 import Container from "./container";
 // ThemeToggle removed as requested
 
@@ -71,7 +71,7 @@ export function MainFooter() {
 
       <Container className="py-8">
         <div className="border-b border-dotted"></div>
-        <div className="py-6 md:py-8 lg:py-10">
+        <div className="py-6 md:py-8 lg:py-10 relative">
           <div className="grid grid-cols-1 md:grid-cols-4 flex-row justify-between gap-4 sm:gap-6 leading-6">
             {/* Logo and company name in first column */}
             <div className="mb-6 md:mb-8">
@@ -79,17 +79,67 @@ export function MainFooter() {
                 <Image
                   src="/logo.svg"
                   alt="Cactus AI Logo"
-                  width={40}
-                  height={40}
-                  className="mr-2"
+                  width={24}
+                  height={24}
+                  className="mr-2 h-6 w-6"
                 />
-                <span className="text-xl font-semibold">Cactus</span>
+                <span className="text-xl font-semibold">CACTUS</span>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center">
+                  <Mail className="h-4 w-4 mr-2" />
+                  <span className="text-sm">sales@cactusits.com</span>
+                </div>
+                <div className="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-4 w-4 mr-2"
+                  >
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                  </svg>
+                  <span className="text-sm">+44 118 466 1766</span>
+                </div>
+                <div className="flex items-start">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-4 w-4 mr-2 mt-0.5"
+                  >
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  <span className="text-sm">
+                    200 Brook Drive, Green Park, Reading, Berkshire RG2 6UB
+                  </span>
+                </div>
               </div>
             </div>
 
             {/* Services column */}
             <div className="mb-6 md:mb-8">
-              <h3 className="font-medium text-base mb-3 md:mb-4">Services</h3>
+              <h3 className="font-medium text-base mb-3 md:mb-4">
+                <Link
+                  href="/services"
+                  className="hover:text-purple-600 transition-colors"
+                >
+                  Services
+                </Link>
+              </h3>
               <ul
                 role="list"
                 aria-labelledby="main-services-heading-mobile"
@@ -99,7 +149,7 @@ export function MainFooter() {
                   <li key={item.name} className="flow-root">
                     <Link
                       href={item.href}
-                      className="text-sm !text-black hover:text-purple-600 dark:text-gray-300 hover:dark:text-purple-400 transition-colors"
+                      className="text-base !text-black hover:text-purple-600 dark:text-gray-300 hover:dark:text-purple-400 transition-colors"
                     >
                       {item.name}
                     </Link>
@@ -110,7 +160,14 @@ export function MainFooter() {
 
             {/* Industries column */}
             <div className="mb-6 md:mb-8">
-              <h3 className="font-medium text-base mb-3 md:mb-4">Industries</h3>
+              <h3 className="font-medium text-base mb-3 md:mb-4">
+                <Link
+                  href="/industries"
+                  className="hover:text-purple-600 transition-colors"
+                >
+                  Industries
+                </Link>
+              </h3>
               <ul
                 role="list"
                 aria-labelledby="main-industries-heading-mobile"
@@ -120,7 +177,7 @@ export function MainFooter() {
                   <li key={item.name} className="flow-root">
                     <Link
                       href={item.href}
-                      className="text-sm !text-black hover:text-purple-600 dark:text-gray-300 hover:dark:text-purple-400 transition-colors"
+                      className="text-base !text-black hover:text-purple-600 dark:text-gray-300 hover:dark:text-purple-400 transition-colors"
                     >
                       {item.name}
                     </Link>
@@ -141,7 +198,7 @@ export function MainFooter() {
                   <li key={item.name} className="flow-root">
                     <Link
                       href={item.href}
-                      className="text-sm !text-black hover:text-purple-600 dark:text-gray-300 hover:dark:text-purple-400 transition-colors"
+                      className="text-base !text-black hover:text-purple-600 dark:text-gray-300 hover:dark:text-purple-400 transition-colors"
                     >
                       {item.name}
                     </Link>
@@ -156,40 +213,86 @@ export function MainFooter() {
 
       {/* Social media icons removed as requested */}
 
-      <Container className="mt-4 mb-6 md:mt-6 md:mb-8">
-        <div className="flex flex-col justify-between text-center text-xs">
+      <Container className="mt-4 mb-6 md:mt-6 md:mb-8 relative">
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="absolute right-0 -top-4 bg-primary hover:bg-primary/80 text-white py-2 px-4 rounded-md transition-colors text-sm"
+          aria-label="Go to top of page"
+        >
+          Go to top
+        </button>
+        <div className="flex flex-col justify-between text-center text-base">
           {/* Policy links moved above copyright text */}
+          <div className="mb-6 flex justify-center gap-4">
+            <a
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              className={socialIconStyle}
+            >
+              <Linkedin size={20} />
+            </a>
+            <a
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="X (formerly Twitter)"
+              className={socialIconStyle}
+            >
+              <X size={20} />
+            </a>
+            <a
+              href="mailto:contact@cactusits.com"
+              aria-label="Email"
+              className={socialIconStyle}
+            >
+              <Mail size={20} />
+            </a>
+          </div>
           <div
-            className="mb-4 flex justify-center gap-4 text-xs text-slate-500"
+            className="mb-4 flex flex-wrap justify-center gap-x-4 gap-y-2 text-base text-black"
             data-component-name="MainFooter"
           >
             <Link
               href="/privacy-policy"
-              className="text-black hover:text-purple-600 dark:text-gray-300 hover:dark:text-purple-400 transition-colors"
+              className="text-black hover:text-purple-600 transition-colors font-medium"
             >
               Privacy Policy
             </Link>
             <Link
               href="/terms-of-use"
-              className="text-black hover:text-purple-600 dark:text-gray-300 hover:dark:text-purple-400 transition-colors"
+              className="text-black hover:text-purple-600 transition-colors font-medium"
             >
               Terms of Use
             </Link>
             <Link
               href="/website-disclaimer"
-              className="text-black hover:text-purple-600 dark:text-gray-300 hover:dark:text-purple-400 transition-colors"
+              className="text-black hover:text-purple-600 transition-colors font-medium"
             >
               Website Disclaimer
             </Link>
             <Link
               href="/cookies-policy"
-              className="text-black hover:text-purple-600 dark:text-gray-300 hover:dark:text-purple-400 transition-colors"
+              className="text-black hover:text-purple-600 transition-colors font-medium"
             >
               Cookies Policy
             </Link>
+            <Link
+              href="/accessibility-statement"
+              className="text-black hover:text-purple-600 transition-colors font-medium"
+            >
+              Accessibility Statement
+            </Link>
+            <Link
+              href="/modern-slavery-act"
+              className="text-black hover:text-purple-600 transition-colors font-medium"
+            >
+              Modern Slavery
+            </Link>
           </div>
 
-          <div className="flex flex-row items-center justify-center gap-1 text-black dark:text-gray-300">
+          <div className="flex flex-row items-center justify-center gap-1 text-black font-normal">
             <span>
               © {new Date().getFullYear()} Cactus AI. All rights reserved.
             </span>
@@ -201,7 +304,7 @@ export function MainFooter() {
               href="https://nishantsura.com"
               target="_blank"
               rel="noreferrer"
-              className="font-medium text-purple-600 hover:underline mx-1 dark:text-purple-400"
+              className="text-purple-600 hover:underline mx-1 dark:text-purple-400"
             >
               Nishant Sura
             </Link>

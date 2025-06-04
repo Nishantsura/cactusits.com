@@ -3,8 +3,9 @@ import { getIndustryBySlug, getAllIndustrySlugs } from "./data-provider";
 import OurApproach from "@/components/industry/our-approach";
 import Link from "next/link";
 import ChooseUs from "@/components/ChooseUs";
-import ContactForm from "@/components/landing/ContactUs";
+import SubscriptionForm from "@/components/landing/NewsLetter";
 import { Section } from "@/components/ui/section";
+import { mapToLocalImage } from "@/lib/image-mapping";
 
 export async function generateStaticParams() {
   const industries = await getAllIndustrySlugs();
@@ -70,7 +71,7 @@ export default async function Page({
 
         <div className="flex-1 relative min-h-[300px] lg:min-h-[400px] h-[50%] rounded-lg overflow-hidden self-center">
           <Image
-            src={Hero.image}
+            src={mapToLocalImage(Hero.image, params.industry)}
             alt="Hero Image"
             height={1000}
             width={1000}
@@ -89,9 +90,9 @@ export default async function Page({
         <ChooseUs />
       </Section>
 
-      {/* Contact us section */}
+      {/* Join Us section */}
       <Section id="contact" spacing="minimal" verticalAlign="center">
-        <ContactForm />
+        <SubscriptionForm heading="Partner With Us" />
       </Section>
     </div>
   );

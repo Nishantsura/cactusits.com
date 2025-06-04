@@ -37,7 +37,7 @@ export default function TestimonialsAdmin() {
 
   // Authentication check
   useEffect(() => {
-    const checkAuth = () => {
+    const checkAuth = async () => {
       try {
         // Make sure we're in a browser environment
         if (typeof window === "undefined") {
@@ -45,25 +45,31 @@ export default function TestimonialsAdmin() {
           return;
         }
 
+        setIsLoading(true);
         const authData = localStorage.getItem("adminAuth");
 
         if (!authData) {
+          console.log("No auth data found, redirecting to login");
           router.push("/admin");
           return;
         }
 
         try {
-          const { authenticated, expires } = JSON.parse(authData);
+          const parsedData = JSON.parse(authData);
+          const { authenticated, expires } = parsedData;
 
           if (!authenticated || new Date(expires) < new Date()) {
             // Session expired
+            console.log("Authentication expired");
             localStorage.removeItem("adminAuth");
             router.push("/admin");
             return;
           }
-
+          
+          // Optional: Verify with a backend endpoint if needed for extra security
+          
           setIsAuthenticated(true);
-          fetchTestimonials();
+          await fetchTestimonials();
         } catch (error) {
           console.error("Error parsing auth data:", error);
           localStorage.removeItem("adminAuth");
@@ -73,6 +79,10 @@ export default function TestimonialsAdmin() {
         console.error("Unexpected error in auth check:", e);
         setIsLoading(false);
         router.push("/admin");
+      } finally {
+        if (typeof window !== "undefined") {
+          setIsLoading(false);
+        }
       }
     };
 
@@ -83,10 +93,12 @@ export default function TestimonialsAdmin() {
   const fetchTestimonials = async () => {
     try {
       setIsLoading(true);
+      setFormError(""); // Clear any previous errors
 
       // Check if Supabase client is properly initialized
       if (!supabase || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
         console.warn("Supabase client not properly initialized");
+        setFormError("Database connection issue. Please check your configuration.");
         setIsLoading(false);
         return;
       }
@@ -98,11 +110,13 @@ export default function TestimonialsAdmin() {
 
       if (error) {
         console.error("Error fetching testimonials:", error);
+        setFormError(`Failed to load testimonials: ${error.message || "Unknown error"}`);
       } else {
         setTestimonials(data || []);
       }
     } catch (error) {
       console.error("Error in fetchTestimonials:", error);
+      setFormError("An unexpected error occurred while loading testimonials");
     } finally {
       setIsLoading(false);
     }
@@ -133,17 +147,21 @@ export default function TestimonialsAdmin() {
       };
 
       // Add new testimonial to Supabase
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("testimonials")
-        .insert([newTestimonial]);
+        .insert([newTestimonial])
+        .select();
 
       if (error) {
-        console.error("Error adding testimonial:", error);
-        setFormError("Failed to add testimonial. Please try again.");
+        console.error("Error adding testimonial:", JSON.stringify(error));
+        setFormError(
+          `Failed to add testimonial: ${error.message || "Unknown error"}`,
+        );
       } else {
+        console.log("Testimonial added successfully:", data);
         // Reset form and refetch testimonials
         resetForm();
-        fetchTestimonials();
+        await fetchTestimonials();
         setIsEditing(false);
       }
     } catch (error) {
@@ -184,19 +202,24 @@ export default function TestimonialsAdmin() {
       };
 
       // Update testimonial in Supabase
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("testimonials")
         .update(updatedTestimonial)
-        .eq("id", currentTestimonial.id);
+        .eq("id", currentTestimonial.id)
+        .select();
 
       if (error) {
-        console.error("Error updating testimonial:", error);
-        setFormError("Failed to update testimonial. Please try again.");
+        console.error("Error updating testimonial:", JSON.stringify(error));
+        setFormError(
+          `Failed to update testimonial: ${error.message || "Unknown error"}`,
+        );
       } else {
+        console.log("Testimonial updated successfully:", data);
         // Reset form and refetch testimonials
         resetForm();
-        fetchTestimonials();
+        await fetchTestimonials();
         setIsEditing(false);
+        setCurrentTestimonial(null);
       }
     } catch (error) {
       console.error("Error in handleUpdateTestimonial:", error);
@@ -416,10 +439,33 @@ export default function TestimonialsAdmin() {
           </div>
         )}
 
+        {/* Error message if any */}
+        {formError && (
+          <div className="bg-red-50 text-red-600 p-4 mb-6 rounded-md">
+            <p>{formError}</p>
+            <button 
+              className="text-sm underline mt-2" 
+              onClick={() => {
+                setFormError("");
+                fetchTestimonials();
+              }}
+            >
+              Try again
+            </button>
+          </div>
+        )}
+        
         {/* List of existing testimonials */}
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
             <h2 className="text-lg font-semibold">Testimonials</h2>
+            <button 
+              onClick={fetchTestimonials} 
+              className="text-sm text-primary hover:underline" 
+              disabled={isLoading}
+            >
+              Refresh
+            </button>
           </div>
 
           {isLoading ? (

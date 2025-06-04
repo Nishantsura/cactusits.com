@@ -1,132 +1,115 @@
 "use client";
-import React from "react";
+import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Section } from "@/components/ui/section";
-import Image from "next/image";
+import { TestimonialsColumn } from "@/components/ui/testimonials-columns-1";
 
-// Define the testimonial type
-export type ServiceTestimonial = {
-  text: string;
-  image: string;
-  name: string;
-  role: string;
-  company?: string;
-  service?: string;
-};
-
-// Sample testimonials data array that can be overridden by props
-const defaultTestimonials: ServiceTestimonial[] = [
+const testimonialsData = [
   {
-    text: "Cactus has been instrumental in our digital transformation journey. Their expertise and strategic guidance have helped us navigate complex technological challenges with confidence.",
-    image: "/testimonials/avatar1.png",
-    name: "Sarah Johnson",
-    role: "CTO",
-    company: "Global Innovations",
+    text: "This ERP revolutionized our operations, streamlining finance and inventory. The cloud-based platform keeps us productive, even remotely.",
+    image: "https://randomuser.me/api/portraits/women/1.jpg",
+    name: "Briana Patton",
+    role: "Operations Manager",
   },
   {
-    text: "Working with Cactus on our cloud migration project exceeded our expectations. Their team's technical knowledge and attention to detail ensured a smooth transition with minimal disruption.",
-    image: "/testimonials/avatar2.png",
-    name: "Michael Chen",
-    role: "IT Director",
-    company: "Horizon Solutions",
+    text: "Implementing this ERP was smooth and quick. The customizable, user-friendly interface made team training effortless.",
+    image: "https://randomuser.me/api/portraits/men/2.jpg",
+    name: "Bilal Ahmed",
+    role: "IT Manager",
   },
   {
-    text: "The cybersecurity assessment Cactus conducted for our organization was comprehensive and eye-opening. They identified vulnerabilities we weren't aware of and provided practical solutions.",
-    image: "/testimonials/avatar3.png",
-    name: "Emma Rodriguez",
-    role: "Security Manager",
-    company: "SecureTech Inc.",
+    text: "The support team is exceptional, guiding us through setup and providing ongoing assistance, ensuring our satisfaction.",
+    image: "https://randomuser.me/api/portraits/women/3.jpg",
+    name: "Saman Malik",
+    role: "Customer Support Lead",
+  },
+  {
+    text: "This ERP's seamless integration enhanced our business operations and efficiency. Highly recommend for its intuitive interface.",
+    image: "https://randomuser.me/api/portraits/men/4.jpg",
+    name: "Omar Raza",
+    role: "CEO",
+  },
+  {
+    text: "Its robust features and quick support have transformed our workflow, making us significantly more efficient.",
+    image: "https://randomuser.me/api/portraits/women/5.jpg",
+    name: "Zainab Hussain",
+    role: "Project Manager",
+  },
+  {
+    text: "The smooth implementation exceeded expectations. It streamlined processes, improving overall business performance.",
+    image: "https://randomuser.me/api/portraits/women/6.jpg",
+    name: "Aliza Khan",
+    role: "Business Analyst",
+  },
+  {
+    text: "Our business functions improved with a user-friendly design and positive customer feedback.",
+    image: "https://randomuser.me/api/portraits/men/7.jpg",
+    name: "Farhan Siddiqui",
+    role: "Marketing Director",
+  },
+  {
+    text: "They delivered a solution that exceeded expectations, understanding our needs and enhancing our operations.",
+    image: "https://randomuser.me/api/portraits/women/8.jpg",
+    name: "Sana Sheikh",
+    role: "Sales Manager",
+  },
+  {
+    text: "Using this ERP, our online presence and conversions significantly improved, boosting business performance.",
+    image: "https://randomuser.me/api/portraits/men/9.jpg",
+    name: "Hassan Ali",
+    role: "E-commerce Manager",
   },
 ];
 
 export default function ServiceTestimonials({
-  testimonials = defaultTestimonials,
-  title = "What Our Clients Say",
-  subtitle = "Discover how we've helped organizations across various industries achieve their business objectives through innovative IT solutions.",
+  title = "Testimonials",
+  subtitle = "See what our customers have to say about us.",
 }: {
-  testimonials?: ServiceTestimonial[];
   title?: string;
   subtitle?: string;
 }) {
+  // Memoize the testimonial data to prevent unnecessary re-calculations
+  const testimonials = useMemo(() => testimonialsData, []);
+  
+  // Memoize the column data
+  const firstColumn = useMemo(() => testimonials.slice(0, 3), [testimonials]);
+  const secondColumn = useMemo(() => testimonials.slice(3, 6), [testimonials]);
+  const thirdColumn = useMemo(() => testimonials.slice(6, 9), [testimonials]);
+
   return (
     <Section
       id="testimonials"
       spacing="normal"
       verticalAlign="center"
-      className="bg-gray-50 py-16"
+      className="bg-background my-20 relative"
     >
-      <div className="text-center mb-12">
-        <h2 className="text-3xl lg:text-4xl font-bold mb-4">{title}</h2>
-        <p className="max-w-3xl mx-auto text-gray-600 text-base">{subtitle}</p>
-      </div>
+      <div className="container z-10 mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          viewport={{ once: true }}
+          className="flex flex-col items-center justify-center max-w-[540px] mx-auto"
+        >
+          <h2 className="text-3xl lg:text-5xl tracking-tighter font-normal mt-5">
+            {title}
+          </h2>
+          <p className="text-center mt-5 opacity-75">{subtitle}</p>
+        </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-        {testimonials.map((testimonial, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            viewport={{ once: true }}
-            className="bg-white p-6 rounded-xl shadow-md border border-gray-100 flex flex-col h-full"
-          >
-            {/* Quote icon */}
-            <div className="mb-4 text-primary">
-              <svg
-                width="40"
-                height="40"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 11H6C3.79086 11 2 9.20914 2 7V7C2 4.79086 3.79086 3 6 3H7C8.10457 3 9 3.89543 9 5V8C9 8.55228 8.55228 9 8 9H7C5.89543 9 5 9.89543 5 11V13C5 14.1046 5.89543 15 7 15H9C10.1046 15 11 14.1046 11 13V13C11 11.8954 10.1046 11 9 11"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M22 11H18C15.7909 11 14 9.20914 14 7V7C14 4.79086 15.7909 3 18 3H19C20.1046 3 21 3.89543 21 5V8C21 8.55228 20.5523 9 20 9H19C17.8954 9 17 9.89543 17 11V13C17 14.1046 17.8954 15 19 15H21C22.1046 15 23 14.1046 23 13V13C23 11.8954 22.1046 11 21 11"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-
-            {/* Testimonial text */}
-            <p className="text-gray-700 italic mb-6 flex-grow">
-              &quot;{testimonial.text}&quot;
-            </p>
-
-            {/* Author info */}
-            <div className="flex items-center mt-auto">
-              <Image
-                src={testimonial.image}
-                alt={testimonial.name}
-                width={48}
-                height={48}
-                className="h-12 w-12 rounded-full object-cover mr-4 border-2 border-gray-100"
-              />
-              <div>
-                <h4 className="font-semibold text-gray-900">
-                  {testimonial.name}
-                </h4>
-                <div className="text-sm text-gray-600">
-                  {testimonial.role}
-                  {testimonial.company ? `, ${testimonial.company}` : ""}
-                </div>
-                {testimonial.service && (
-                  <div className="text-xs text-primary mt-1">
-                    {testimonial.service}
-                  </div>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        ))}
+        <div className="flex justify-center gap-6 mt-10 [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] max-h-[740px] overflow-hidden">
+          <TestimonialsColumn testimonials={firstColumn} duration={15} />
+          <TestimonialsColumn
+            testimonials={secondColumn}
+            className="hidden md:block"
+            duration={19}
+          />
+          <TestimonialsColumn
+            testimonials={thirdColumn}
+            className="hidden lg:block"
+            duration={17}
+          />
+        </div>
       </div>
     </Section>
   );

@@ -1,4 +1,8 @@
 import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { mapToLocalImage } from "@/lib/image-mapping";
+
+// The actual image mapping is done in the page component
+// This maintains the original data structure from Supabase
 
 interface IndustryPageProps {
   Hero: {
@@ -36,7 +40,7 @@ export async function getIndustryBySlug(
       industry: data.hero_industry,
       title: data.hero_title,
       description: data.hero_description,
-      image: data.hero_image || "",
+      image: mapToLocalImage(data.hero_image || ""),
     },
     Approach: data.approach_items || [],
   };

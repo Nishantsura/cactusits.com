@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import { Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 export default function ChooseUs() {
   // Keep the existing content but adapt to new layout
@@ -36,12 +37,19 @@ export default function ChooseUs() {
       {/* Heading removed as requested */}
 
       <div className="container mx-auto max-w-7xl px-4">
-        <div className="grid grid-cols-1 gap-8 items-start lg:items-center lg:grid-cols-2">
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start md:items-center">
           <div className="flex gap-10 flex-col">
             <div className="flex gap-4 flex-col">
               {/* Badge removed as requested */}
               <div className="flex gap-2 flex-col">
-                <h2 className="text-3xl lg:text-5xl tracking-tighter max-w-xl text-left font-regular">
+                <h2 className="text-3xl lg:text-5xl tracking-tighter max-w-xl text-left font-regular flex items-center">
+                  <Image
+                    src="/logo.svg"
+                    alt="cactus it logo"
+                    width={1000}
+                    height={1000}
+                    className="w-7 h-7 object-contain mr-2"
+                  />
                   Why Choose Cactus
                 </h2>
                 <p className="text-lg leading-relaxed tracking-tight text-muted-foreground max-w-xl text-left">
@@ -52,22 +60,35 @@ export default function ChooseUs() {
             </div>
             <div className="grid lg:pl-6 grid-cols-1 sm:grid-cols-2 items-start gap-6">
               {chooseUsPoints.map((point, index) => (
-                <div key={index} className="flex flex-row gap-6 items-start">
-                  <div className="flex-shrink-0 mt-1">
+                <div
+                  key={index}
+                  className={cn(
+                    "flex flex-col py-8 px-2 relative group/feature rounded-lg hover:shadow-md transition-all duration-300",
+                  )}
+                >
+                  {/* Hover animation overlay similar to Feature component */}
+                  <div className="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-gradient-to-t from-neutral-100 to-transparent pointer-events-none" />
+
+                  <div className="mb-4 relative z-10 px-6">
                     <Image
                       src={point.icon}
                       alt={`${point.heading} icon`}
                       width={28}
                       height={28}
-                      className="w-7 h-7"
+                      className="w-8 h-8"
                     />
                   </div>
-                  <div className="flex flex-col gap-1">
-                    <p className="font-medium">{point.heading}</p>
-                    <p className="text-muted-foreground text-sm">
-                      {point.description}
-                    </p>
+
+                  <div className="text-lg font-medium mb-2 relative z-10 px-6">
+                    <div className="absolute left-0 inset-y-0 h-6 group-hover/feature:h-8 w-1 rounded-tr-full rounded-br-full bg-neutral-300 group-hover/feature:bg-primary transition-all duration-200 origin-center" />
+                    <span className="group-hover/feature:translate-x-2 transition duration-200 inline-block text-neutral-800">
+                      {point.heading}
+                    </span>
                   </div>
+
+                  <p className="text-sm text-gray-muted px-6 relative z-10">
+                    {point.description}
+                  </p>
                 </div>
               ))}
             </div>
@@ -78,7 +99,7 @@ export default function ChooseUs() {
               alt="Why Choose Us"
               width={800}
               height={450}
-              className="w-full h-full object-cover object-center"
+              className="w-full h-[300px] md:h-[400px] lg:h-[450px] object-cover object-center rounded-lg"
             />
           </div>
         </div>

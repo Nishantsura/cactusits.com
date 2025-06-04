@@ -13,19 +13,37 @@ interface IndustryCardProps {
   icon: React.ReactNode;
 }
 
+interface IndustryCardProps {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  slug?: string;
+}
+
 const IndustryCard: React.FC<IndustryCardProps> = ({
   title,
   description,
   icon,
+  slug,
 }) => {
-  return (
+  const cardContent = (
     <div className="relative overflow-hidden min-w-[300px] sm:min-w-[350px] h-[250px] bg-warm-white rounded-lg p-6 flex flex-col justify-between border border-gray-100 shadow-sm">
       <div className="absolute top-0 right-0 ">{icon}</div>
       <div className="mt-16">
-        <h3 className="font-semibold text-[#2d2d40]">{title}</h3>
-        <p className="text-sm text-gray-500 mt-2">{description}</p>
+        <h3 className="font-semibold text-[#2d2d40] text-wrap break-words pr-2 line-clamp-2">
+          {title}
+        </h3>
+        <p className="text-sm text-gray-500 mt-2 line-clamp-4">{description}</p>
       </div>
     </div>
+  );
+
+  return slug ? (
+    <Link href={`/industries/${slug}`} className="block cursor-pointer">
+      {cardContent}
+    </Link>
+  ) : (
+    cardContent
   );
 };
 
@@ -93,11 +111,11 @@ export default function IndustriesSection() {
         {/* Left column with heading and image */}
         <div className="w-fit lg:w-3/12 relative inline-block">
           <Image
-            src="/landing/industry-1.svg"
+            src="/landing/pexels-tima-miroshnichenko-5685961.jpg"
             alt="left industry"
             width={1000}
             height={1000}
-            className="h-auto max-w-44 sm:max-w-64 w-full lg:w-auto"
+            className="h-auto max-w-44 sm:max-w-64 w-full lg:w-auto object-cover rounded-full"
           />
           <Link href="/industries">
             <button className="flex w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-foreground items-center justify-center text-white border-8 absolute bottom-0 -right-10 lg:left-44 text-xs sm:text-sm">
@@ -160,6 +178,10 @@ export default function IndustriesSection() {
                         ""
                       }
                       icon={defaultIcons[index % defaultIcons.length]}
+                      slug={
+                        industry.slug ||
+                        `${(industry.name || industry.hero_industry || "").toLowerCase().replace(/\s+/g, "-")}`
+                      }
                     />
                   </div>
                 ))
